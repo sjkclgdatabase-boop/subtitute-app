@@ -1,0 +1,21 @@
+/* Tailwind v4 的全新导入方式 */
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.04) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.04) 0px, transparent 50%);
+    background-attachment: fixed;
+  }
+}
+
+/* 强制重置 Vue 默认可能残留的 app 容器限制 */
+#app {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  display: block;
+}

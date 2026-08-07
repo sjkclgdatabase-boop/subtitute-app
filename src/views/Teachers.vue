@@ -1,0 +1,290 @@
+<template>
+  <div class="p-6 max-w-7xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6 text-gray-800">教师资料管理</h1>
+    
+    <!-- 顶部操作栏：采用跟图片一样的双班制胶囊切换器与功能区 -->
+    <div class="bg-white p-4 rounded-3xl shadow-sm ring-1 ring-slate-900/5 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+      
+      <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+        <!-- 左侧：上午班 / 下午班胶囊切换器 -->
+        <div class="bg-slate-100 p-1.5 rounded-2xl flex items-center shadow-inner w-full sm:w-auto">
+          <button 
+            @click="currentSession = 'morning'" 
+            class="flex-1 sm:flex-none py-2.5 px-6 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2"
+            :class="currentSession === 'morning' 
+              ? 'bg-white text-indigo-600 shadow-sm ring-2 ring-blue-600' 
+              : 'text-slate-500 hover:text-slate-900'"
+          >
+            <span>☀️</span> 上午班
+          </button>
+          <button 
+            @click="currentSession = 'afternoon'" 
+            class="flex-1 sm:flex-none py-2.5 px-6 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2"
+            :class="currentSession === 'afternoon' 
+              ? 'bg-white text-orange-600 shadow-sm ring-2 ring-orange-500' 
+              : 'text-slate-500 hover:text-slate-900'"
+          >
+            <span>🌙</span> 下午班
+          </button>
+        </div>
+
+        <!-- 批量导入与模版按钮组 -->
+        <div class="flex gap-2 w-full sm:w-auto">
+          <button @click="downloadTemplate" class="bg-emerald-600 text-white px-4 py-2.5 rounded-xl hover:bg-emerald-700 text-sm font-semibold shadow-sm transition">
+            下载模版
+          </button>
+          <label class="bg-blue-600 text-white px-4 py-2.5 rounded-xl hover:bg-blue-700 cursor-pointer text-sm font-semibold shadow-sm transition flex items-center justify-center">
+            批量导入
+            <input type="file" accept=".csv" @change="handleCsvUpload" class="hidden" />
+          </label>
+        </div>
+      </div>
+
+      <button @click="showModal = true" class="w-full md:w-auto bg-purple-600 text-white px-6 py-2.5 rounded-xl hover:bg-purple-700 text-sm font-semibold shadow-md transition">
+        + 新增教师
+      </button>
+    </div>
+
+    <!-- 教师列表表格 (自动根据当前选择的班次过滤，并支持点击表头排序) -->
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-gray-50 text-gray-700 select-none text-sm border-b border-slate-100">
+            <th @click="sortBy('name')" class="p-4 cursor-pointer hover:bg-gray-100 transition">
+              <div class="flex items-center gap-1 font-bold">
+                姓名 <span class="text-xs text-slate-400">{{ getSortIcon('name') }}</span>
+              </div>
+            </th>
+            <th @click="sortBy('subject')" class="p-4 cursor-pointer hover:bg-gray-100 transition">
+              <div class="flex items-center gap-1 font-bold">
+                科目 <span class="text-xs text-slate-400">{{ getSortIcon('subject') }}</span>
+              </div>
+            </th>
+            <th @click="sortBy('session')" class="p-4 cursor-pointer hover:bg-gray-100 transition">
+              <div class="flex items-center gap-1 font-bold">
+                班次 <span class="text-xs text-slate-400">{{ getSortIcon('session') }}</span>
+              </div>
+            </th>
+            <th @click="sortBy('max_substitute_per_week')" class="p-4 cursor-pointer hover:bg-gray-100 transition">
+              <div class="flex items-center gap-1 font-bold">
+                每周代课上限 <span class="text-xs text-slate-400">{{ getSortIcon('max_substitute_per_week') }}</span>
+              </div>
+            </th>
+            <th @click="sortBy('is_active')" class="p-4 cursor-pointer hover:bg-gray-100 transition">
+              <div class="flex items-center gap-1 font-bold">
+                状态 <span class="text-xs text-slate-400">{{ getSortIcon('is_active') }}</span>
+              </div>
+            </th>
+            <th class="p-4 font-bold">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-if="filteredTeachers.length === 0">
+            <td colspan="6" class="p-12 text-center text-slate-400 text-sm">
+              当前{{ currentSession === 'morning' ? '上午班' : '下午班' }}暂无教师数据
+            </td>
+          </tr>
+          <tr v-for="t in filteredTeachers" :key="t.id" class="hover:bg-slate-50/80 transition border-b border-slate-50 last:border-none">
+            <td class="p-4 font-semibold text-slate-800">{{ t.name }}</td>
+            <td class="p-4 text-slate-600">{{ t.subject || '-' }}</td>
+            <td class="p-4">
+              <span :class="t.session === 'afternoon' ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'" class="px-3 py-1 rounded-full text-xs font-bold">
+                {{ t.session === 'afternoon' ? '下午班' : '上午班' }}
+              </span>
+            </td>
+            <td class="p-4 text-slate-600">{{ t.max_substitute_per_week }} 节</td>
+            <td class="p-4">
+              <span :class="t.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'" class="px-2.5 py-1 rounded-md text-xs font-semibold">
+                {{ t.is_active ? '在职' : '离职' }}
+              </span>
+            </td>
+            <td class="p-4">
+              <button @click="deleteTeacher(t.id)" class="text-red-600 hover:text-red-800 text-sm font-medium transition">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 新增模态框 -->
+    <div v-if="showModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div class="bg-white p-6 rounded-3xl w-full max-w-sm shadow-2xl ring-1 ring-slate-900/10">
+        <h2 class="text-lg font-bold text-slate-900 mb-4">新增教师</h2>
+        
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 mb-1">姓名</label>
+            <input v-model="form.name" placeholder="例如: 张三" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 mb-1">科目</label>
+            <input v-model="form.subject" placeholder="例如: 华文" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 mb-1">分配班次</label>
+            <select v-model="form.session" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+              <option value="morning">上午班 (Morning)</option>
+              <option value="afternoon">下午班 (Afternoon)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 mb-1">每周代课上限 (节)</label>
+            <input v-model.number="form.max_substitute_per_week" type="number" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50" />
+          </div>
+        </div>
+
+        <div class="mt-6 flex gap-3">
+          <button @click="showModal = false" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl text-sm font-semibold transition">取消</button>
+          <button @click="saveTeacher" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-xl text-sm font-semibold shadow-md transition">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { supabase } from '../services/supabase'
+import { parseCSV } from '../utils/importCsv'
+import { useToast } from '../utils/toast'
+
+const toast = useToast()
+const teachers = ref([])
+const showModal = ref(false)
+const currentSession = ref('morning') // 默认当前选中的班次
+
+const form = ref({ name: '', subject: '', max_substitute_per_week: 5, session: 'morning', is_active: true })
+
+// 排序状态管理
+const sortKey = ref('name') 
+const sortOrder = ref('asc') 
+
+const sortBy = (key) => {
+  if (sortKey.value === key) {
+    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    sortKey.value = key
+    sortOrder.value = 'asc'
+  }
+}
+
+const getSortIcon = (key) => {
+  if (sortKey.value !== key) return '↕'
+  return sortOrder.value === 'asc' ? '▲' : '▼'
+}
+
+// 计算属性：强制过滤并确保绝对是 A-Z 正序排列
+const filteredTeachers = computed(() => {
+  const list = teachers.value.filter(t => (t.session || 'morning') === currentSession.value)
+  
+  return [...list].sort((a, b) => {
+    // 强制转为大写并去掉前后空格，防止因为大小写或空格导致排序错乱
+    let valA = a[sortKey.value] ? String(a[sortKey.value]).trim().toUpperCase() : ''
+    let valB = b[sortKey.value] ? String(b[sortKey.value]).trim().toUpperCase() : ''
+
+    // 字符串标准 A-Z 比较
+    const res = valA.localeCompare(valB, 'en', { numeric: true })
+    
+    // 根据当前正反序状态返回
+    return sortOrder.value === 'asc' ? res : -res
+  })
+})
+
+const fetchTeachers = async () => {
+  const { data } = await supabase.from('teachers').select('*')
+  if (data) teachers.value = data
+}
+
+const downloadTemplate = () => {
+  const csvContent = "name,subject,max_substitute_per_week,session\n张三,华文,5,morning\n李四,数学,8,afternoon"
+  const blob = new Blob(['\ufeff', csvContent], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  
+  const link = document.createElement("a")
+  link.setAttribute("href", url)
+  link.setAttribute("download", "教师信息导入模版.csv")
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
+
+const saveTeacher = async () => {
+  const { error } = await supabase.from('teachers').insert([form.value])
+  if (error) toast.error("保存失败: " + error.message)
+  else {
+    toast.success("添加成功")
+    showModal.value = false
+    form.value = { name: '', subject: '', max_substitute_per_week: 5, session: 'morning', is_active: true }
+    fetchTeachers()
+  }
+}
+
+const deleteTeacher = async (id) => {
+  const { error } = await supabase.from('teachers').delete().eq('id', id)
+  if (!error) { toast.success("删除成功"); fetchTeachers(); }
+}
+
+const handleCsvUpload = async (e) => {
+  const file = e.target.files[0]
+  if (!file) return
+  
+  try {
+    const data = await parseCSV(file)
+    if (!data || data.length === 0) {
+      toast.error("CSV 文件为空或格式错误")
+      return
+    }
+
+    let updateCount = 0
+    let insertCount = 0
+
+    for (const row of data) {
+      if (!row.name) continue
+      const trimmedName = String(row.name).trim()
+
+      let rawSession = row.session ? String(row.session).trim().toLowerCase() : 'morning'
+      if (rawSession.includes('afternoon') || rawSession.includes('下') || rawSession.includes('petang')) {
+        rawSession = 'afternoon'
+      } else {
+        rawSession = 'morning'
+      }
+
+      const teacherPayload = {
+        name: trimmedName,
+        subject: row.subject ? String(row.subject).trim() : '',
+        max_substitute_per_week: parseInt(row.max_substitute_per_week || 5),
+        session: rawSession,
+        is_active: true
+      }
+
+      const existingTeacher = teachers.value.find(t => t.name.trim() === trimmedName)
+
+      if (existingTeacher) {
+        const { error } = await supabase
+          .from('teachers')
+          .update(teacherPayload)
+          .eq('id', existingTeacher.id)
+        
+        if (error) throw error
+        updateCount++
+      } else {
+        const { error } = await supabase
+          .from('teachers')
+          .insert([teacherPayload])
+        
+        if (error) throw error
+        insertCount++
+      }
+    }
+
+    toast.success(`导入完成！已更新 ${updateCount} 位，新增 ${insertCount} 位教师资料。`)
+    fetchTeachers()
+  } catch (err) {
+    toast.error("导入失败: " + err.message)
+  } finally {
+    e.target.value = ''
+  }
+}
+
+onMounted(fetchTeachers)
+</script>
