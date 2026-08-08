@@ -13,7 +13,7 @@
       <!-- 右侧操作区：上传下载 -->
       <div class="flex flex-wrap items-center gap-3">
         <!-- 下载模板按钮 -->
-        <button @click="downloadTemplate" class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-xl hover:bg-indigo-100 transition-all shadow-sm">
+        <button @click="downloadTemplate" class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-xl hover:bg-indigo-100 transition-all shadow-sm cursor-pointer">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
           下载导入模板
         </button>
@@ -34,20 +34,20 @@
         <button 
           @click="currentSession = 'morning'; selectedTeacherId = ''; currentTimetable = []" 
           :class="currentSession === 'morning' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
-          class="flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-bold transition-all"
+          class="flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-bold transition-all cursor-pointer"
         >
           ☀️ 上午班
         </button>
         <button 
           @click="currentSession = 'afternoon'; selectedTeacherId = ''; currentTimetable = []" 
           :class="currentSession === 'afternoon' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
-          class="flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-bold transition-all"
+          class="flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-bold transition-all cursor-pointer"
         >
           🌙 下午班
         </button>
       </div>
 
-      <!-- 教师选择器 (自动根据上方班次过滤并按A-Z排序) -->
+      <!-- 教师选择器 -->
       <div class="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">
         <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm">
           👩‍🏫
@@ -96,12 +96,16 @@
                 <td v-for="day in config.daysPerWeek" :key="day" class="p-2 border border-slate-50">
                   <div 
                     @click="openEditModal(day, row.period)"
-                    class="h-20 w-full rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all duration-200 border-2"
+                    class="h-20 w-full rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all duration-200 border-2 relative"
                     :class="getCell(day, row.period) 
                       ? 'bg-indigo-50 border-indigo-100 hover:border-indigo-300 hover:shadow-md hover:-translate-y-0.5' 
                       : 'bg-transparent border-dashed border-slate-200 hover:border-indigo-300 hover:bg-slate-50'"
                   >
                     <template v-if="getCell(day, row.period)">
+                      <!-- 合班卡片顶角提示标签 -->
+                      <span v-if="getCell(day, row.period).class_name.includes('/')" class="absolute top-1.5 right-1.5 px-1.5 py-0.5 bg-violet-100 text-violet-700 rounded text-[9px] font-bold">
+                        合班
+                      </span>
                       <span class="font-bold text-indigo-900 text-sm">{{ getCell(day, row.period).class_name }}</span>
                       <span class="text-xs text-indigo-500 font-medium mt-1">{{ getCell(day, row.period).subject }}</span>
                     </template>
@@ -139,31 +143,82 @@
               <h2 class="text-lg font-bold text-slate-900">编辑排课</h2>
               <p class="text-xs text-slate-500 mt-1 font-medium">星期{{ dayNames[editingData.weekday - 1] }} · 第 {{ editingData.period }} 节 ({{ getPeriodTime(editingData.period) }})</p>
             </div>
-            <button @click="closeModal" class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">×</button>
+            <button @click="closeModal" class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition cursor-pointer">×</button>
           </div>
 
           <div class="space-y-4">
             <div>
-              <label class="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wider">班级</label>
-              <input v-model="editingData.class_name" type="text" placeholder="例如: 3C" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all">
+              <label class="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wider">班级 (合班可用斜杠如: 3A/3B)</label>
+              <input v-model="editingData.class_name" type="text" placeholder="例如: 3C 或 3A/3B" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wider">科目</label>
-              <input v-model="editingData.subject" type="text" placeholder="例如: 英文" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all">
+              <input v-model="editingData.subject" type="text" placeholder="例如: 英文 或 PM" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all">
             </div>
           </div>
 
           <div class="mt-8 flex gap-3">
-            <button v-if="editingData.id" @click="deleteClass" class="flex-1 bg-red-50 hover:bg-red-100 text-red-600 font-semibold py-2.5 rounded-xl text-sm transition-colors">
+            <button v-if="editingData.id" @click="deleteClass" class="flex-1 bg-red-50 hover:bg-red-100 text-red-600 font-semibold py-2.5 rounded-xl text-sm transition-colors cursor-pointer">
               清空此节
             </button>
-            <button @click="saveClass" class="flex-[2] bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2.5 rounded-xl text-sm shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5">
+            <button @click="saveClass" class="flex-[2] bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2.5 rounded-xl text-sm shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 cursor-pointer">
               保存修改
             </button>
           </div>
         </div>
       </div>
     </transition>
+
+    <!-- 📊 动态数字百分比进度条弹窗 -->
+    <Transition
+      enter-active-class="transition duration-300 ease-out"
+      enter-from-class="opacity-0 scale-95"
+      enter-to-class="opacity-100 scale-100"
+      leave-active-class="transition duration-200 ease-in"
+      leave-from-class="opacity-100 scale-100"
+      leave-to-class="opacity-0 scale-95"
+    >
+      <div v-if="uploadProgress.show" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 select-none">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100 text-center space-y-6">
+          
+          <!-- 顶部状态图标 -->
+          <div class="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl transition-all duration-300"
+               :class="uploadProgress.percent === 100 ? 'bg-emerald-100 text-emerald-600' : 'bg-indigo-50 text-indigo-600 animate-bounce'">
+            <span v-if="uploadProgress.percent < 100">📅</span>
+            <span v-else>🎉</span>
+          </div>
+
+          <!-- 标题与当前状态文字 -->
+          <div>
+            <h3 class="text-lg font-extrabold text-slate-900">
+              {{ uploadProgress.percent === 100 ? '全校课表导入成功！' : '正在批量导入课表...' }}
+            </h3>
+            <p class="text-xs font-semibold text-slate-500 mt-1.5">
+              {{ uploadProgress.statusText }}
+            </p>
+          </div>
+
+          <!-- 数字百分比进度条主体 -->
+          <div class="space-y-2">
+            <!-- 填充条 -->
+            <div class="w-full h-3.5 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200/80 shadow-inner">
+              <div 
+                class="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600 rounded-full transition-all duration-300 shadow-sm"
+                :style="{ width: uploadProgress.percent + '%' }"
+              ></div>
+            </div>
+            
+            <!-- 数字百分比提示 -->
+            <div class="flex justify-between items-center text-xs font-bold px-1">
+              <span class="text-slate-400">处理进度</span>
+              <span class="text-indigo-600 font-black text-sm">{{ uploadProgress.percent }}%</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </Transition>
+
   </div>
 </template>
 
@@ -177,13 +232,41 @@ const toast = useToast()
 const dayNames = ['一', '二', '三', '四', '五', '六', '日']
 const config = ref({ daysPerWeek: 5, periodsPerDay: 11 })
 const teachersList = ref([])
-const currentSession = ref('morning') // 默认当前显示上午班
+const currentSession = ref('morning')
 const selectedTeacherId = ref('')
 const currentTimetable = ref([])
 const showModal = ref(false)
 const editingData = ref({ id: null, weekday: 1, period: 1, class_name: '', subject: '' })
 
-// 结构化表格行（包含节次与休息时间行）
+// 📊 上传百分比进度条状态
+const uploadProgress = ref({
+  show: false,
+  percent: 0,
+  statusText: ''
+})
+
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+
+const startProgress = (initialText = '正在读取 CSV 课表模板...') => {
+  uploadProgress.value = {
+    show: true,
+    percent: 10,
+    statusText: initialText
+  }
+}
+
+const updateProgress = (percent, text) => {
+  uploadProgress.value.percent = percent
+  if (text) uploadProgress.value.statusText = text
+}
+
+const finishProgress = async (successMsg = '导入完成') => {
+  uploadProgress.value.percent = 100
+  uploadProgress.value.statusText = successMsg
+  await sleep(600)
+  uploadProgress.value.show = false
+}
+
 const tableRows = computed(() => {
   if (currentSession.value === 'morning') {
     return [
@@ -217,13 +300,11 @@ const tableRows = computed(() => {
   }
 })
 
-// 根据节次获取时间字符串
 const getPeriodTime = (periodNum) => {
   const found = tableRows.value.find(r => r.type === 'period' && r.period === periodNum)
   return found ? found.time : ''
 }
 
-// 计算属性：只筛选出当前所选班次的老师，并按 A-Z 排序
 const filteredTeachersList = computed(() => {
   const list = teachersList.value.filter(t => (t.session || 'morning') === currentSession.value)
   return [...list].sort((a, b) => {
@@ -272,8 +353,8 @@ const saveClass = async () => {
     teacher_id: selectedTeacherId.value,
     weekday: editingData.value.weekday,
     period: editingData.value.period,
-    class_name: editingData.value.class_name,
-    subject: editingData.value.subject
+    class_name: editingData.value.class_name.trim().toUpperCase(),
+    subject: editingData.value.subject.trim().toUpperCase()
   }
   const res = editingData.value.id 
     ? await supabase.from('timetable').update(payload).eq('id', editingData.value.id)
@@ -293,9 +374,8 @@ const deleteClass = async () => {
   closeModal()
 }
 
-// 下载模板
 const downloadTemplate = () => {
-  const csvContent = "\uFEFFteacher_name,weekday,period,class_name,subject\n(示例)填写教师真实姓名,1,3,高一(1)班,数学";
+  const csvContent = "\uFEFFteacher_name,weekday,period,class_name,subject\n(示例)张三,1,3,3A/3B,PM\n(示例)李四,2,4,4A,BM";
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
@@ -307,32 +387,45 @@ const downloadTemplate = () => {
   toast.success("模板下载成功！");
 }
 
-// CSV上传导入功能（实现重复上传自动覆盖）
+// 📂 集成数字百分比进度条：批量导入课表逻辑
 const handleCsvUpload = async (e) => {
   const file = e.target.files[0]
   if (!file) return
   
+  startProgress('正在读取课表 CSV 文件...')
+
   try {
+    await sleep(200)
+    updateProgress(25, '正在解析与校验课表合法性...')
+
     const data = await parseCSV(file)
     const filteredData = data.filter(row => row.teacher_name && !row.teacher_name.includes('示例'))
     
-    if (filteredData.length === 0) throw new Error("没有读取到有效数据，请检查格式。")
+    if (filteredData.length === 0) {
+      uploadProgress.value.show = false
+      throw new Error("没有读取到有效数据，请检查格式。")
+    }
 
     let successCount = 0
+    const totalRows = filteredData.length
 
-    // 逐条处理上传的数据
-    for (const [index, row] of filteredData.entries()) {
+    await sleep(200)
+    updateProgress(40, `读取成功！准备导入 ${totalRows} 条课表数据...`)
+
+    for (let index = 0; index < totalRows; index++) {
+      const row = filteredData[index]
       const inputName = row.teacher_name.trim()
       const matchedTeacher = teachersList.value.find(t => t.name.trim() === inputName)
       
       if (!matchedTeacher) {
-        throw new Error(`第 ${index + 2} 行出错：系统教师库中找不到名为 "${inputName}" 的老师，请先去添加！`)
+        uploadProgress.value.show = false
+        throw new Error(`第 ${index + 2} 行出错：系统教师库中找不到名为 "${inputName}" 的老师，请先在教师档案中添加！`)
       }
 
       const weekdayNum = parseInt(row.weekday)
       const periodNum = parseInt(row.period)
 
-      // 1. 先检查该老师在这一天这一节是否已经有课，如果有则直接删除（实现覆盖效果）
+      // 1. 删除旧记录 (覆盖模式)
       await supabase
         .from('timetable')
         .delete()
@@ -340,30 +433,35 @@ const handleCsvUpload = async (e) => {
         .eq('weekday', weekdayNum)
         .eq('period', periodNum)
 
-      // 2. 插入最新的课表记录
+      // 2. 写入最新记录
       const { error: insertErr } = await supabase.from('timetable').insert({
         teacher_id: matchedTeacher.id,
         weekday: weekdayNum,
         period: periodNum,
-        class_name: row.class_name.trim(),
-        subject: row.subject.trim()
+        class_name: row.class_name.trim().toUpperCase(),
+        subject: row.subject.trim().toUpperCase()
       })
 
       if (insertErr) throw insertErr
       successCount++
+
+      // 动态推算写入进度 (40% ~ 90%)
+      const currentPercent = 40 + Math.floor(((index + 1) / totalRows) * 50)
+      updateProgress(currentPercent, `正在同步向数据库写入课表 (${index + 1}/${totalRows})...`)
     }
-    
+
+    await finishProgress(`成功导入并更新 ${successCount} 条课表数据！`)
     toast.success(`成功导入并更新 ${successCount} 条课表数据！`)
     
-    // 如果当前正好选中了某位老师，刷新他的课表显示
     if (selectedTeacherId.value) {
       fetchTeacherTimetable()
     }
     
   } catch (err) {
+    uploadProgress.value.show = false
     toast.error("导入失败: " + err.message)
   } finally {
-    e.target.value = '' // 清空文件选择框，允许重复选择同一个文件
+    e.target.value = ''
   }
 }
 </script>

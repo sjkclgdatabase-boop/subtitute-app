@@ -289,6 +289,56 @@
       </div>
     </div>
 
+    <!-- 📊 动态数字百分比进度条弹窗 -->
+    <Transition
+      enter-active-class="transition duration-300 ease-out"
+      enter-from-class="opacity-0 scale-95"
+      enter-to-class="opacity-100 scale-100"
+      leave-active-class="transition duration-200 ease-in"
+      leave-from-class="opacity-100 scale-100"
+      leave-to-class="opacity-0 scale-95"
+    >
+      <div v-if="uploadProgress.show" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 select-none">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100 text-center space-y-6">
+          
+          <!-- 顶部状态图标 -->
+          <div class="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl transition-all duration-300"
+               :class="uploadProgress.percent === 100 ? 'bg-emerald-100 text-emerald-600' : 'bg-indigo-50 text-indigo-600 animate-bounce'">
+            <span v-if="uploadProgress.percent < 100">📂</span>
+            <span v-else>🎉</span>
+          </div>
+
+          <!-- 标题与当前状态文字 -->
+          <div>
+            <h3 class="text-lg font-extrabold text-slate-900">
+              {{ uploadProgress.percent === 100 ? '模板导入成功！' : '正在导入模板数据...' }}
+            </h3>
+            <p class="text-xs font-semibold text-slate-500 mt-1.5">
+              {{ uploadProgress.statusText }}
+            </p>
+          </div>
+
+          <!-- 数字百分比进度条主体 -->
+          <div class="space-y-2">
+            <!-- 填充条 -->
+            <div class="w-full h-3.5 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200/80 shadow-inner">
+              <div 
+                class="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 rounded-full transition-all duration-300 shadow-sm"
+                :style="{ width: uploadProgress.percent + '%' }"
+              ></div>
+            </div>
+            
+            <!-- 数字百分比提示 -->
+            <div class="flex justify-between items-center text-xs font-bold px-1">
+              <span class="text-slate-400">处理进度</span>
+              <span class="text-indigo-600 font-black text-sm">{{ uploadProgress.percent }}%</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </Transition>
+
   </div>
 </template>
 
@@ -302,6 +352,39 @@ const config = ref({ daysPerWeek: 5, periodsPerDay: 8 })
 const loading = ref(false)
 const fileInput = ref(null)
 const weekFileInput = ref(null)
+
+// 📊 上传百分比进度条状态
+const uploadProgress = ref({
+  show: false,
+  percent: 0,
+  statusText: ''
+})
+
+// 延迟辅助函数
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+
+// 打开并启动进度条
+const startProgress = (initialText = '正在读取模板文件...') => {
+  uploadProgress.value = {
+    show: true,
+    percent: 10,
+    statusText: initialText
+  }
+}
+
+// 更新百分比和状态文字
+const updateProgress = (percent, text) => {
+  uploadProgress.value.percent = percent
+  if (text) uploadProgress.value.statusText = text
+}
+
+// 完成进度并平滑关闭
+const finishProgress = async (successMsg = '导入完成') => {
+  uploadProgress.value.percent = 100
+  uploadProgress.value.statusText = successMsg
+  await sleep(600)
+  uploadProgress.value.show = false
+}
 
 // 班级管理状态
 const classList = ref([])
@@ -455,13 +538,19 @@ const downloadWeekTemplate = () => {
   toast.success("周历模板下载成功！")
 }
 
+// 📂 集成数字百分比进度条：批量导入上课周历
 const handleWeekFileUpload = async (event) => {
   const file = event.target.files[0]
   if (!file) return
 
+  startProgress('正在读取周历 CSV 模板...')
+
   const reader = new FileReader()
   reader.onload = async (e) => {
     try {
+      await sleep(250)
+      updateProgress(35, '正在校验日期格式与数据合法性...')
+
       const text = e.target.result
       const lines = text.split('\n')
       const rows = []
@@ -493,17 +582,24 @@ const handleWeekFileUpload = async (event) => {
       }
 
       if (rows.length === 0) {
+        uploadProgress.value.show = false
         toast.error("文件内容为空或格式错误！")
         return
       }
 
+      await sleep(250)
+      updateProgress(70, `正在向数据库写入 ${rows.length} 条周历记录...`)
+
       const { error } = await supabase.from('school_weeks').insert(rows)
       if (error) throw error
+
+      await finishProgress(`成功导入 ${rows.length} 条周历数据！`)
 
       toast.success(`成功批量导入 ${rows.length} 条周历数据！`)
       if (weekFileInput.value) weekFileInput.value.value = ''
       fetchSchoolWeeks()
     } catch (err) {
+      uploadProgress.value.show = false
       toast.error("导入周历失败: " + err.message)
     }
   }
@@ -527,13 +623,19 @@ const downloadTemplate = () => {
   toast.success("目标模板下载成功！")
 }
 
+// 📂 集成数字百分比进度条：批量导入科目目标
 const handleFileUpload = async (event) => {
   const file = event.target.files[0]
   if (!file) return
 
+  startProgress('正在读取科目目标 CSV 模板...')
+
   const reader = new FileReader()
   reader.onload = async (e) => {
     try {
+      await sleep(250)
+      updateProgress(40, '正在解析各年级科目目标指标...')
+
       const text = e.target.result
       const lines = text.split('\n')
       const rows = []
@@ -553,23 +655,29 @@ const handleFileUpload = async (event) => {
       }
 
       if (rows.length === 0) {
+        uploadProgress.value.show = false
         toast.error("文件内容为空或格式错误！")
         return
       }
 
+      await sleep(250)
+      updateProgress(75, `正在写入 ${rows.length} 项科目目标至数据库...`)
+
       const { error } = await supabase.from('subject_targets').insert(rows)
       if (error) throw error
+
+      await finishProgress(`成功导入 ${rows.length} 条科目目标！`)
 
       toast.success(`成功导入 ${rows.length} 条科目目标数据！`)
       if (fileInput.value) fileInput.value.value = ''
     } catch (err) {
+      uploadProgress.value.show = false
       toast.error("导入失败: " + err.message)
     }
   }
   reader.readAsText(file)
 }
 
-// 🟢 修复点 1：使用通用语法清空数据表
 const clearOnlyRecords = async () => {
   if (!confirm("⚠️ 确定要清空所有的请假与代课记录吗？此操作不可逆！")) return
 
@@ -589,7 +697,6 @@ const clearOnlyRecords = async () => {
   }
 }
 
-// 🟢 修复点 2：清空课表语法修复
 const clearOnlyTimetable = async () => {
   if (!confirm("⚠️ 确定要清空全校课表吗？老师名单会保留。")) return
 
@@ -606,7 +713,6 @@ const clearOnlyTimetable = async () => {
   }
 }
 
-// 🟢 修复点 3：MMI 备份与清空语法修复
 const backupAndClearMmi = async () => {
   if (!confirm("📥 确定要先备份并清空所有 MMI 教学干扰历史数据吗？")) return
 
@@ -638,7 +744,6 @@ const backupAndClearMmi = async () => {
   }
 }
 
-// 🟢 修复点 4：初始化系统彻底清理语法修复
 const clearEverything = async () => {
   if (!confirm("🚨 警告：这将删除系统中所有的教师、课表、班级和请假数据！确定要让系统彻底恢复出厂设置吗？")) return
 

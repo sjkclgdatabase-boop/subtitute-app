@@ -2,7 +2,7 @@
   <div class="p-6 max-w-7xl mx-auto">
     <h1 class="text-2xl font-bold mb-6 text-gray-800">教师档案管理</h1>
     
-    <!-- 顶部操作栏：采用跟图片一样的双班制胶囊切换器与功能区 -->
+    <!-- 顶部操作栏：双班制胶囊切换器与功能区 -->
     <div class="bg-white p-4 rounded-3xl shadow-sm ring-1 ring-slate-900/5 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
       
       <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
@@ -10,7 +10,7 @@
         <div class="bg-slate-100 p-1.5 rounded-2xl flex items-center shadow-inner w-full sm:w-auto">
           <button 
             @click="currentSession = 'morning'" 
-            class="flex-1 sm:flex-none py-2.5 px-6 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2"
+            class="flex-1 sm:flex-none py-2.5 px-6 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
             :class="currentSession === 'morning' 
               ? 'bg-white text-indigo-600 shadow-sm ring-2 ring-blue-600' 
               : 'text-slate-500 hover:text-slate-900'"
@@ -19,7 +19,7 @@
           </button>
           <button 
             @click="currentSession = 'afternoon'" 
-            class="flex-1 sm:flex-none py-2.5 px-6 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2"
+            class="flex-1 sm:flex-none py-2.5 px-6 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
             :class="currentSession === 'afternoon' 
               ? 'bg-white text-orange-600 shadow-sm ring-2 ring-orange-500' 
               : 'text-slate-500 hover:text-slate-900'"
@@ -30,7 +30,7 @@
 
         <!-- 批量导入与模版按钮组 -->
         <div class="flex gap-2 w-full sm:w-auto">
-          <button @click="downloadTemplate" class="bg-emerald-600 text-white px-4 py-2.5 rounded-xl hover:bg-emerald-700 text-sm font-semibold shadow-sm transition">
+          <button @click="downloadTemplate" class="bg-emerald-600 text-white px-4 py-2.5 rounded-xl hover:bg-emerald-700 text-sm font-semibold shadow-sm transition cursor-pointer">
             下载导入模板
           </button>
           <label class="bg-blue-600 text-white px-4 py-2.5 rounded-xl hover:bg-blue-700 cursor-pointer text-sm font-semibold shadow-sm transition flex items-center justify-center">
@@ -40,12 +40,12 @@
         </div>
       </div>
 
-      <button @click="showModal = true" class="w-full md:w-auto bg-purple-600 text-white px-6 py-2.5 rounded-xl hover:bg-purple-700 text-sm font-semibold shadow-md transition">
+      <button @click="showModal = true" class="w-full md:w-auto bg-purple-600 text-white px-6 py-2.5 rounded-xl hover:bg-purple-700 text-sm font-semibold shadow-md transition cursor-pointer">
         +  添加教师
       </button>
     </div>
 
-    <!-- 教师列表表格 (自动根据当前选择的班次过滤，并支持点击表头排序) -->
+    <!-- 教师列表表格 -->
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
       <table class="w-full text-left border-collapse">
         <thead>
@@ -99,7 +99,7 @@
               </span>
             </td>
             <td class="p-4">
-              <button @click="deleteTeacher(t.id)" class="text-red-600 hover:text-red-800 text-sm font-medium transition">删除</button>
+              <button @click="deleteTeacher(t.id)" class="text-red-600 hover:text-red-800 text-sm font-medium transition cursor-pointer">删除</button>
             </td>
           </tr>
         </tbody>
@@ -122,7 +122,7 @@
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-500 mb-1">分配班次</label>
-            <select v-model="form.session" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+            <select v-model="form.session" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer">
               <option value="morning">上午班 (Morning)</option>
               <option value="afternoon">下午班 (Afternoon)</option>
             </select>
@@ -134,11 +134,62 @@
         </div>
 
         <div class="mt-6 flex gap-3">
-          <button @click="showModal = false" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl text-sm font-semibold transition">取消</button>
-          <button @click="saveTeacher" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-xl text-sm font-semibold shadow-md transition">保存</button>
+          <button @click="showModal = false" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl text-sm font-semibold transition cursor-pointer">取消</button>
+          <button @click="saveTeacher" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-xl text-sm font-semibold shadow-md transition cursor-pointer">保存</button>
         </div>
       </div>
     </div>
+
+    <!-- 📊 动态数字百分比进度条弹窗 -->
+    <Transition
+      enter-active-class="transition duration-300 ease-out"
+      enter-from-class="opacity-0 scale-95"
+      enter-to-class="opacity-100 scale-100"
+      leave-active-class="transition duration-200 ease-in"
+      leave-from-class="opacity-100 scale-100"
+      leave-to-class="opacity-0 scale-95"
+    >
+      <div v-if="uploadProgress.show" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 select-none">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100 text-center space-y-6">
+          
+          <!-- 顶部状态图标 -->
+          <div class="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl transition-all duration-300"
+               :class="uploadProgress.percent === 100 ? 'bg-emerald-100 text-emerald-600' : 'bg-indigo-50 text-indigo-600 animate-bounce'">
+            <span v-if="uploadProgress.percent < 100">👩‍🏫</span>
+            <span v-else>🎉</span>
+          </div>
+
+          <!-- 标题与当前状态文字 -->
+          <div>
+            <h3 class="text-lg font-extrabold text-slate-900">
+              {{ uploadProgress.percent === 100 ? '教师数据导入成功！' : '正在批量导入教师...' }}
+            </h3>
+            <p class="text-xs font-semibold text-slate-500 mt-1.5">
+              {{ uploadProgress.statusText }}
+            </p>
+          </div>
+
+          <!-- 数字百分比进度条主体 -->
+          <div class="space-y-2">
+            <!-- 填充条 -->
+            <div class="w-full h-3.5 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200/80 shadow-inner">
+              <div 
+                class="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 rounded-full transition-all duration-300 shadow-sm"
+                :style="{ width: uploadProgress.percent + '%' }"
+              ></div>
+            </div>
+            
+            <!-- 数字百分比提示 -->
+            <div class="flex justify-between items-center text-xs font-bold px-1">
+              <span class="text-slate-400">处理进度</span>
+              <span class="text-indigo-600 font-black text-sm">{{ uploadProgress.percent }}%</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </Transition>
+
   </div>
 </template>
 
@@ -151,9 +202,38 @@ import { useToast } from '../utils/toast'
 const toast = useToast()
 const teachers = ref([])
 const showModal = ref(false)
-const currentSession = ref('morning') // 默认当前选中的班次
+const currentSession = ref('morning')
 
 const form = ref({ name: '', subject: '', max_substitute_per_week: 5, session: 'morning', is_active: true })
+
+// 📊 上传百分比进度条状态
+const uploadProgress = ref({
+  show: false,
+  percent: 0,
+  statusText: ''
+})
+
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+
+const startProgress = (initialText = '正在读取 CSV 教师模板...') => {
+  uploadProgress.value = {
+    show: true,
+    percent: 10,
+    statusText: initialText
+  }
+}
+
+const updateProgress = (percent, text) => {
+  uploadProgress.value.percent = percent
+  if (text) uploadProgress.value.statusText = text
+}
+
+const finishProgress = async (successMsg = '导入完成') => {
+  uploadProgress.value.percent = 100
+  uploadProgress.value.statusText = successMsg
+  await sleep(600)
+  uploadProgress.value.show = false
+}
 
 // 排序状态管理
 const sortKey = ref('name') 
@@ -173,19 +253,14 @@ const getSortIcon = (key) => {
   return sortOrder.value === 'asc' ? '▲' : '▼'
 }
 
-// 计算属性：强制过滤并确保绝对是 A-Z 正序排列
 const filteredTeachers = computed(() => {
   const list = teachers.value.filter(t => (t.session || 'morning') === currentSession.value)
   
   return [...list].sort((a, b) => {
-    // 强制转为大写并去掉前后空格，防止因为大小写或空格导致排序错乱
     let valA = a[sortKey.value] ? String(a[sortKey.value]).trim().toUpperCase() : ''
     let valB = b[sortKey.value] ? String(b[sortKey.value]).trim().toUpperCase() : ''
 
-    // 字符串标准 A-Z 比较
     const res = valA.localeCompare(valB, 'en', { numeric: true })
-    
-    // 根据当前正反序状态返回
     return sortOrder.value === 'asc' ? res : -res
   })
 })
@@ -206,6 +281,7 @@ const downloadTemplate = () => {
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
+  toast.success("教师模版下载成功！")
 }
 
 const saveTeacher = async () => {
@@ -224,21 +300,33 @@ const deleteTeacher = async (id) => {
   if (!error) { toast.success("删除成功"); fetchTeachers(); }
 }
 
+// 📂 完美集成数字百分比进度条的批量导入逻辑
 const handleCsvUpload = async (e) => {
   const file = e.target.files[0]
   if (!file) return
   
+  startProgress('正在读取教师 CSV 文件...')
+
   try {
+    await sleep(200)
+    updateProgress(30, '正在解析与校验教师名单数据...')
+
     const data = await parseCSV(file)
     if (!data || data.length === 0) {
+      uploadProgress.value.show = false
       toast.error("CSV 文件为空或格式错误")
       return
     }
 
     let updateCount = 0
     let insertCount = 0
+    const totalRows = data.length
 
-    for (const row of data) {
+    await sleep(200)
+    updateProgress(50, `准备处理 ${totalRows} 条教师记录...`)
+
+    for (let index = 0; index < totalRows; index++) {
+      const row = data[index]
       if (!row.name) continue
       const trimmedName = String(row.name).trim()
 
@@ -275,11 +363,17 @@ const handleCsvUpload = async (e) => {
         if (error) throw error
         insertCount++
       }
+
+      // 动态推算写入进度 (50% ~ 90%)
+      const currentPercent = 50 + Math.floor(((index + 1) / totalRows) * 40)
+      updateProgress(currentPercent, `正在写入数据库 (${index + 1}/${totalRows})...`)
     }
 
+    await finishProgress(`处理完成：新增 ${insertCount} 位，更新 ${updateCount} 位教师`)
     toast.success(`导入完成！已更新 ${updateCount} 位，新增 ${insertCount} 位教师资料。`)
     fetchTeachers()
   } catch (err) {
+    uploadProgress.value.show = false
     toast.error("导入失败: " + err.message)
   } finally {
     e.target.value = ''
