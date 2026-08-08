@@ -17,14 +17,14 @@
         <button 
           @click="activeTab = 'class'" 
           :class="activeTab === 'class' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'"
-          class="px-5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2"
+          class="px-5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
         >
           <span>🏫 按班级记录 </span>
         </button>
         <button 
           @click="activeTab = 'teacher'" 
           :class="activeTab === 'teacher' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'"
-          class="px-5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2"
+          class="px-5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
         >
           <span>👩‍🏫 按教师记录</span>
         </button>
@@ -54,7 +54,7 @@
           <label class="block text-xs font-bold text-slate-700 mb-2">⚠️ 干扰类型 / 原因:</label>
           <select 
             v-model="classForm.reason" 
-            class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-3"
+            class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-3 cursor-pointer"
           >
             <option value="Perhimpunan / 集会">特别集会</option>
             <option value="Program Sekolah / 学校活动">全校活动</option>
@@ -76,7 +76,7 @@
         </div>
       </div>
 
-      <!-- 范围选择 (1-选几个班级, 2-整个年级, 3-全校) -->
+      <!-- 范围选择 -->
       <div class="mb-6 bg-slate-50 p-6 rounded-2xl border border-slate-200">
         <label class="block text-xs font-bold text-slate-700 mb-3">🎯 选择受影响范围:</label>
         
@@ -95,14 +95,12 @@
           </label>
         </div>
 
-        <!-- 子选项：1-指定班级 (按年级分行整齐排列) -->
+        <!-- 子选项：1-指定班级 -->
         <div v-if="classForm.scopeType === 'specific'" class="space-y-3 pt-2">
           <div v-for="(classes, grade) in groupedClasses" :key="grade" class="flex flex-wrap items-center gap-2">
-            <!-- 年级标签 -->
             <span class="text-xs font-black text-slate-400 w-16 shrink-0">
               Tahun {{ grade }}:
             </span>
-            <!-- 该年级下的所有班级按钮 -->
             <label 
               v-for="c in classes" 
               :key="c" 
@@ -123,7 +121,7 @@
             type="button"
             @click="classForm.selectedGrade = g"
             :class="classForm.selectedGrade === g ? 'bg-indigo-600 text-white' : 'bg-white text-slate-700 border-slate-200'"
-            class="px-4 py-2 border rounded-xl text-xs font-bold transition-all"
+            class="px-4 py-2 border rounded-xl text-xs font-bold transition-all cursor-pointer"
           >
             Tahun {{ g }} ({{ g }}年级全班)
           </button>
@@ -135,17 +133,17 @@
         </div>
       </div>
 
-      <!-- 节次范围选择 (第几节到第几节) -->
+      <!-- 节次范围选择 -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-2">⏰ 受影响起始节次:</label>
-          <select v-model="classForm.startPeriod" class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-800">
+          <select v-model="classForm.startPeriod" class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-800 cursor-pointer">
             <option v-for="p in 11" :key="p" :value="p">第 {{ p }} 节</option>
           </select>
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-2">⏰ 受影响结束节次:</label>
-          <select v-model="classForm.endPeriod" class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-800">
+          <select v-model="classForm.endPeriod" class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-800 cursor-pointer">
             <option v-for="p in 11" :key="p" :value="p">第 {{ p }} 节</option>
           </select>
         </div>
@@ -164,7 +162,7 @@
 
       <button 
         @click="submitClassInterruption" 
-        class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-2xl text-xs font-bold shadow-md transition-all"
+        class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer"
       >
         💾 提交班级干扰记录
       </button>
@@ -195,7 +193,7 @@
           <select 
             v-model="teacherForm.teacherId" 
             @change="loadTeacherSubjects"
-            class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
           >
             <option value="" disabled>-- 请选择教师 --</option>
             <option v-for="t in teachersList" :key="t.id" :value="t.id">{{ t.name }}</option>
@@ -228,12 +226,15 @@
         <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
           <div 
             v-for="sub in exportedSubjects" 
-            :key="sub.id"
+            :key="sub.period"
             class="p-3 bg-white border border-indigo-100 rounded-xl shadow-sm flex items-center justify-between"
           >
             <div>
-              <span class="text-xs font-extrabold text-slate-900">第 {{ sub.period }} 节</span>
-              <span class="text-xs text-slate-500 ml-2">{{ sub.class_name }} · {{ sub.subject }}</span>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-extrabold text-slate-900">第 {{ sub.period }} 节</span>
+                <span v-if="sub.is_combined" class="px-1.5 py-0.5 bg-violet-100 text-violet-700 rounded text-[9px] font-bold">合班</span>
+              </div>
+              <span class="text-xs text-slate-500">{{ sub.class_name }} · {{ sub.subject }}</span>
             </div>
             <span class="text-[10px] px-2 py-0.5 rounded bg-indigo-100 text-indigo-700 font-bold">受干扰</span>
           </div>
@@ -243,7 +244,7 @@
       <button 
         @click="submitTeacherInterruption" 
         :disabled="exportedSubjects.length === 0"
-        class="bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-6 py-3 rounded-2xl text-xs font-bold shadow-md transition-all"
+        class="bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-6 py-3 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer"
       >
         💾 确认并保存该教师干扰事件
       </button>
@@ -286,7 +287,7 @@
               <td class="p-3 font-medium text-slate-700">{{ log.reason }}</td>
               <td class="p-3 text-slate-500 text-xs">{{ log.remarks || '-' }}</td>
               <td class="p-3 text-right">
-                <button @click="deleteLog(log.id)" class="text-xs text-red-600 hover:text-red-800 font-semibold px-2 py-1 bg-red-50 rounded-lg">
+                <button @click="deleteLog(log.id)" class="text-xs text-red-600 hover:text-red-800 font-semibold px-2 py-1 bg-red-50 rounded-lg cursor-pointer">
                   删除
                 </button>
               </td>
@@ -305,14 +306,13 @@ import { supabase } from '../services/supabase'
 import { useToast } from '../utils/toast'
 
 const toast = useToast()
-const activeTab = ref('class') // 'class' 或 'teacher'
+const activeTab = ref('class')
 
-// 班级干扰表单
 const classForm = ref({
   date: new Date().toISOString().split('T')[0],
   reason: 'Perhimpunan / 集会',
-  customReason: '', // 👈 新增自定义原因字段
-  scopeType: 'specific', // 'specific', 'grade', 'all'
+  customReason: '',
+  scopeType: 'specific',
   selectedClasses: [],
   selectedGrade: 1,
   startPeriod: 1,
@@ -320,10 +320,8 @@ const classForm = ref({
   remarks: ''
 })
 
-// 可选班级列表（按年级结构分组）
 const groupedClasses = ref({})
 
-// 获取班级列表函数（自动按年级归类）
 const fetchClasses = async () => {
   const { data } = await supabase
     .from('classes')
@@ -332,10 +330,9 @@ const fetchClasses = async () => {
     .order('class_name', { ascending: true })
   
   if (data) {
-    // 自动按年级（如 1, 2, 3...）分组
     const groups = {}
     data.forEach(c => {
-      const g = c.grade || c.class_name[0] // 优先取 grade 字段，没有则取首字母
+      const g = c.grade || c.class_name[0]
       if (!groups[g]) groups[g] = []
       groups[g].push(c.class_name)
     })
@@ -343,7 +340,6 @@ const fetchClasses = async () => {
   }
 }
 
-// 教师干扰表单
 const teacherForm = ref({
   date: new Date().toISOString().split('T')[0],
   teacherId: '',
@@ -354,16 +350,14 @@ const teachersList = ref([])
 const exportedSubjects = ref([])
 const loadingSubjects = ref(false)
 
-// 历史日志列表
 const interruptionLogs = ref([])
 
-// 加载教师数据
 const loadTeachers = async () => {
-  const { data } = await supabase.from('teachers').select('id, name').eq('is_active', true)
+  const { data } = await supabase.from('teachers').select('id, name')
   if (data) teachersList.value = data
 }
 
-// 自动导出该教师当天的科目/班级
+// 🚀 核心优化：加载教师请假课表并按【节次 period】精准去重/合并合班
 const loadTeacherSubjects = async () => {
   if (!teacherForm.value.teacherId || !teacherForm.value.date) {
     exportedSubjects.value = []
@@ -376,8 +370,26 @@ const loadTeacherSubjects = async () => {
       .select('*')
       .eq('teacher_id', teacherForm.value.teacherId)
       .eq('leave_date', teacherForm.value.date)
+      .order('period', { ascending: true })
 
-    exportedSubjects.value = data || []
+    // 智能合并同一节次的合班课表
+    const periodMap = new Map()
+    ;(data || []).forEach(s => {
+      if (!periodMap.has(s.period)) {
+        periodMap.set(s.period, {
+          ...s,
+          is_combined: false
+        })
+      } else {
+        const existing = periodMap.get(s.period)
+        if (!existing.class_name.includes(s.class_name)) {
+          existing.class_name = `${existing.class_name}/${s.class_name}`
+        }
+        existing.is_combined = true
+      }
+    })
+
+    exportedSubjects.value = Array.from(periodMap.values())
   } catch (err) {
     toast.error("课程提取失败: " + err.message)
   } finally {
@@ -385,7 +397,6 @@ const loadTeacherSubjects = async () => {
   }
 }
 
-// 提交班级干扰记录
 const submitClassInterruption = async () => {
   let targetDisplay = ''
   if (classForm.value.scopeType === 'specific') {
@@ -397,7 +408,6 @@ const submitClassInterruption = async () => {
     targetDisplay = '全校所有班级'
   }
 
-  // 最终的原因：如果选了 Lain-lain 则使用自定义输入的文本
   const finalReason = classForm.value.reason === 'Lain-lain / 其他干扰' 
     ? (classForm.value.customReason ? classForm.value.customReason.trim() : '其他干扰')
     : classForm.value.reason
@@ -421,14 +431,12 @@ const submitClassInterruption = async () => {
 
     toast.success("班级干扰事件记录成功！")
     fetchLogs()
-    // 清空自定义输入
     classForm.value.customReason = ''
   } catch (err) {
     toast.error("保存失败: " + err.message)
   }
 }
 
-// 提交教师干扰记录
 const submitTeacherInterruption = async () => {
   if (exportedSubjects.value.length === 0) return
 
@@ -459,7 +467,6 @@ const submitTeacherInterruption = async () => {
   }
 }
 
-// 获取历史干扰日志
 const fetchLogs = async () => {
   const { data } = await supabase
     .from('mmi_interruptions')
@@ -469,7 +476,6 @@ const fetchLogs = async () => {
   interruptionLogs.value = data || []
 }
 
-// 删除日志
 const deleteLog = async (id) => {
   try {
     await supabase.from('mmi_interruptions').delete().eq('id', id)

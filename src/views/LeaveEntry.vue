@@ -18,13 +18,13 @@
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
         
-        <!-- 左侧：完全复刻图片的上下午班胶囊切换器 -->
+        <!-- 左侧：班次选择 -->
         <div>
           <label class="block text-sm font-semibold text-slate-700 mb-2">班次选择</label>
           <div class="bg-slate-100 p-1.5 rounded-2xl flex items-center shadow-inner">
             <button 
               @click="currentSession = 'morning'; selectedTeacherId = ''; dailyClasses = []" 
-              class="flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2"
+              class="flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
               :class="currentSession === 'morning' 
                 ? 'bg-white text-indigo-600 shadow-sm ring-2 ring-blue-600' 
                 : 'text-slate-500 hover:text-slate-900'"
@@ -33,7 +33,7 @@
             </button>
             <button 
               @click="currentSession = 'afternoon'; selectedTeacherId = ''; dailyClasses = []" 
-              class="flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2"
+              class="flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
               :class="currentSession === 'afternoon' 
                 ? 'bg-white text-orange-600 shadow-sm ring-2 ring-orange-500' 
                 : 'text-slate-500 hover:text-slate-900'"
@@ -43,15 +43,13 @@
           </div>
         </div>
 
-        <!-- 右侧：完全复刻图片的教师选择器 (自动根据当前班次联动) -->
+        <!-- 右侧：教师选择器 -->
         <div>
           <label class="block text-sm font-semibold text-slate-700 mb-2">请假教师</label>
           <div class="relative flex items-center bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm hover:border-slate-300 transition">
-            <!-- 左侧小图标 -->
             <div class="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center text-base mr-3 shrink-0">
               👩‍🏫
             </div>
-            <!-- 下拉选择框 -->
             <select 
               v-model="selectedTeacherId" 
               @change="fetchDailyTimetable"
@@ -62,7 +60,6 @@
                 {{ teacher.name }}{{ teacher.subject ? ` (${teacher.subject})` : '' }}
               </option>
             </select>
-            <!-- 右侧下拉箭头图标 -->
             <div class="absolute right-4 pointer-events-none text-slate-400">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
             </div>
@@ -73,7 +70,6 @@
 
       <!-- 第二行：选择日期与请假原因 -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
-        <!-- 选择日期 -->
         <div>
           <label class="block text-sm font-semibold text-slate-700 mb-2">请假日期（系统自动推算星期）</label>
           <input 
@@ -84,7 +80,6 @@
           />
         </div>
 
-        <!-- 请假原因 -->
         <div>
           <label class="block text-sm font-semibold text-slate-700 mb-2">请假原因 (选填)</label>
           <input 
@@ -124,14 +119,17 @@
         </div>
 
         <div v-else class="space-y-3">
-          <div v-for="cls in dailyClasses" :key="cls.id" class="flex items-center justify-between p-4 bg-indigo-50/50 border border-indigo-100 rounded-2xl">
+          <div v-for="cls in dailyClasses" :key="cls.period" class="flex items-center justify-between p-4 bg-indigo-50/50 border border-indigo-100 rounded-2xl">
             <div class="flex items-center gap-4">
               <div class="w-12 h-12 rounded-xl bg-white text-indigo-700 flex flex-col items-center justify-center font-bold shadow-sm ring-1 ring-slate-900/5">
                 <span class="text-[10px] text-slate-400">第</span>
                 <span class="text-lg leading-none">{{ cls.period }}</span>
               </div>
               <div>
-                <p class="font-bold text-slate-900 text-lg">{{ cls.class_name }}</p>
+                <div class="flex items-center gap-2">
+                  <p class="font-bold text-slate-900 text-lg">{{ cls.class_name }}</p>
+                  <span v-if="cls.is_combined" class="px-2 py-0.5 bg-violet-100 text-violet-700 rounded text-[10px] font-bold">合班</span>
+                </div>
                 <p class="text-sm text-indigo-600 font-medium">{{ cls.subject }}</p>
               </div>
             </div>
@@ -145,7 +143,7 @@
             <button 
               @click="submitLeaveRequests" 
               :disabled="isSubmitting"
-              class="group flex items-center justify-center px-8 py-3 text-sm font-semibold text-white bg-slate-900 rounded-full hover:bg-slate-800 hover:shadow-lg hover:-translate-y-0.5 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+              class="group flex items-center justify-center px-8 py-3 text-sm font-semibold text-white bg-slate-900 rounded-full hover:bg-slate-800 hover:shadow-lg hover:-translate-y-0.5 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <span v-if="!isSubmitting">生成 {{ dailyClasses.length }} 节代课任务</span>
               <span v-else>正在生成中...</span>
@@ -169,7 +167,7 @@ const router = useRouter()
 const toast = useToast()
 
 const teachersList = ref([])
-const currentSession = ref('morning') // 默认上午班
+const currentSession = ref('morning')
 const selectedTeacherId = ref('')
 const leaveDate = ref('')
 const leaveReason = ref('')
@@ -180,18 +178,15 @@ const isSubmitting = ref(false)
 
 const dayNames = ['日', '一', '二', '三', '四', '五', '六']
 
-// 1. 初始化时获取所有教师名单（包含 session 字段）
 onMounted(async () => {
   const { data } = await supabase.from('teachers').select('id, name, subject, session')
   if (data) teachersList.value = data
 })
 
-// 计算属性：只显示当前选中班次的老师
 const filteredTeachersList = computed(() => {
   return teachersList.value.filter(t => (t.session || 'morning') === currentSession.value)
 })
 
-// 2. 根据用户选择的日期，自动计算星期几（1-7，星期一为1，星期日为7）
 const computedWeekdayNumber = computed(() => {
   if (!leaveDate.value) return null
   const dateObj = new Date(leaveDate.value)
@@ -199,14 +194,13 @@ const computedWeekdayNumber = computed(() => {
   return day === 0 ? 7 : day
 })
 
-// 用于界面显示的中文星期
 const computedWeekdayName = computed(() => {
   if (!leaveDate.value) return ''
   const dateObj = new Date(leaveDate.value)
   return dayNames[dateObj.getDay()]
 })
 
-// 3. 核心功能：自动去数据库的 timetable 里拉取该教师当天的所有课
+// 🚀 核心优化：抓取并自动按【节次 period】合并合班课
 const fetchDailyTimetable = async () => {
   if (!selectedTeacherId.value || !leaveDate.value) {
     dailyClasses.value = []
@@ -220,10 +214,30 @@ const fetchDailyTimetable = async () => {
       .select('*')
       .eq('teacher_id', selectedTeacherId.value)
       .eq('weekday', computedWeekdayNumber.value)
-      .order('period', { ascending: true }) // 按节次自动排序
+      .order('period', { ascending: true })
 
     if (error) throw error
-    dailyClasses.value = data || []
+
+    // 智能合并算法：如果同一个 period 有多条课表，自动将班级名称用 '/' 连接
+    const periodMap = new Map()
+
+    ;(data || []).forEach(cls => {
+      if (!periodMap.has(cls.period)) {
+        periodMap.set(cls.period, {
+          ...cls,
+          is_combined: false
+        })
+      } else {
+        const existing = periodMap.get(cls.period)
+        // 判断班级名称是否已经包含（防止重复拼接）
+        if (!existing.class_name.includes(cls.class_name)) {
+          existing.class_name = `${existing.class_name}/${cls.class_name}`
+        }
+        existing.is_combined = true
+      }
+    })
+
+    dailyClasses.value = Array.from(periodMap.values())
   } catch (error) {
     toast.error("抓取课表失败: " + error.message)
   } finally {
@@ -231,15 +245,13 @@ const fetchDailyTimetable = async () => {
   }
 }
 
-// 4. 一键提交：批量生成代课任务，并同步写入 MMI 教学干扰事件历史记录
+// 提交代课任务并同步至 MMI
 const submitLeaveRequests = async () => {
   isSubmitting.value = true
   try {
-    // 0. 获取当前请假老师的姓名
     const currentTeacher = teachersList.value.find(t => t.id === selectedTeacherId.value)
     const teacherName = currentTeacher ? currentTeacher.name : '未知老师'
 
-    // 1. 清理旧的待指派请假任务
     await supabase
       .from('leave_requests')
       .delete()
@@ -247,7 +259,6 @@ const submitLeaveRequests = async () => {
       .eq('leave_date', leaveDate.value)
       .eq('status', 'pending')
 
-    // 2. 构造最新的批量插入请假数据
     const requests = dailyClasses.value.map(cls => ({
       teacher_id: selectedTeacherId.value,
       leave_date: leaveDate.value,
@@ -262,18 +273,13 @@ const submitLeaveRequests = async () => {
     const { error: leaveError } = await supabase.from('leave_requests').insert(requests)
     if (leaveError) throw leaveError
 
-    // 3. 🚀 关键：如果当天有排课，直接在 MMI 干扰事件历史表中创建一条正式记录
     if (dailyClasses.value.length > 0) {
       const minPeriod = Math.min(...dailyClasses.value.map(c => c.period))
       const maxPeriod = Math.max(...dailyClasses.value.map(c => c.period))
 
-      // 构造符合 MMI 历史记录表结构的 payload
-      // 注意：这里的字段名 (interruption_date, start_period, end_period, reason, target_display) 
-      // 需与你平时在 MMI 页面录入时向数据库提交的字段保持一致
-      // 构造符合 MMI 历史记录表结构的 payload（加上了 type: 'teacher'）
       const mmiLogPayload = {
         interruption_date: leaveDate.value,
-        type: 'teacher', // 👈 关键点：必须补上这个字段，和手动录入保持一致！
+        type: 'teacher',
         start_period: minPeriod,
         end_period: maxPeriod,
         reason: `教师请假: ${leaveReason.value || '未填写'}`,
