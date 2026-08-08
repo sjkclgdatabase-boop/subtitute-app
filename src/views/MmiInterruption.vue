@@ -56,13 +56,13 @@
             v-model="classForm.reason" 
             class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-3"
           >
-            <option value="Perhimpunan / 集会">Perhimpunan / 特别集会</option>
-            <option value="Program Sekolah / 学校活动">Program Sekolah / 全校活动</option>
-            <option value="Ceramah / 讲座">Ceramah / 讲座/宣导会</option>
-            <option value="Latihan Sukan / 运动会练习">Latihan Sukan / 运动会/表演练习</option>
-            <option value="Pertandingan / 比赛">Pertandingan / 校内外比赛</option>
-            <option value="Urusan Rasmi / 官方临时事务">Urusan Rasmi / 官方临时事务</option>
-            <option value="Lain-lain / 其他干扰">Lain-lain / 其他干扰 (请自行填写)</option>
+            <option value="Perhimpunan / 集会">特别集会</option>
+            <option value="Program Sekolah / 学校活动">全校活动</option>
+            <option value="Ceramah / 讲座">讲座/宣导会</option>
+            <option value="Latihan Sukan / 运动会练习">运动会/表演练习</option>
+            <option value="Pertandingan / 比赛">校内外比赛</option>
+            <option value="Urusan Rasmi / 官方临时事务">官方临时事务</option>
+            <option value="Lain-lain / 其他干扰">其他干扰 (请自行填写)</option>
           </select>
 
           <!-- 当选择 Lain-lain 时，自动显示自定义输入框 -->

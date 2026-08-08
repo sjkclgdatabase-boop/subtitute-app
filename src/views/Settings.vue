@@ -45,14 +45,14 @@
       <div class="mt-10 pt-6 border-t border-slate-100 flex justify-end">
         <button 
           @click="saveConfig" 
-          class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-full text-sm font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+          class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-full text-sm font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
         >
           保存配置
         </button>
       </div>
     </div>
 
-    <!-- 卡片二：学年上课周历与假期维护 (含模板下载与中文上载) -->
+    <!-- 卡片二：学年上课周历与假期维护 -->
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md">
       <h2 class="text-lg font-bold text-slate-800 mb-2 flex items-center gap-2">
         <span class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center">📅</span>
@@ -60,14 +60,13 @@
       </h2>
       <p class="text-slate-500 text-xs mb-6">录入全年上课周与假期周，系统自动剔除假期，精准计算科目「理论应达进度」。</p>
 
-      <!-- 📥 模板下载与 📂 批量上载操作栏 -->
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-200 mb-6">
         <div>
           <h3 class="text-sm font-bold text-slate-900">批量导入/导出上课周历</h3>
           <p class="text-slate-500 text-xs mt-1">支持下载标准CSV模板，填写后批量上传，适配周历数据格式。</p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
-          <button @click="downloadWeekTemplate" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-2">
+          <button @click="downloadWeekTemplate" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-2 cursor-pointer">
             📥 下载周历模板
           </button>
           
@@ -78,7 +77,6 @@
         </div>
       </div>
 
-      <!-- 单条添加新周历表单 -->
       <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 mb-6 grid grid-cols-1 sm:grid-cols-5 gap-3 items-end">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">第几周</label>
@@ -99,12 +97,11 @@
             <option :value="false">🔴 假期周</option>
           </select>
         </div>
-        <button @click="addSchoolWeek" class="bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded-xl text-xs font-bold shadow-md transition-all">
+        <button @click="addSchoolWeek" class="bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer">
           ➕ 单条添加
         </button>
       </div>
 
-      <!-- 已录入周历列表 -->
       <div class="space-y-3">
         <div class="flex items-center justify-between mb-2">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">已录入的学年周历列表</h3>
@@ -123,7 +120,7 @@
                 {{ w.is_school_week ? '🟢 上课周' : '🔴 假期周' }}
               </span>
             </div>
-            <button @click="deleteSchoolWeek(w.id)" class="text-slate-400 hover:text-red-600 text-xs font-bold px-3 py-1 rounded-lg transition hover:bg-red-50">
+            <button @click="deleteSchoolWeek(w.id)" class="text-slate-400 hover:text-red-600 text-xs font-bold px-3 py-1 rounded-lg transition hover:bg-red-50 cursor-pointer">
               🗑️ 删除
             </button>
           </div>
@@ -159,7 +156,7 @@
 
         <button 
           @click="addClass" 
-          class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all shrink-0"
+          class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all shrink-0 cursor-pointer"
         >
           ➕ 添加班级
         </button>
@@ -168,7 +165,7 @@
       <div class="space-y-6">
         <div class="flex items-center justify-between">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">已录入的全校班级列表</h3>
-          <button @click="toggleAllGrades" class="text-xs text-indigo-600 font-bold hover:underline">
+          <button @click="toggleAllGrades" class="text-xs text-indigo-600 font-bold hover:underline cursor-pointer">
             {{ allExpanded ? '全部折叠' : '全部展开' }}
           </button>
         </div>
@@ -202,7 +199,7 @@
                 </div>
                 <button 
                   @click.stop="deleteClass(c.id)" 
-                  class="text-slate-300 hover:text-red-600 text-xs font-bold p-1 transition opacity-0 group-hover:opacity-100 ml-3"
+                  class="text-slate-300 hover:text-red-600 text-xs font-bold p-1 transition opacity-0 group-hover:opacity-100 ml-3 cursor-pointer"
                   title="删除"
                 >
                   ✕
@@ -229,7 +226,7 @@
           <p class="text-slate-500 text-xs mt-1">支持 CSV 模板，上传后自动更新数据库目标配置。</p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
-          <button @click="downloadTemplate" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-2">
+          <button @click="downloadTemplate" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-2 cursor-pointer">
             📥 下载模板
           </button>
           
@@ -247,7 +244,7 @@
         <span class="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center">🛠️</span>
         正式上线数据清理与维护
       </h2>
-      <p class="text-slate-500 text-xs mb-6">用用于测试结束、正式上线前清理历史测试数据，支持一键备份。</p>
+      <p class="text-slate-500 text-xs mb-6">用于测试结束、正式上线前清理历史测试数据，支持一键备份。</p>
       
       <div class="space-y-6">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 border-b border-slate-100 gap-4">
@@ -255,7 +252,7 @@
             <h3 class="text-sm font-bold text-slate-900">清空所有请假与代课记录</h3>
             <p class="text-slate-500 text-xs mt-1">仅删除请假、代课历史测试数据，保留教师资料与排课表。</p>
           </div>
-          <button @click="clearOnlyRecords" :disabled="loading" class="px-5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 font-semibold text-xs rounded-xl transition shadow-sm border border-amber-200 disabled:opacity-50 shrink-0">
+          <button @click="clearOnlyRecords" :disabled="loading" class="px-5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 font-semibold text-xs rounded-xl transition shadow-sm border border-amber-200 disabled:opacity-50 shrink-0 cursor-pointer">
             清空请假记录
           </button>
         </div>
@@ -265,7 +262,7 @@
             <h3 class="text-sm font-bold text-slate-900">重置全校课表</h3>
             <p class="text-slate-500 text-xs mt-1">清空全部排课数据，便于批量导入新学年课表（保留教师名单）。</p>
           </div>
-          <button @click="clearOnlyTimetable" :disabled="loading" class="px-5 py-2 bg-orange-50 hover:bg-orange-100 text-orange-700 font-semibold text-xs rounded-xl transition shadow-sm border border-orange-200 disabled:opacity-50 shrink-0">
+          <button @click="clearOnlyTimetable" :disabled="loading" class="px-5 py-2 bg-orange-50 hover:bg-orange-100 text-orange-700 font-semibold text-xs rounded-xl transition shadow-sm border border-orange-200 disabled:opacity-50 shrink-0 cursor-pointer">
             清空全校课表
           </button>
         </div>
@@ -275,7 +272,7 @@
             <h3 class="text-sm font-bold text-indigo-900">备份并清空 MMI 干扰历史数据</h3>
             <p class="text-slate-500 text-xs mt-1">自动下载 JSON 备份至本地，再安全清除全部 MMI 干扰日志。</p>
           </div>
-          <button @click="backupAndClearMmi" :disabled="loading" class="px-5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold text-xs rounded-xl transition shadow-sm border border-indigo-200 disabled:opacity-50 shrink-0">
+          <button @click="backupAndClearMmi" :disabled="loading" class="px-5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold text-xs rounded-xl transition shadow-sm border border-indigo-200 disabled:opacity-50 shrink-0 cursor-pointer">
             📥 备份并清空 MMI 数据
           </button>
         </div>
@@ -285,7 +282,7 @@
             <h3 class="text-sm font-bold text-red-600">危险操作：初始化系统</h3>
             <p class="text-slate-500 text-xs mt-1">一键清空请假、代课、课表、教师名单，恢复系统至初始空白状态。</p>
           </div>
-          <button @click="clearEverything" :disabled="loading" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs rounded-xl transition shadow-md disabled:opacity-50 shrink-0">
+          <button @click="clearEverything" :disabled="loading" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs rounded-xl transition shadow-md disabled:opacity-50 shrink-0 cursor-pointer">
             彻底重置系统
           </button>
         </div>
@@ -371,7 +368,6 @@ const fetchClasses = async () => {
   if (error) console.error(error)
 }
 
-// 加载上课周历
 const fetchSchoolWeeks = async () => {
   const { data, error } = await supabase
     .from('school_weeks')
@@ -414,7 +410,6 @@ const deleteClass = async (id) => {
   }
 }
 
-// 添加单条上课周历
 const addSchoolWeek = async () => {
   if (!newWeek.value.start_date || !newWeek.value.end_date) {
     return toast.error("请完整填写开始和结束日期！")
@@ -432,7 +427,6 @@ const addSchoolWeek = async () => {
   }
 }
 
-// 删除上课周历
 const deleteSchoolWeek = async (id) => {
   try {
     const { error } = await supabase.from('school_weeks').delete().eq('id', id)
@@ -444,7 +438,6 @@ const deleteSchoolWeek = async (id) => {
   }
 }
 
-// 📥 下载上课周历模板（兼容 DD/MM/YYYY 格式）
 const downloadWeekTemplate = () => {
   const csvContent = "week_number,start_date,end_date,is_school_week\n" +
                      "1,12/01/2026,16/01/2026,TRUE\n" +
@@ -462,7 +455,6 @@ const downloadWeekTemplate = () => {
   toast.success("周历模板下载成功！")
 }
 
-// 📂 智能解析并批量导入上课周历（完美兼容 DD/MM/YYYY 转 YYYY-MM-DD，以及大小写 TRUE/FALSE）
 const handleWeekFileUpload = async (event) => {
   const file = event.target.files[0]
   if (!file) return
@@ -474,17 +466,15 @@ const handleWeekFileUpload = async (event) => {
       const lines = text.split('\n')
       const rows = []
 
-      // 辅助函数：将 DD/MM/YYYY 转换为数据库要求的 YYYY-MM-DD
       const parseDate = (dateStr) => {
         dateStr = dateStr.trim()
         if (dateStr.includes('/')) {
           const parts = dateStr.split('/')
           if (parts.length === 3) {
-            // 格式: DD/MM/YYYY -> YYYY-MM-DD
             return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`
           }
         }
-        return dateStr // 如果本来就是 YYYY-MM-DD 则直接返回
+        return dateStr
       }
 
       for (let i = 1; i < lines.length; i++) {
@@ -520,7 +510,6 @@ const handleWeekFileUpload = async (event) => {
   reader.readAsText(file)
 }
 
-// 下载科目目标模板
 const downloadTemplate = () => {
   const csvContent = "grade,subject_name,planned_periods,kpm_min_hours\n" +
                      "3,BAHASA MELAYU,80,60\n" +
@@ -538,7 +527,6 @@ const downloadTemplate = () => {
   toast.success("目标模板下载成功！")
 }
 
-// 上传并导入科目目标
 const handleFileUpload = async (event) => {
   const file = event.target.files[0]
   if (!file) return
@@ -581,15 +569,16 @@ const handleFileUpload = async (event) => {
   reader.readAsText(file)
 }
 
+// 🟢 修复点 1：使用通用语法清空数据表
 const clearOnlyRecords = async () => {
   if (!confirm("⚠️ 确定要清空所有的请假与代课记录吗？此操作不可逆！")) return
 
   loading.value = true
   try {
-    const { error: err1 } = await supabase.from('substitute_assignments').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+    const { error: err1 } = await supabase.from('substitute_assignments').delete().not('id', 'is', null)
     if (err1) throw err1
 
-    const { error: err2 } = await supabase.from('leave_requests').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+    const { error: err2 } = await supabase.from('leave_requests').delete().not('id', 'is', null)
     if (err2) throw err2
 
     toast.success("所有请假与代课记录已成功清除！")
@@ -600,12 +589,13 @@ const clearOnlyRecords = async () => {
   }
 }
 
+// 🟢 修复点 2：清空课表语法修复
 const clearOnlyTimetable = async () => {
   if (!confirm("⚠️ 确定要清空全校课表吗？老师名单会保留。")) return
 
   loading.value = true
   try {
-    const { error } = await supabase.from('timetable').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+    const { error } = await supabase.from('timetable').delete().not('id', 'is', null)
     if (error) throw error
 
     toast.success("全校课表已全部重置！")
@@ -616,6 +606,7 @@ const clearOnlyTimetable = async () => {
   }
 }
 
+// 🟢 修复点 3：MMI 备份与清空语法修复
 const backupAndClearMmi = async () => {
   if (!confirm("📥 确定要先备份并清空所有 MMI 教学干扰历史数据吗？")) return
 
@@ -636,7 +627,7 @@ const backupAndClearMmi = async () => {
       toast.success("当前没有 MMI 干扰数据需要备份，即将直接执行清空。")
     }
 
-    const { error: deleteErr } = await supabase.from('mmi_interruptions').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+    const { error: deleteErr } = await supabase.from('mmi_interruptions').delete().not('id', 'is', null)
     if (deleteErr) throw deleteErr
 
     toast.success("MMI 干扰数据已成功备份并从数据库清空！")
@@ -647,16 +638,17 @@ const backupAndClearMmi = async () => {
   }
 }
 
+// 🟢 修复点 4：初始化系统彻底清理语法修复
 const clearEverything = async () => {
   if (!confirm("🚨 警告：这将删除系统中所有的教师、课表、班级和请假数据！确定要让系统彻底恢复出厂设置吗？")) return
 
   loading.value = true
   try {
-    await supabase.from('substitute_assignments').delete().neq('id', '00000000-0000-0000-0000-000000000000')
-    await supabase.from('leave_requests').delete().neq('id', '00000000-0000-0000-0000-000000000000')
-    await supabase.from('timetable').delete().neq('id', '00000000-0000-0000-0000-000000000000')
-    await supabase.from('mmi_interruptions').delete().neq('id', '00000000-0000-0000-0000-000000000000')
-    const { error } = await supabase.from('teachers').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+    await supabase.from('substitute_assignments').delete().not('id', 'is', null)
+    await supabase.from('leave_requests').delete().not('id', 'is', null)
+    await supabase.from('timetable').delete().not('id', 'is', null)
+    await supabase.from('mmi_interruptions').delete().not('id', 'is', null)
+    const { error } = await supabase.from('teachers').delete().not('id', 'is', null)
     if (error) throw error
 
     toast.success("系统已完全重置为初始状态！")
