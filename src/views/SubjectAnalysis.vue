@@ -8,7 +8,7 @@
           科目目标与达成率分析中心
         </h1>
         <p class="text-slate-500 text-sm mt-2 font-medium">
-          多维度深度追踪教学目标、MMI 干扰及达成情况，支持数据报表、视觉看板与独立 PDF 报告导出。
+          多维度追踪教学目标、MMI 教学干扰与达成情况，支持数据报表、可视化看板及 PDF 报告导出。
         </p>
       </div>
 
@@ -40,14 +40,14 @@
         class="pb-4 text-sm font-bold transition-all relative flex items-center gap-2"
         :class="activeTab === 'chart' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-400 hover:text-slate-700'"
       >
-        <span>📈 视觉图表分析看板</span>
+        <span>📈 可视化图表看板</span>
       </button>
     </div>
 
     <!-- 🔍 多维度高级筛选面板 -->
     <div class="no-print bg-white p-6 rounded-3xl border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-4 gap-4">
       <div>
-        <label class="block text-xs font-bold text-slate-500 mb-2">按年级筛选 (Tahun)</label>
+        <label class="block text-xs font-bold text-slate-500 mb-2">按年级筛选</label>
         <select v-model="filterGrade" @change="onGradeChange" class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
           <option value="all">全校所有年级</option>
           <option v-for="g in [1,2,3,4,5,6]" :key="g" :value="g">{{ g }} 年级</option>
@@ -55,7 +55,7 @@
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-500 mb-2">按具体班级筛选 (Kelas)</label>
+        <label class="block text-xs font-bold text-slate-500 mb-2">按班级筛选</label>
         <select v-model="filterClass" class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
           <option value="all">该年级所有班级</option>
           <option v-for="c in availableClasses" :key="c.id" :value="c.class_name">{{ c.class_name }}</option>
@@ -63,7 +63,7 @@
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-500 mb-2">按具体科目筛选 (Subjek)</label>
+        <label class="block text-xs font-bold text-slate-500 mb-2">按科目筛选</label>
         <select v-model="filterSubject" class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
           <option value="all">所有科目</option>
           <option v-for="s in uniqueSubjects" :key="s" :value="s">{{ s }}</option>
@@ -71,9 +71,9 @@
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-indigo-600 mb-2">👨‍🏫 按任课老师筛选 (Guru)</label>
+        <label class="block text-xs font-bold text-indigo-600 mb-2">👨‍🏫 按任课老师筛选</label>
         <select v-model="filterTeacher" class="w-full bg-indigo-50/50 border border-indigo-200 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <option value="all">全校所有老师</option>
+          <option value="all">全校所有教师</option>
           <option v-for="tch in allTeachers" :key="tch.id" :value="tch.name">{{ tch.name }}</option>
         </select>
       </div>
@@ -118,7 +118,7 @@
               <tr class="bg-slate-100 text-[11px] font-bold text-slate-700 uppercase tracking-wider border-b border-slate-300">
                 <th class="py-3 px-4">年级 / 班级</th>
                 <th class="py-3 px-4">科目名称</th>
-                <th class="py-3 px-4">任课老师 (Guru)</th>
+                <th class="py-3 px-4">任课老师</th>
                 <th class="py-3 px-4 text-center">学年计划目标</th>
                 <th class="py-3 px-4 text-center">理论应到进度</th>
                 <th class="py-3 px-4 text-center">受干扰损失</th>
@@ -181,7 +181,7 @@
           <!-- 图表 2 -->
           <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
             <div class="flex justify-between items-center">
-              <h3 class="text-sm font-bold text-slate-800">📊 各年级 (Tahun) 达标分布概况</h3>
+              <h3 class="text-sm font-bold text-slate-800">📊 各年级达标分布概况</h3>
               <span class="text-xs text-slate-400">达标 vs 未达标</span>
             </div>
 
@@ -204,8 +204,8 @@
         <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-6">
           <div class="flex justify-between items-center">
             <div>
-              <h3 class="text-sm font-bold text-slate-800">⚠️ 受 MMI 干扰损失节数最多的科目排名</h3>
-              <p class="text-xs text-slate-400 mt-0.5">直观评估哪些科目因请假、活动公假损失了最多的教学时间</p>
+              <h3 class="text-sm font-bold text-slate-800">⚠️ MMI 干扰损失课时最多科目排行</h3>
+              <p class="text-xs text-slate-400 mt-0.5">直观展示各科目因请假、公务活动损失的教学课时</p>
             </div>
             <span class="text-xs bg-amber-50 text-amber-700 px-3 py-1 rounded-full font-bold">干扰警示</span>
           </div>
@@ -237,7 +237,7 @@
     <div v-if="showManageModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
       <div class="bg-white rounded-3xl max-w-3xl w-full p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center border-b border-slate-100 pb-4">
-          <h3 class="text-base font-bold text-slate-800">⚙️ 科目目标 (Sasaran) 在线维护</h3>
+          <h3 class="text-base font-bold text-slate-800">⚙️ 科目目标在线维护</h3>
           <button @click="showManageModal = false" class="text-slate-400 hover:text-slate-700 font-bold text-sm">✕ 关闭</button>
         </div>
 
@@ -253,7 +253,7 @@
             <input type="text" v-model="newTarget.subject_name" placeholder="例: MATEMATIK" class="w-full bg-white border border-slate-200 px-3 py-2 rounded-xl text-xs font-semibold" />
           </div>
           <div>
-            <label class="block text-[11px] font-bold text-slate-600 mb-1">计划总节数 (Sasaran)</label>
+            <label class="block text-[11px] font-bold text-slate-600 mb-1">计划总节数</label>
             <input type="number" v-model.number="newTarget.planned_periods" placeholder="例: 215" class="w-full bg-white border border-slate-200 px-3 py-2 rounded-xl text-xs font-semibold" />
           </div>
           <button @click="addTarget" class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-xl text-xs font-bold shadow-sm transition">

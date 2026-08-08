@@ -5,9 +5,9 @@
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
       <div>
         <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">
-          可视化课表调度
+          教师课表调度
         </h1>
-        <p class="text-slate-500 text-sm mt-2 font-medium">直观查看并点击网格快速修改，或批量导入全校课表</p>
+        <p class="text-slate-500 text-sm mt-2 font-medium">支持网格快速编辑，可批量导入全校教师课表</p>
       </div>
       
       <!-- 右侧操作区：上传下载 -->
@@ -15,13 +15,13 @@
         <!-- 下载模板按钮 -->
         <button @click="downloadTemplate" class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-xl hover:bg-indigo-100 transition-all shadow-sm">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-          下载模板
+          下载导入模板
         </button>
         
         <!-- 上传CSV按钮 -->
         <label class="cursor-pointer inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-white bg-slate-900 rounded-xl hover:bg-slate-800 hover:shadow-md transition-all shadow-sm">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-          批量导入
+          批量导入课表
           <input type="file" accept=".csv" class="hidden" @change="handleCsvUpload" />
         </label>
       </div>
@@ -57,7 +57,7 @@
           @change="fetchTeacherTimetable"
           class="bg-transparent border-none text-slate-700 font-semibold focus:ring-0 cursor-pointer pr-6 text-sm w-full sm:w-64"
         >
-          <option value="" disabled>请选择{{ currentSession === 'morning' ? '上午班' : '下午班' }}教师</option>
+          <option value="" disabled>选择{{ currentSession === 'morning' ? '上午班' : '下午班' }}教师</option>
           <option v-for="teacher in filteredTeachersList" :key="teacher.id" :value="teacher.id">
             {{ teacher.name }}{{ teacher.subject ? ` (${teacher.subject})` : '' }}
           </option>
@@ -69,7 +69,7 @@
     <div v-if="!selectedTeacherId" class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-16 text-center flex flex-col items-center justify-center mt-6">
       <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-4xl mb-4 ring-1 ring-slate-100">👆</div>
       <h3 class="text-lg font-bold text-slate-800">请在上方的 {{ currentSession === 'morning' ? '上午班' : '下午班' }} 列表选择一位教师</h3>
-      <p class="text-slate-500 mt-2 text-sm">选择后即可查看并编辑该教师对应班次时段的二维可视化课表</p>
+      <p class="text-slate-500 mt-2 text-sm">选定后查看、编辑该教师课表</p>
     </div>
 
     <!-- 可视化二维网格 (选中教师后显示) -->

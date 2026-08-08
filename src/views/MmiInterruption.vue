@@ -8,7 +8,7 @@
           MMI 教学干扰事件记录中心
         </h1>
         <p class="text-slate-500 text-sm mt-2 font-medium">
-          Melindungi Masa Instruksional · 依据班级与教师追踪教学干扰事件，确保教学时间受保护
+          Melindungi Masa Instruksional · 按班级、教师记录教学干扰事件，保障教学时间
         </p>
       </div>
 
@@ -19,14 +19,14 @@
           :class="activeTab === 'class' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'"
           class="px-5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2"
         >
-          <span>🏫 依据班级记录</span>
+          <span>🏫 按班级记录 </span>
         </button>
         <button 
           @click="activeTab = 'teacher'" 
           :class="activeTab === 'teacher' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'"
           class="px-5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2"
         >
-          <span>👩‍🏫 依据老师记录</span>
+          <span>👩‍🏫 按教师记录</span>
         </button>
       </div>
     </div>
@@ -83,7 +83,7 @@
         <div class="flex flex-wrap gap-4 mb-4">
           <label class="inline-flex items-center gap-2 cursor-pointer">
             <input type="radio" v-model="classForm.scopeType" value="specific" class="text-indigo-600 focus:ring-indigo-500" />
-            <span class="text-xs font-bold text-slate-800">1. 指定几个班级</span>
+            <span class="text-xs font-bold text-slate-800">1. 指定班级</span>
           </label>
           <label class="inline-flex items-center gap-2 cursor-pointer">
             <input type="radio" v-model="classForm.scopeType" value="grade" class="text-indigo-600 focus:ring-indigo-500" />
@@ -138,13 +138,13 @@
       <!-- 节次范围选择 (第几节到第几节) -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2">⏰ 开始受影响节次:</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2">⏰ 受影响起始节次:</label>
           <select v-model="classForm.startPeriod" class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-800">
             <option v-for="p in 11" :key="p" :value="p">第 {{ p }} 节</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2">⏰ 结束受影响节次:</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2">⏰ 受影响结束节次:</label>
           <select v-model="classForm.endPeriod" class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-800">
             <option v-for="p in 11" :key="p" :value="p">第 {{ p }} 节</option>
           </select>
@@ -153,11 +153,11 @@
 
       <!-- 备注 -->
       <div class="mb-6">
-        <label class="block text-xs font-bold text-slate-700 mb-2">📝 详细说明/补救措施 (Catatan / Impak):</label>
+        <label class="block text-xs font-bold text-slate-700 mb-2">📝 详细说明与补救措施:</label>
         <input 
           v-model="classForm.remarks" 
           type="text" 
-          placeholder="例如: 大礼堂举行防登革热讲座，已安排后补教学 (PdP Diganti)" 
+          placeholder="示例：大礼堂举办防登革热讲座。" 
           class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
       </div>
@@ -174,7 +174,7 @@
     <div v-if="activeTab === 'teacher'" class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 mb-8">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-2.5 h-2.5 rounded-full bg-violet-600"></span>
-        教师干扰事件与课程自动导出录入
+        教师干扰事件录入
       </h2>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -209,7 +209,7 @@
         <input 
           v-model="teacherForm.reason" 
           type="text" 
-          placeholder="例如: 带队参加县级羽球赛 (Guru Bertugas Luar) / 出席 JPN 紧急会议" 
+          placeholder="例如: 带队参加比赛、出席会议、出席工作坊、病假等" 
           class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-800"
         />
       </div>
@@ -217,12 +217,12 @@
       <!-- 系统自动导出的课程预览区块 -->
       <div class="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100 mb-6">
         <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-900 mb-3 flex items-center justify-between">
-          <span>📚 自动导出：该教师当天原排课程与受影响班级</span>
+          <span>📚 自动加载：该教师当日原有课程及受影响班级</span>
           <span v-if="loadingSubjects" class="text-xs font-normal text-indigo-600 animate-pulse">正在提取课程...</span>
         </h3>
 
         <div v-if="exportedSubjects.length === 0" class="text-xs text-slate-400 py-4 text-center">
-          请选择日期与教师以导出当天的受影响科目与班级
+          请选择日期与教师，自动加载当日受影响科目与班级
         </div>
 
         <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
@@ -245,7 +245,7 @@
         :disabled="exportedSubjects.length === 0"
         class="bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-6 py-3 rounded-2xl text-xs font-bold shadow-md transition-all"
       >
-        💾 确认并行政统一记录该教师干扰事件
+        💾 确认并保存该教师干扰事件
       </button>
     </div>
 
@@ -258,9 +258,9 @@
           <thead>
             <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-widest font-semibold border-b border-slate-100">
               <th class="py-3 px-4">日期</th>
-              <th class="p-3">类型</th>
+              <th class="p-3">事件类型</th>
               <th class="p-3">影响对象 / 范围</th>
-              <th class="p-3">影响节次</th>
+              <th class="p-3">受影响节次</th>
               <th class="p-3">干扰原因</th>
               <th class="p-3">说明 / 备注</th>
               <th class="p-3 text-right">操作</th>

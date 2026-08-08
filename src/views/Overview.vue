@@ -7,10 +7,10 @@
         <h1 class="text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
           代课调度中心
         </h1>
-        <p class="text-slate-500 text-sm mt-2 font-medium">实时监控教职工请假与智能代课指派进展</p>
+        <p class="text-slate-500 text-sm mt-2 font-medium">实时监控教师请假，跟踪代课任务分配进度</p>
       </div>
       <router-link to="/leave-entry" class="group relative inline-flex items-center justify-center px-6 py-2.5 text-sm font-semibold text-white transition-all duration-200 bg-slate-900 font-display rounded-full hover:bg-slate-800 hover:shadow-lg hover:shadow-slate-900/20 hover:-translate-y-0.5">
-        <span>录入新请假</span>
+        <span>新建请假</span>
         <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
       </router-link>
     </div>
@@ -19,7 +19,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <div class="bg-white rounded-2xl p-6 shadow-sm ring-1 ring-slate-900/5 hover:shadow-md transition-all">
         <div class="flex items-center justify-between">
-          <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider">待指派任务</p>
+          <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider">待分配代课任务</p>
           <div class="w-10 h-10 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center ring-1 ring-amber-500/20">⏳</div>
         </div>
         <p class="text-4xl font-bold text-slate-900 mt-4">{{ pendingCount }}</p>
@@ -27,7 +27,7 @@
       
       <div class="bg-white rounded-2xl p-6 shadow-sm ring-1 ring-slate-900/5 hover:shadow-md transition-all">
         <div class="flex items-center justify-between">
-          <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider">已完成调度</p>
+          <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider">已完成代课</p>
           <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center ring-1 ring-emerald-500/20">✓</div>
         </div>
         <p class="text-4xl font-bold text-slate-900 mt-4">{{ assignedCount }}</p>
@@ -35,7 +35,7 @@
       
       <div class="bg-white rounded-2xl p-6 shadow-sm ring-1 ring-slate-900/5 hover:shadow-md transition-all">
         <div class="flex items-center justify-between">
-          <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider">历史总计</p>
+          <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider">历史总任务</p>
           <div class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center ring-1 ring-indigo-500/20">📊</div>
         </div>
         <p class="text-4xl font-bold text-slate-900 mt-4">{{ leaveRequests.length }}</p>
@@ -51,14 +51,14 @@
             :class="viewMode === 'today' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'"
             class="px-4 py-2 rounded-lg text-xs font-bold transition-all"
           >
-            📅 只看今天
+            📅  仅今日
           </button>
           <button 
             @click="viewMode = 'grouped'"
             :class="viewMode === 'grouped' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'"
             class="px-4 py-2 rounded-lg text-xs font-bold transition-all"
           >
-            📂 按日期折叠归类
+            📂 按日期分组
           </button>
         </div>
 
@@ -97,18 +97,18 @@
               </th>
               <!-- 状态表头 -->
               <th class="p-4 cursor-pointer hover:text-indigo-600 transition" @click="handleSort('status')">
-                状态 <span v-if="sortKey === 'status'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+                任务状态 <span v-if="sortKey === 'status'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
               </th>
               <!-- 代课安排表头 -->
               <th class="p-4 text-left cursor-pointer hover:text-indigo-600 transition" @click="handleSort('substitute')">
-                代课安排 <span v-if="sortKey === 'substitute'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
+                代课教师 <span v-if="sortKey === 'substitute'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
               </th>
               <th class="py-4 pr-6 pl-4 text-right">操作</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100 text-sm">
             <tr v-if="displayedRequests.length === 0">
-              <td colspan="6" class="py-12 text-center text-slate-400 font-medium">所选日期 ({{ targetDate }}) 没有任何请假记录，晴空万里！</td>
+              <td colspan="6" class="py-12 text-center text-slate-400 font-medium">所选日期 ({{ targetDate }}) 暂无教师请假记录 </td>
             </tr>
             <tr v-for="req in displayedRequests" :key="req.id" class="hover:bg-slate-50/50 transition-colors group">
               <td class="py-4 pl-6 pr-4 font-bold text-slate-900">

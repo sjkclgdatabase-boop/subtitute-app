@@ -7,7 +7,7 @@
         <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
           <span class="text-white text-sm font-bold">ED</span>
         </div>
-        <span class="font-bold text-lg tracking-tight text-slate-900">智能代课系统</span>
+        <span class="font-bold text-lg tracking-tight text-slate-900">智能教务统筹系统</span>
       </div>
       
       <!-- 导航链接 -->
@@ -44,15 +44,15 @@ const toast = useToast()
 
 // 修复了这里的逗号问题
 const navItems = [
-  { name: '总览', path: '/' },
-  { name: '请假录入', path: '/leave-entry' },
-  { name: '教师管理', path: '/teachers' },
-  { name: '课表', path: '/timetable' },
-  { name: '记录', path: '/records' },
-  { name: '报表', path: '/statistics' },
-  { name: '🛡️ MMI 干扰', path: '/mmi-interruption' }, 
-  { name: '📈 科目目标分析', path: '/subject-analysis' },
-  { name: '⚙️ 设置', path: '/settings' } 
+  { name: '调度总览', path: '/' },
+  { name: '教师请假登记', path: '/leave-entry' },
+  { name: '教师档案', path: '/teachers' },
+  { name: '全校课表', path: '/timetable' },
+  { name: '代课记录', path: '/records' },
+  { name: '统计报表', path: '/statistics' },
+  { name: 'MMI冲突干预', path: '/mmi-interruption' }, 
+  { name: '学科学情分析', path: '/subject-analysis' },
+  { name: '⚙️ 系统设置', path: '/settings' } 
 ]
 
 const logout = async () => {

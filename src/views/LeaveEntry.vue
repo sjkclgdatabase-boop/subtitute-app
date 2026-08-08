@@ -4,9 +4,9 @@
     <!-- 头部区域 -->
     <div class="mb-10">
       <h1 class="text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
-        智能请假录入
+        教师请假登记
       </h1>
-      <p class="text-slate-500 text-sm mt-2 font-medium">支持双班制：选择班次与教师，系统将自动拉取当日课表生成代课任务</p>
+      <p class="text-slate-500 text-sm mt-2 font-medium">适配双班运行模式，选定班次与教师后，系统自动调取当日课表，生成代课任务</p>
     </div>
 
     <!-- 步骤一：基础信息选择 -->
@@ -57,7 +57,7 @@
               @change="fetchDailyTimetable"
               class="w-full bg-transparent border-none text-slate-700 font-semibold focus:ring-0 cursor-pointer text-sm appearance-none outline-none pr-8"
             >
-              <option value="" disabled>请选择{{ currentSession === 'morning' ? '上午班' : '下午班' }}教师</option>
+              <option value="" disabled>请选择{{ currentSession === 'morning' ? '上午班' : '下午班' }}请假教师</option>
               <option v-for="teacher in filteredTeachersList" :key="teacher.id" :value="teacher.id">
                 {{ teacher.name }}{{ teacher.subject ? ` (${teacher.subject})` : '' }}
               </option>
@@ -75,7 +75,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
         <!-- 选择日期 -->
         <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">请假日期 (系统自动计算星期)</label>
+          <label class="block text-sm font-semibold text-slate-700 mb-2">请假日期（系统自动推算星期）</label>
           <input 
             type="date" 
             v-model="leaveDate"
@@ -90,7 +90,7 @@
           <input 
             type="text" 
             v-model="leaveReason"
-            placeholder="例如：病假、事假、外出开会等..."
+            placeholder="示例：病假、事假、公务外出参会"
             class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium text-slate-700"
           />
         </div>

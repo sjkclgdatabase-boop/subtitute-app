@@ -6,7 +6,7 @@
       <h1 class="text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
         系统全局设置与维护
       </h1>
-      <p class="text-slate-500 text-sm mt-2 font-medium">配置学校作息参数、管理基础班级、设定 MMI 目标或进行上线前的数据清理与备份</p>
+      <p class="text-slate-500 text-sm mt-2 font-medium">配置学校作息参数、管理基础班级、设置MMI目标，支持上线前数据清理与备份</p>
     </div>
 
     <!-- 卡片一：学校作息配置 -->
@@ -56,15 +56,15 @@
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md">
       <h2 class="text-lg font-bold text-slate-800 mb-2 flex items-center gap-2">
         <span class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center">📅</span>
-        学年上课周历与假期配置 (School Weeks)
+        学年上课周历与假期配置
       </h2>
-      <p class="text-slate-500 text-xs mb-6">录入全年的上课周与假期周，系统将据此自动排除假期，精准计算科目“理论应到进度”。</p>
+      <p class="text-slate-500 text-xs mb-6">录入全年上课周与假期周，系统自动剔除假期，精准计算科目「理论应达进度」。</p>
 
       <!-- 📥 模板下载与 📂 批量上载操作栏 -->
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-200 mb-6">
         <div>
           <h3 class="text-sm font-bold text-slate-900">批量导入/导出上课周历</h3>
-          <p class="text-slate-500 text-xs mt-1">支持下载标准 CSV 模板填写后批量上传，完美适配你的周历数据格式。</p>
+          <p class="text-slate-500 text-xs mt-1">支持下载标准CSV模板，填写后批量上传，适配周历数据格式。</p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
           <button @click="downloadWeekTemplate" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-2">
@@ -135,9 +135,9 @@
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md">
       <h2 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center">📚</span>
-        学校班级基础管理 (Classes Setup)
+        学校班级基础管理
       </h2>
-      <p class="text-slate-500 text-xs mb-6">在此维护全校的标准班级，供排课、请假及 MMI 干扰记录时点选调用。</p>
+      <p class="text-slate-500 text-xs mb-6">维护全校标准班级，供排课、请假与 MMI 干扰记录选用。</p>
 
       <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 mb-8 flex flex-col sm:flex-row gap-4 items-end">
         <div class="w-full sm:w-1/3">
@@ -167,7 +167,7 @@
 
       <div class="space-y-6">
         <div class="flex items-center justify-between">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">已录入的全校班级列表 (可折叠)</h3>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">已录入的全校班级列表</h3>
           <button @click="toggleAllGrades" class="text-xs text-indigo-600 font-bold hover:underline">
             {{ allExpanded ? '全部折叠' : '全部展开' }}
           </button>
@@ -221,12 +221,12 @@
         <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">📊</span>
         MMI 科目目标 (Sasaran) 批量配置
       </h2>
-      <p class="text-slate-500 text-xs mb-6">下载标准模板，填写各年级各科目的计划目标节数与教育部底线后，批量导入到系统中。</p>
+      <p class="text-slate-500 text-xs mb-6">下载标准模板，填写各年级各科目计划目标课时与基准底线，批量导入系统。</p>
 
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-200">
         <div>
           <h3 class="text-sm font-bold text-slate-900">导入/导出科目目标</h3>
-          <p class="text-slate-500 text-xs mt-1">支持 CSV 格式模板，上传后会自动更新数据库中的目标设定。</p>
+          <p class="text-slate-500 text-xs mt-1">支持 CSV 模板，上传后自动更新数据库目标配置。</p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
           <button @click="downloadTemplate" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-2">
@@ -247,13 +247,13 @@
         <span class="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center">🛠️</span>
         正式上线数据清理与维护
       </h2>
-      <p class="text-slate-500 text-xs mb-6">用于测试阶段结束、学校正式上线前清理不需要的历史测试数据，支持一键备份。</p>
+      <p class="text-slate-500 text-xs mb-6">用用于测试结束、正式上线前清理历史测试数据，支持一键备份。</p>
       
       <div class="space-y-6">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 border-b border-slate-100 gap-4">
           <div>
             <h3 class="text-sm font-bold text-slate-900">清空所有请假与代课记录</h3>
-            <p class="text-slate-500 text-xs mt-1">仅删除请假单与代课指派的历史测试数据，保留教师资料与排课表。</p>
+            <p class="text-slate-500 text-xs mt-1">仅删除请假、代课历史测试数据，保留教师资料与排课表。</p>
           </div>
           <button @click="clearOnlyRecords" :disabled="loading" class="px-5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 font-semibold text-xs rounded-xl transition shadow-sm border border-amber-200 disabled:opacity-50 shrink-0">
             清空请假记录
@@ -263,7 +263,7 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 border-b border-slate-100 gap-4">
           <div>
             <h3 class="text-sm font-bold text-slate-900">重置全校课表</h3>
-            <p class="text-slate-500 text-xs mt-1">清空所有网格排课数据，方便重新批量导入新学年课表（教师名单会被保留）。</p>
+            <p class="text-slate-500 text-xs mt-1">清空全部排课数据，便于批量导入新学年课表（保留教师名单）。</p>
           </div>
           <button @click="clearOnlyTimetable" :disabled="loading" class="px-5 py-2 bg-orange-50 hover:bg-orange-100 text-orange-700 font-semibold text-xs rounded-xl transition shadow-sm border border-orange-200 disabled:opacity-50 shrink-0">
             清空全校课表
@@ -273,7 +273,7 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 border-b border-slate-100 gap-4">
           <div>
             <h3 class="text-sm font-bold text-indigo-900">备份并清空 MMI 干扰历史数据</h3>
-            <p class="text-slate-500 text-xs mt-1">先自动下载保存一份 JSON 备份文件到本地，随后安全清除所有 MMI 干扰日志。</p>
+            <p class="text-slate-500 text-xs mt-1">自动下载 JSON 备份至本地，再安全清除全部 MMI 干扰日志。</p>
           </div>
           <button @click="backupAndClearMmi" :disabled="loading" class="px-5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold text-xs rounded-xl transition shadow-sm border border-indigo-200 disabled:opacity-50 shrink-0">
             📥 备份并清空 MMI 数据
@@ -283,7 +283,7 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h3 class="text-sm font-bold text-red-600">危险操作：初始化系统</h3>
-            <p class="text-slate-500 text-xs mt-1">一键清空所有请假、代课、课表及教师名单，让系统恢复到最初空白状态。</p>
+            <p class="text-slate-500 text-xs mt-1">一键清空请假、代课、课表、教师名单，恢复系统至初始空白状态。</p>
           </div>
           <button @click="clearEverything" :disabled="loading" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs rounded-xl transition shadow-md disabled:opacity-50 shrink-0">
             彻底重置系统

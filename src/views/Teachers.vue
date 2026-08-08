@@ -1,6 +1,6 @@
 <template>
   <div class="p-6 max-w-7xl mx-auto">
-    <h1 class="text-2xl font-bold mb-6 text-gray-800">教师资料管理</h1>
+    <h1 class="text-2xl font-bold mb-6 text-gray-800">教师档案管理</h1>
     
     <!-- 顶部操作栏：采用跟图片一样的双班制胶囊切换器与功能区 -->
     <div class="bg-white p-4 rounded-3xl shadow-sm ring-1 ring-slate-900/5 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
@@ -31,7 +31,7 @@
         <!-- 批量导入与模版按钮组 -->
         <div class="flex gap-2 w-full sm:w-auto">
           <button @click="downloadTemplate" class="bg-emerald-600 text-white px-4 py-2.5 rounded-xl hover:bg-emerald-700 text-sm font-semibold shadow-sm transition">
-            下载模版
+            下载导入模板
           </button>
           <label class="bg-blue-600 text-white px-4 py-2.5 rounded-xl hover:bg-blue-700 cursor-pointer text-sm font-semibold shadow-sm transition flex items-center justify-center">
             批量导入
@@ -41,7 +41,7 @@
       </div>
 
       <button @click="showModal = true" class="w-full md:w-auto bg-purple-600 text-white px-6 py-2.5 rounded-xl hover:bg-purple-700 text-sm font-semibold shadow-md transition">
-        + 新增教师
+        +  添加教师
       </button>
     </div>
 
@@ -52,7 +52,7 @@
           <tr class="bg-gray-50 text-gray-700 select-none text-sm border-b border-slate-100">
             <th @click="sortBy('name')" class="p-4 cursor-pointer hover:bg-gray-100 transition">
               <div class="flex items-center gap-1 font-bold">
-                姓名 <span class="text-xs text-slate-400">{{ getSortIcon('name') }}</span>
+                教师姓名 <span class="text-xs text-slate-400">{{ getSortIcon('name') }}</span>
               </div>
             </th>
             <th @click="sortBy('subject')" class="p-4 cursor-pointer hover:bg-gray-100 transition">
@@ -62,12 +62,12 @@
             </th>
             <th @click="sortBy('session')" class="p-4 cursor-pointer hover:bg-gray-100 transition">
               <div class="flex items-center gap-1 font-bold">
-                班次 <span class="text-xs text-slate-400">{{ getSortIcon('session') }}</span>
+                所属班次 <span class="text-xs text-slate-400">{{ getSortIcon('session') }}</span>
               </div>
             </th>
             <th @click="sortBy('max_substitute_per_week')" class="p-4 cursor-pointer hover:bg-gray-100 transition">
               <div class="flex items-center gap-1 font-bold">
-                每周代课上限 <span class="text-xs text-slate-400">{{ getSortIcon('max_substitute_per_week') }}</span>
+                每周代课最大节数 <span class="text-xs text-slate-400">{{ getSortIcon('max_substitute_per_week') }}</span>
               </div>
             </th>
             <th @click="sortBy('is_active')" class="p-4 cursor-pointer hover:bg-gray-100 transition">

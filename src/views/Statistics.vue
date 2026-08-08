@@ -5,7 +5,7 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 no-print">
       <div>
         <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">教务数据分析与 MMI 报表中心</h1>
-        <p class="text-slate-500 text-sm mt-1">多维度监控教学时间干扰、科目受影响程度与教师代课负荷</p>
+        <p class="text-slate-500 text-sm mt-1">多维度监控教学干扰、科目影响及教师代课负荷</p>
       </div>
     </div>
 
@@ -16,8 +16,8 @@
           📅
         </div>
         <div>
-          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">全局时间范围过滤</div>
-          <div class="text-sm font-extrabold text-slate-800">所有报表与排行榜将根据此时间段实时计算</div>
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">时间范围筛选</div>
+          <div class="text-sm font-extrabold text-slate-800">全部报表、排行榜按所选时间段实时计算</div>
         </div>
       </div>
       
@@ -45,7 +45,7 @@
           @click="resetDateFilter" 
           class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-2xl text-xs font-bold transition"
         >
-          重置时间
+          重置
         </button>
       </div>
     </div>
@@ -57,49 +57,49 @@
         :class="currentTab === 'overview' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'"
         class="px-4 py-2 rounded-xl text-xs font-bold transition-all"
       >
-        📊 综合概览与代课负荷
+        📊 综合概览・代课负荷
       </button>
       <button 
         @click="currentTab = 'reason'" 
         :class="currentTab === 'reason' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'"
         class="px-4 py-2 rounded-xl text-xs font-bold transition-all"
       >
-        ⚠️ 1. 项目干扰分析
+        ⚠️ 项目干扰分析
       </button>
       <button 
         @click="currentTab = 'trend'" 
         :class="currentTab === 'trend' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'"
         class="px-4 py-2 rounded-xl text-xs font-bold transition-all"
       >
-        📅 2. 日期干扰高峰
+        📅 干扰高峰日期
       </button>
       <button 
         @click="currentTab = 'class'" 
         :class="currentTab === 'class' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'"
         class="px-4 py-2 rounded-xl text-xs font-bold transition-all"
       >
-        🏫 3. 班级干扰分析
+        🏫 班级干扰分析
       </button>
       <button 
         @click="currentTab = 'subject'" 
         :class="currentTab === 'subject' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'"
         class="px-4 py-2 rounded-xl text-xs font-bold transition-all"
       >
-        📚 4. 被影响最多的科目排行
+        📚 受影响科目排行
       </button>
       <button 
         @click="currentTab = 'affectedTeacher'" 
         :class="currentTab === 'affectedTeacher' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'"
         class="px-4 py-2 rounded-xl text-xs font-bold transition-all"
       >
-        📉 5. 受影响最大老师排行 (Top 5)
+        📉 高负荷教师排行  (前 5)
       </button>
       <button 
         @click="currentTab = 'teacher'" 
         :class="currentTab === 'teacher' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'"
         class="px-4 py-2 rounded-xl text-xs font-bold transition-all"
       >
-        👨‍🏫 6. 老师干扰总表
+        👨‍🏫 教师干扰总表
       </button>
     </div>
 
@@ -130,7 +130,7 @@
 
       <div class="bg-white p-8 rounded-3xl shadow-sm ring-1 ring-slate-900/5">
         <div class="flex justify-between items-center mb-6">
-          <h2 class="text-base font-bold text-slate-900">⚖️ 教师代课负荷公平性矩阵 (Top 5 负荷)</h2>
+          <h2 class="text-base font-bold text-slate-900">⚖️ 高负荷教师排行 (前 5)</h2>
           <button @click="exportSinglePdf" class="no-print px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1">
             📥 打印 / 另存为 PDF 报告
           </button>
@@ -154,8 +154,8 @@
     <div v-if="currentTab === 'reason'" class="bg-white p-8 rounded-3xl shadow-sm ring-1 ring-slate-900/5 space-y-6 animate-fadeIn">
       <div class="flex justify-between items-center">
         <div>
-          <h2 class="text-lg font-bold text-slate-900">⚠️ 项目分析：哪一个项目干扰最多</h2>
-          <p class="text-xs text-slate-500 mt-1">统计各项活动占用教学时间的绝对节数与比例。</p>
+          <h2 class="text-lg font-bold text-slate-900">⚠️ 教学干扰项目统计</h2>
+          <p class="text-xs text-slate-500 mt-1">统计各项活动占用教学课时的节数与占比。</p>
         </div>
         <button @click="exportSinglePdf" class="no-print px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1">
           📥 打印 / 另存为 PDF 报告
@@ -179,8 +179,8 @@
     <div v-if="currentTab === 'trend'" class="bg-white p-8 rounded-3xl shadow-sm ring-1 ring-slate-900/5 space-y-6 animate-fadeIn">
       <div class="flex justify-between items-center">
         <div>
-          <h2 class="text-lg font-bold text-slate-900">📅 日期干扰高峰：哪一天有最多干扰</h2>
-          <p class="text-xs text-slate-500 mt-1">分析学校在每周哪一天面临最频繁的教学时间中断。</p>
+          <h2 class="text-lg font-bold text-slate-900">📅 教学干扰日期统计</h2>
+          <p class="text-xs text-slate-500 mt-1">统计每周各日发生教学中断的频次情况。</p>
         </div>
         <button @click="exportSinglePdf" class="no-print px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1">
           📥 打印 / 另存为 PDF 报告
@@ -199,8 +199,8 @@
     <div v-if="currentTab === 'class'" class="bg-white p-8 rounded-3xl shadow-sm ring-1 ring-slate-900/5 space-y-6 animate-fadeIn">
       <div class="flex justify-between items-center">
         <div>
-          <h2 class="text-lg font-bold text-slate-900">🏫 班级干扰分析</h2>
-          <p class="text-xs text-slate-500 mt-1">仅提取并展示纯班级受活动冲击的累计节数（点击表头可切换排序）。</p>
+          <h2 class="text-lg font-bold text-slate-900">🏫 班级教学干扰统计</h2>
+          <p class="text-xs text-slate-500 mt-1">仅统计各班级受活动冲击的累计课时。</p>
         </div>
         <button @click="exportSinglePdf" class="no-print px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1">
           📥 打印 / 另存为 PDF 报告
@@ -215,10 +215,10 @@
                 班级名称 {{ classSortKey === 'className' ? (classSortAsc ? '▲' : '▼') : '↕' }}
               </th>
               <th @click="sortClassTable('totalPeriods')" class="p-4 border-b font-bold cursor-pointer hover:bg-slate-100 transition">
-                累计受干扰节数 {{ classSortKey === 'totalPeriods' ? (classSortAsc ? '▲' : '▼') : '↕' }}
+                受干扰累计节数 {{ classSortKey === 'totalPeriods' ? (classSortAsc ? '▲' : '▼') : '↕' }}
               </th>
               <th @click="sortClassTable('percentage')" class="p-4 border-b font-bold rounded-r-xl cursor-pointer hover:bg-slate-100 transition">
-                干扰频次占比 {{ classSortKey === 'percentage' ? (classSortAsc ? '▲' : '▼') : '↕' }}
+                干扰占比 {{ classSortKey === 'percentage' ? (classSortAsc ? '▲' : '▼') : '↕' }}
               </th>
             </tr>
           </thead>
@@ -237,8 +237,8 @@
     <div v-if="currentTab === 'subject'" class="bg-white p-8 rounded-3xl shadow-sm ring-1 ring-slate-900/5 space-y-6 animate-fadeIn">
       <div class="flex justify-between items-center">
         <div>
-          <h2 class="text-lg font-bold text-slate-900">📚 被影响最多的科目排行榜</h2>
-          <p class="text-xs text-slate-500 mt-1">统计因请假或各项活动导致各学科课程中断的累计节数（点击表头可排序）。</p>
+          <h2 class="text-lg font-bold text-slate-900">📚 科目教学干扰统计</h2>
+          <p class="text-xs text-slate-500 mt-1">统计各类请假及活动造成各学科课程中断的累计课时。</p>
         </div>
         <button @click="exportSinglePdf" class="no-print px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1">
           📥 打印 / 另存为 PDF 报告
@@ -253,7 +253,7 @@
                 科目名称 {{ subjectSortKey === 'subjectName' ? (subjectSortAsc ? '▲' : '▼') : '↕' }}
               </th>
               <th @click="sortSubjectTable('totalPeriods')" class="p-4 border-b font-bold rounded-r-xl cursor-pointer hover:bg-slate-100 transition">
-                受干扰中断的总节数 {{ subjectSortKey === 'totalPeriods' ? (subjectSortAsc ? '▲' : '▼') : '↕' }}
+                受干扰总节数 {{ subjectSortKey === 'totalPeriods' ? (subjectSortAsc ? '▲' : '▼') : '↕' }}
               </th>
             </tr>
           </thead>
@@ -271,8 +271,8 @@
     <div v-if="currentTab === 'affectedTeacher'" class="bg-white p-8 rounded-3xl shadow-sm ring-1 ring-slate-900/5 space-y-6 animate-fadeIn">
       <div class="flex justify-between items-center">
         <div>
-          <h2 class="text-lg font-bold text-slate-900">📉 受影响最大老师排行榜 (Top 5)</h2>
-          <p class="text-xs text-slate-500 mt-1">仅提取纯教师数据，展示课堂遭到中断最多的前五位老师（点击表头可排序）。</p>
+          <h2 class="text-lg font-bold text-slate-900">📉 教师课堂干扰统计（前 5）</h2>
+          <p class="text-xs text-slate-500 mt-1">统计教师课堂受中断情况，展示受影响最高的前 5 位教师。</p>
         </div>
         <button @click="exportSinglePdf" class="no-print px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1">
           📥 打印 / 另存为 PDF 报告
@@ -287,7 +287,7 @@
                 教师姓名 {{ affectedTeacherSortKey === 'teacherName' ? (affectedTeacherSortAsc ? '▲' : '▼') : '↕' }}
               </th>
               <th @click="sortAffectedTeacherTable('totalPeriods')" class="p-4 border-b font-bold rounded-r-xl cursor-pointer hover:bg-slate-100 transition">
-                受干扰中断的总节数 {{ affectedTeacherSortKey === 'totalPeriods' ? (affectedTeacherSortAsc ? '▲' : '▼') : '↕' }}
+                受干扰总节数 {{ affectedTeacherSortKey === 'totalPeriods' ? (affectedTeacherSortAsc ? '▲' : '▼') : '↕' }}
               </th>
             </tr>
           </thead>
@@ -305,8 +305,8 @@
     <div v-if="currentTab === 'teacher'" class="bg-white p-8 rounded-3xl shadow-sm ring-1 ring-slate-900/5 space-y-6 animate-fadeIn">
       <div class="flex justify-between items-center">
         <div>
-          <h2 class="text-lg font-bold text-slate-900">👨‍🏫 全校老师干扰总表与代课累计</h2>
-          <p class="text-xs text-slate-500 mt-1">列出学校所有登记的老师，完整追踪其代课与受干扰情况（点击表头可排序）。</p>
+          <h2 class="text-lg font-bold text-slate-900">👨‍🏫 全校教师代课及课堂干扰总览</h2>
+          <p class="text-xs text-slate-500 mt-1">展示全校登记教师，完整统计代课量及课堂受干扰数据。</p>
         </div>
         <button @click="exportSinglePdf" class="no-print px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1">
           📥 打印 / 另存为 PDF 报告
@@ -327,7 +327,7 @@
                 累计代课节数 {{ teacherSortKey === 'count' ? (teacherSortAsc ? '▲' : '▼') : '↕' }}
               </th>
               <th @click="sortTeacherTable('interruptedCount')" class="p-4 border-b font-bold rounded-r-xl cursor-pointer hover:bg-slate-100 transition">
-                受干扰中断节数 {{ teacherSortKey === 'interruptedCount' ? (teacherSortAsc ? '▲' : '▼') : '↕' }}
+                受干扰总节数 {{ teacherSortKey === 'interruptedCount' ? (teacherSortAsc ? '▲' : '▼') : '↕' }}
               </th>
             </tr>
           </thead>

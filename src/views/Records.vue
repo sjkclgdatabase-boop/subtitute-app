@@ -5,9 +5,9 @@
     <div class="print:hidden flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
       <div>
         <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">
-          代课记录与每日统筹表
+          每日代课统筹管理
         </h1>
-        <p class="text-slate-500 text-sm mt-2 font-medium">点击表格 GURU GANTI 格子进行指派，或使用一键智能自动排课瞬间完成今日排程</p>
+        <p class="text-slate-500 text-sm mt-2 font-medium">点击表格单元格指派代课教师，支持一键智能生成当日代课排程</p>
       </div>
 
       <div class="flex flex-wrap items-center gap-3">
@@ -18,7 +18,7 @@
           class="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md transition-all flex items-center gap-2 shrink-0"
         >
           <span v-if="isAutoAssigning" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-          <span>⚡ 一键智能自动排课</span>
+          <span>⚡ 一键智能分配代课</span>
         </button>
 
         <!-- 班次切换标签 -->
@@ -28,20 +28,20 @@
             :class="currentSession === 'morning' ? 'bg-slate-900 text-white shadow' : 'text-slate-600 hover:text-slate-900'"
             class="px-4 py-2 rounded-lg text-xs font-bold transition-all"
           >
-            ☀️ 上午班表
+            ☀️ 上午班
           </button>
           <button 
             @click="currentSession = 'afternoon'" 
             :class="currentSession === 'afternoon' ? 'bg-slate-900 text-white shadow' : 'text-slate-600 hover:text-slate-900'"
             class="px-4 py-2 rounded-lg text-xs font-bold transition-all"
           >
-            🌙 下午班表
+            🌙 下午班
           </button>
         </div>
 
         <!-- 选择日期 -->
         <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl shadow-sm ring-1 ring-slate-900/5">
-          <span class="text-xs font-bold text-slate-500">日期:</span>
+          <span class="text-xs font-bold text-slate-500">选择日期：</span>
           <input 
             type="date" 
             v-model="targetDate" 
@@ -54,7 +54,7 @@
           class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-xl text-sm font-semibold shadow-md transition-all hover:shadow-lg flex items-center gap-2 shrink-0"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-          打印官方统筹表
+          打印代课统筹表
         </button>
       </div>
     </div>
