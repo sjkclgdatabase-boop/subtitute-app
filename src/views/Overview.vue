@@ -49,14 +49,14 @@
           <button 
             @click="viewMode = 'today'"
             :class="viewMode === 'today' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'"
-            class="px-4 py-2 rounded-lg text-xs font-bold transition-all"
+            class="px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer"
           >
             📅  仅今日
           </button>
           <button 
             @click="viewMode = 'grouped'"
             :class="viewMode === 'grouped' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'"
-            class="px-4 py-2 rounded-lg text-xs font-bold transition-all"
+            class="px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer"
           >
             📂 按日期分组
           </button>
@@ -66,7 +66,7 @@
           v-if="viewMode === 'today'"
           type="date" 
           v-model="targetDate"
-          class="bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
         />
       </div>
 
@@ -83,23 +83,18 @@
         <table class="w-full text-left border-collapse whitespace-nowrap">
           <thead>
             <tr class="bg-slate-50/50 border-b border-slate-100 text-slate-500 text-xs uppercase tracking-widest font-semibold select-none">
-              <!-- 请假老师表头 -->
               <th class="py-4 pl-6 pr-4 cursor-pointer hover:text-indigo-600 transition" @click="handleSort('teacher')">
                 请假老师 <span v-if="sortKey === 'teacher'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
               </th>
-              <!-- 班级 / 科目表头 -->
               <th class="p-4 cursor-pointer hover:text-indigo-600 transition" @click="handleSort('class')">
                 班级 / 科目 <span v-if="sortKey === 'class'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
               </th>
-              <!-- 节次表头 -->
               <th class="p-4 cursor-pointer hover:text-indigo-600 transition" @click="handleSort('period')">
                 节次 <span v-if="sortKey === 'period'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
               </th>
-              <!-- 状态表头 -->
               <th class="p-4 cursor-pointer hover:text-indigo-600 transition" @click="handleSort('status')">
                 任务状态 <span v-if="sortKey === 'status'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
               </th>
-              <!-- 代课安排表头 -->
               <th class="p-4 text-left cursor-pointer hover:text-indigo-600 transition" @click="handleSort('substitute')">
                 代课教师 <span v-if="sortKey === 'substitute'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
               </th>
@@ -117,6 +112,7 @@
               <td class="p-4">
                 <div class="flex items-center gap-2">
                   <span class="text-slate-900 font-medium">{{ req.class_name }}</span>
+                  <span v-if="req.class_name.includes('/')" class="px-1.5 py-0.5 bg-violet-100 text-violet-700 rounded text-[10px] font-bold">合班</span>
                   <span class="text-slate-400">·</span>
                   <span class="text-slate-500">{{ req.subject }}</span>
                 </div>
@@ -141,7 +137,7 @@
                 <button 
                   v-if="req.status === 'pending'"
                   @click="openRecommendModal(req)"
-                  class="inline-flex items-center justify-center px-4 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 rounded-full hover:bg-indigo-100 transition-all"
+                  class="inline-flex items-center justify-center px-4 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 rounded-full hover:bg-indigo-100 transition-all cursor-pointer"
                 >
                   ✨ 智能与手动排课
                 </button>
@@ -160,7 +156,7 @@
         <div v-for="(requests, date) in groupedRequests" :key="date" class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
           <button 
             @click="toggleDateFold(date)"
-            class="w-full flex justify-between items-center px-6 py-4 bg-slate-50 hover:bg-slate-100 transition text-left"
+            class="w-full flex justify-between items-center px-6 py-4 bg-slate-50 hover:bg-slate-100 transition text-left cursor-pointer"
           >
             <div class="flex items-center gap-3">
               <span class="font-bold text-slate-900 text-base">📅 {{ date }}</span>
@@ -203,6 +199,7 @@
                   <td class="p-3">
                     <div class="flex items-center gap-2">
                       <span class="text-slate-900 font-medium">{{ req.class_name }}</span>
+                      <span v-if="req.class_name.includes('/')" class="px-1.5 py-0.5 bg-violet-100 text-violet-700 rounded text-[10px] font-bold">合班</span>
                       <span class="text-slate-400">·</span>
                       <span class="text-slate-500">{{ req.subject }}</span>
                     </div>
@@ -227,7 +224,7 @@
                     <button 
                       v-if="req.status === 'pending'"
                       @click="openRecommendModal(req)"
-                      class="inline-flex items-center justify-center px-4 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 rounded-full hover:bg-indigo-100 transition-all"
+                      class="inline-flex items-center justify-center px-4 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 rounded-full hover:bg-indigo-100 transition-all cursor-pointer"
                     >
                       ✨ 排课
                     </button>
@@ -252,7 +249,7 @@
               <h2 class="text-xl font-bold text-slate-900">代课指派中心</h2>
               <p class="text-sm text-slate-500 mt-1">支持智能推荐排序，或在下方直接手动选择任意同班次老师</p>
             </div>
-            <button @click="showModal = false" class="text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full p-2 transition">×</button>
+            <button @click="showModal = false" class="text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full p-2 transition cursor-pointer">×</button>
           </div>
           
           <div class="p-8 bg-slate-50/50 space-y-6 overflow-y-auto">
@@ -274,7 +271,7 @@
               <div class="flex flex-col sm:flex-row items-center gap-3">
                 <select 
                   v-model="manualSelectedTeacherId" 
-                  class="w-full px-3 py-2 bg-white border border-indigo-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  class="w-full px-3 py-2 bg-white border border-indigo-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
                 >
                   <option value="" disabled>-- 请手动选择同班次教师 --</option>
                   <option v-for="t in allSameSessionTeachers" :key="t.id" :value="t.id">
@@ -284,7 +281,7 @@
                 <button 
                   @click="assignSubstitute(manualSelectedTeacherId)" 
                   :disabled="!manualSelectedTeacherId"
-                  class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-5 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all shrink-0"
+                  class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-5 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all shrink-0 cursor-pointer"
                 >
                   确认手动指派
                 </button>
@@ -327,7 +324,7 @@
                       </div>
                     </div>
                   </div>
-                  <button @click="assignSubstitute(teacher.id)" class="bg-slate-900 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all">
+                  <button @click="assignSubstitute(teacher.id)" class="bg-slate-900 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer">
                     智能指派
                   </button>
                 </div>
@@ -362,9 +359,8 @@ const viewMode = ref('today')
 const targetDate = ref(new Date().toISOString().split('T')[0])
 const foldedDates = ref({})
 
-// 全局多字段排序状态
-const sortKey = ref('period') // 默认按节次排序
-const sortOrder = ref('asc')  // 'asc' 升序，'desc' 降序
+const sortKey = ref('period')
+const sortOrder = ref('asc')
 
 const handleSort = (key) => {
   if (sortKey.value === key) {
@@ -375,7 +371,6 @@ const handleSort = (key) => {
   }
 }
 
-// 统一的排序比对函数
 const sortFunction = (a, b) => {
   let valA, valB
 
@@ -407,13 +402,11 @@ const manualSelectedTeacherId = ref('')
 const pendingCount = computed(() => leaveRequests.value.filter(r => r.status === 'pending').length)
 const assignedCount = computed(() => leaveRequests.value.filter(r => r.status === 'assigned').length)
 
-// 1. “只看今天”模式下的列表（支持多表头排序）
 const displayedRequests = computed(() => {
   const filtered = leaveRequests.value.filter(r => r.leave_date === targetDate.value)
   return filtered.sort(sortFunction)
 })
 
-// 2. “按日期折叠归类”模式下的分组列表（每组内部支持多表头排序）
 const groupedRequests = computed(() => {
   const groups = {}
   leaveRequests.value.forEach(req => {
