@@ -29,7 +29,7 @@ export async function recommendSubstitute(leaveRequest) {
   const { data: busyTimetable, error: ttErr } = await supabase
     .from('timetable')
     .select('teacher_id')
-    .eq('weekday', weekday')
+    .eq('weekday', weekday)
     .eq('period', period);
   if (ttErr) throw ttErr;
   const busyTeacherIds = new Set(busyTimetable.map(t => t.teacher_id));
@@ -73,7 +73,7 @@ export async function recommendSubstitute(leaveRequest) {
     weeklySubCountMap[sub.sub_teacher_id] = (weeklySubCountMap[sub.sub_teacher_id] || 0) + 1;
   });
 
-  // 7. 🚀 核心优化：统计每位老师当天（weekday）的原本【实际占用节数】（精准去重合班课）
+  // 7. 统计每位老师当天（weekday）的原本【实际占用节数】（精准去重合班课）
   const { data: dayTimetable } = await supabase
     .from('timetable')
     .select('teacher_id, period')
@@ -85,13 +85,13 @@ export async function recommendSubstitute(leaveRequest) {
       if (!teacherPeriodSetMap[t.teacher_id]) {
         teacherPeriodSetMap[t.teacher_id] = new Set();
       }
-      teacherPeriodSetMap[t.teacher_id].add(t.period); // 使用 Set 自动对同一个 period 去重
+      teacherPeriodSetMap[t.teacher_id].add(t.period);
     });
   }
 
   const dayClassCountMap = {};
   Object.keys(teacherPeriodSetMap).forEach(teacherId => {
-    dayClassCountMap[teacherId] = teacherPeriodSetMap[teacherId].size; // 得到真正的节数
+    dayClassCountMap[teacherId] = teacherPeriodSetMap[teacherId].size;
   });
 
   // 8. 统计每位老师【在当天（leave_date）已经帮别人代了多少节课】
@@ -117,24 +117,21 @@ export async function recommendSubstitute(leaveRequest) {
     const currentWeeklySubCount = weeklySubCountMap[teacher.id] || 0;
     if (currentWeeklySubCount >= teacher.max_substitute_per_week) continue;
 
-    // 本身原排课实际节数
     const originalClasses = dayClassCountMap[teacher.id] || 0;
-    // 当天已代课数
     const todaySubCount = todaySubCountMap[teacher.id] || 0;
-    // 今日总负荷节数
     const totalClassesToday = originalClasses + todaySubCount;
 
     let score = 0;
     if (teacher.subject === subject) score += 10;
     score += (5 - currentWeeklySubCount);
-    score -= totalClassesToday * 2; // 根据今日总工作量进行负载均衡打分
+    score -= totalClassesToday * 2;
 
     candidates.push({ 
       ...teacher, 
       currentSubCount: currentWeeklySubCount, 
-      originalClasses,    // 本身原排课节数
-      todaySubCount,      // 当天已代课节数
-      totalClassesToday,  // 今日总节数
+      originalClasses,
+      todaySubCount,
+      totalClassesToday,
       score 
     });
   }
