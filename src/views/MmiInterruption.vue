@@ -39,7 +39,6 @@
       </h2>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <!-- 日期选择 -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-2">📅 干扰发生日期:</label>
           <input 
@@ -49,7 +48,6 @@
           />
         </div>
 
-        <!-- 干扰原因/类型 -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-2">⚠️ 干扰类型 / 原因:</label>
           <select 
@@ -65,7 +63,6 @@
             <option value="Lain-lain / 其他干扰">其他干扰 (请自行填写)</option>
           </select>
 
-          <!-- 当选择 Lain-lain 时，自动显示自定义输入框 -->
           <input 
             v-if="classForm.reason === 'Lain-lain / 其他干扰'"
             type="text" 
@@ -76,7 +73,6 @@
         </div>
       </div>
 
-      <!-- 范围选择 -->
       <div class="mb-6 bg-slate-50 p-6 rounded-2xl border border-slate-200">
         <label class="block text-xs font-bold text-slate-700 mb-3">🎯 选择受影响范围:</label>
         
@@ -95,7 +91,6 @@
           </label>
         </div>
 
-        <!-- 子选项：1-指定班级 -->
         <div v-if="classForm.scopeType === 'specific'" class="space-y-3 pt-2">
           <div v-for="(classes, grade) in groupedClasses" :key="grade" class="flex flex-wrap items-center gap-2">
             <span class="text-xs font-black text-slate-400 w-16 shrink-0">
@@ -113,7 +108,6 @@
           </div>
         </div>
 
-        <!-- 子选项：2-整个年级 -->
         <div v-if="classForm.scopeType === 'grade'" class="flex flex-wrap gap-2 pt-2">
           <button 
             v-for="g in [1, 2, 3, 4, 5, 6]" 
@@ -123,17 +117,15 @@
             :class="classForm.selectedGrade === g ? 'bg-indigo-600 text-white' : 'bg-white text-slate-700 border-slate-200'"
             class="px-4 py-2 border rounded-xl text-xs font-bold transition-all cursor-pointer"
           >
-            Tahun {{ g }} ({{ g }}年级全班)
+            Tahun {{ g }} ({{ g }}年级全级)
           </button>
         </div>
 
-        <!-- 子选项：3-全校 -->
         <div v-if="classForm.scopeType === 'all'" class="text-xs text-indigo-700 font-bold pt-2">
           ✅ 影响全校所有一至六年级班级
         </div>
       </div>
 
-      <!-- 节次范围选择 -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-2">⏰ 受影响起始节次:</label>
@@ -149,7 +141,6 @@
         </div>
       </div>
 
-      <!-- 备注 -->
       <div class="mb-6">
         <label class="block text-xs font-bold text-slate-700 mb-2">📝 详细说明与补救措施:</label>
         <input 
@@ -176,7 +167,6 @@
       </h2>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <!-- 选择日期 -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-2">📅 干扰发生日期:</label>
           <input 
@@ -187,7 +177,6 @@
           />
         </div>
 
-        <!-- 选择教师 -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-2">👩‍🏫 选择受干扰/请假教师:</label>
           <select 
@@ -201,7 +190,6 @@
         </div>
       </div>
 
-      <!-- 干扰原因 -->
       <div class="mb-6">
         <label class="block text-xs font-bold text-slate-700 mb-2">⚠️ 干扰原因 (如离校公干/带队/会议/病假):</label>
         <input 
@@ -212,7 +200,6 @@
         />
       </div>
 
-      <!-- 系统自动导出的课程预览区块 -->
       <div class="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100 mb-6">
         <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-900 mb-3 flex items-center justify-between">
           <span>📚 自动加载：该教师当日原有课程及受影响班级</span>
@@ -287,7 +274,7 @@
               <td class="p-3 font-medium text-slate-700">{{ log.reason }}</td>
               <td class="p-3 text-slate-500 text-xs">{{ log.remarks || '-' }}</td>
               <td class="p-3 text-right">
-                <button @click="deleteLog(log.id)" class="text-xs text-red-600 hover:text-red-800 font-semibold px-2 py-1 bg-red-50 rounded-lg cursor-pointer">
+                <button @click="deleteLog(log)" class="text-xs text-red-600 hover:text-red-800 font-semibold px-2 py-1 bg-red-50 rounded-lg cursor-pointer transition">
                   删除
                 </button>
               </td>
@@ -357,7 +344,6 @@ const loadTeachers = async () => {
   if (data) teachersList.value = data
 }
 
-// 🚀 核心优化：加载教师请假课表并按【节次 period】精准去重/合并合班
 const loadTeacherSubjects = async () => {
   if (!teacherForm.value.teacherId || !teacherForm.value.date) {
     exportedSubjects.value = []
@@ -372,7 +358,6 @@ const loadTeacherSubjects = async () => {
       .eq('leave_date', teacherForm.value.date)
       .order('period', { ascending: true })
 
-    // 智能合并同一节次的合班课表
     const periodMap = new Map()
     ;(data || []).forEach(s => {
       if (!periodMap.has(s.period)) {
@@ -476,10 +461,66 @@ const fetchLogs = async () => {
   interruptionLogs.value = data || []
 }
 
-const deleteLog = async (id) => {
+// 🚀 修复链式调用顺序：.delete().in(...)
+const deleteLog = async (log) => {
+  if (!confirm(`确定要删除 ${log.interruption_date} 的这条 MMI 干扰记录吗？`)) return
+
   try {
-    await supabase.from('mmi_interruptions').delete().eq('id', id)
-    toast.success("日志已删除")
+    // 1. 删除 MMI 记录
+    const { error: mmiErr } = await supabase
+      .from('mmi_interruptions')
+      .delete()
+      .eq('id', log.id)
+
+    if (mmiErr) throw mmiErr
+
+    // 2. 如果属于教师请假干扰，双向联动删除对应的代课调度任务 (leave_requests 与 substitute_assignments)
+    if (log.type === 'teacher' || (log.target_display && (log.target_display.includes('教师:') || log.target_display.includes('教师：') || log.target_display.includes('教师')))) {
+      let teacherName = ''
+      if (log.target_display) {
+        teacherName = log.target_display.replace(/教师[:：]?\s*/, '').trim()
+      }
+
+      if (teacherName) {
+        // 根据老师名字查询 teacher_id
+        const { data: teacherObj } = await supabase
+          .from('teachers')
+          .select('id')
+          .eq('name', teacherName)
+          .single()
+
+        if (teacherObj) {
+          // 查询出要删除的请假记录 ID 列表
+          const { data: leaveReqs } = await supabase
+            .from('leave_requests')
+            .select('id')
+            .eq('teacher_id', teacherObj.id)
+            .eq('leave_date', log.interruption_date)
+
+          if (leaveReqs && leaveReqs.length > 0) {
+            const leaveIds = leaveReqs.map(l => l.id)
+
+            // 先同步删除代课指派记录 (substitute_assignments)
+            const { error: subDelErr } = await supabase
+              .from('substitute_assignments')
+              .delete()
+              .in('leave_request_id', leaveIds)
+
+            if (subDelErr) console.error("清理代课指派记录失败:", subDelErr)
+
+            // 再删除请假任务记录 (leave_requests)
+            const { error: leaveDelErr } = await supabase
+              .from('leave_requests')
+              .delete()
+              .in('id', leaveIds)
+
+            if (leaveDelErr) console.error("清理请假申请记录失败:", leaveDelErr)
+          }
+        }
+      }
+    }
+
+    toast.success("干扰记录与对应的请假登记已同步彻底清除！")
     fetchLogs()
   } catch (err) {
     toast.error("删除失败: " + err.message)

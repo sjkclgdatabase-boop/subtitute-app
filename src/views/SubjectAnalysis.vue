@@ -116,15 +116,33 @@
           <table class="w-full text-left border-collapse print-table">
             <thead>
               <tr class="bg-slate-100 text-[11px] font-bold text-slate-700 uppercase tracking-wider border-b border-slate-300">
-                <th class="py-3 px-4">年级 / 班级</th>
-                <th class="py-3 px-4">科目名称</th>
-                <th class="py-3 px-4">任课老师</th>
-                <th class="py-3 px-4 text-center">学年计划目标</th>
-                <th class="py-3 px-4 text-center">理论应到进度</th>
-                <th class="py-3 px-4 text-center">受干扰损失</th>
-                <th class="py-3 px-4 text-center">实际执行</th>
-                <th class="py-3 px-4 text-center">差距</th>
-                <th class="py-3 px-4 text-center">状态</th>
+                <th @click="toggleSort('class_name')" class="py-3 px-4 cursor-pointer hover:bg-slate-200 transition select-none">
+                  年级 / 班级 <span class="text-indigo-600">{{ getSortIcon('class_name') }}</span>
+                </th>
+                <th @click="toggleSort('subject_name')" class="py-3 px-4 cursor-pointer hover:bg-slate-200 transition select-none">
+                  科目名称 <span class="text-indigo-600">{{ getSortIcon('subject_name') }}</span>
+                </th>
+                <th @click="toggleSort('teacher_name')" class="py-3 px-4 cursor-pointer hover:bg-slate-200 transition select-none">
+                  任课老师 <span class="text-indigo-600">{{ getSortIcon('teacher_name') }}</span>
+                </th>
+                <th @click="toggleSort('target')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-200 transition select-none">
+                  学年计划目标 <span class="text-indigo-600">{{ getSortIcon('target') }}</span>
+                </th>
+                <th @click="toggleSort('expected')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-200 transition select-none">
+                  理论应到进度 <span class="text-indigo-600">{{ getSortIcon('expected') }}</span>
+                </th>
+                <th @click="toggleSort('lostCount')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-200 transition select-none">
+                  受干扰损失 <span class="text-indigo-600">{{ getSortIcon('lostCount') }}</span>
+                </th>
+                <th @click="toggleSort('actual')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-200 transition select-none">
+                  实际执行 <span class="text-indigo-600">{{ getSortIcon('actual') }}</span>
+                </th>
+                <th @click="toggleSort('gap')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-200 transition select-none">
+                  差距 <span class="text-indigo-600">{{ getSortIcon('gap') }}</span>
+                </th>
+                <th @click="toggleSort('status')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-200 transition select-none">
+                  状态 <span class="text-indigo-600">{{ getSortIcon('status') }}</span>
+                </th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-200 text-xs font-medium text-slate-800">
@@ -157,9 +175,7 @@
 
       <!-- ================= TAB 2: 📈 视觉图表分析看板 ================= -->
       <div v-if="activeTab === 'chart'" class="space-y-6">
-        
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- 图表 1 -->
           <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
             <div class="flex justify-between items-center">
               <h3 class="text-sm font-bold text-slate-800">🎯 全校科目总体达标健康率</h3>
@@ -178,7 +194,6 @@
             </div>
           </div>
 
-          <!-- 图表 2 -->
           <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
             <div class="flex justify-between items-center">
               <h3 class="text-sm font-bold text-slate-800">📊 各年级达标分布概况</h3>
@@ -200,7 +215,6 @@
           </div>
         </div>
 
-        <!-- 图表 3 -->
         <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-6">
           <div class="flex justify-between items-center">
             <div>
@@ -302,6 +316,9 @@ const filterClass = ref('all')
 const filterSubject = ref('all')
 const filterTeacher = ref('all')
 
+const sortKey = ref('grade')
+const sortOrder = ref('asc')
+
 const analysisList = ref([])
 const allClasses = ref([])
 const allTargets = ref([])
@@ -323,27 +340,57 @@ const progressRatio = computed(() => {
   return Math.min(1, Math.max(0, ratio))
 })
 
+const cleanString = (str) => {
+  if (!str) return ''
+  return String(str).trim().toUpperCase().replace(/[^A-Z0-9\u4e00-\u9fa5]/g, '')
+}
+
 const standardizeSubjectName = (name) => {
-  if (!name) return ''
-  const upper = name.trim().toUpperCase()
+  const clean = cleanString(name)
+  if (!clean) return ''
   
-  if (['BI', 'ENGLISH', 'BAHASA INGGERIS'].includes(upper)) return 'BAHASA INGGERIS'
-  if (['BM', 'MELAYU', 'BAHASA MELAYU'].includes(upper)) return 'BAHASA MELAYU'
-  if (['BC', 'CINA', 'BAHASA CINA', 'CHINESE'].includes(upper)) return 'BAHASA CINA'
+  if (['BI', 'ENGLISH', 'BAHASAINGGERIS', 'ENG', '英文'].includes(clean)) return 'BAHASA INGGERIS'
+  if (['BM', 'MELAYU', 'BAHASAMELAYU', 'MALAY', '国文', '马来文'].includes(clean)) return 'BAHASA MELAYU'
+  if (['BC', 'CINA', 'BAHASACINA', 'CHINESE', '华文', '华语'].includes(clean)) return 'BAHASA CINA'
   
-  if (['MATEMATIK', 'MATH', 'MT'].includes(upper)) return 'MATEMATIK'
-  if (['SN', 'SAINS', 'SCIENCE'].includes(upper)) return 'SAINS'
+  if (['MATEMATIK', 'MATH', 'MT', 'MM', '数学'].includes(clean)) return 'MATEMATIK'
+  if (['SN', 'SAINS', 'SCIENCE', 'SC', '科学'].includes(clean)) return 'SAINS'
   
-  if (['PJ', 'PENDIDIKAN JASMANI'].includes(upper)) return 'PENDIDIKAN JASMANI'
-  if (['PM', 'PENDIDIKAN MORAL'].includes(upper)) return 'PENDIDIKAN MORAL'
-  if (['PI', 'PENDIDIKAN ISLAM'].includes(upper)) return 'PENDIDIKAN ISLAM'
-  if (['PSV', 'PENDIDIKAN SENI VISUAL'].includes(upper)) return 'PENDIDIKAN SENI VISUAL'
-  if (['MZ', 'PMUZIK', 'PENDIDIKAN MUZIK'].includes(upper)) return 'PENDIDIKAN MUZIK'
-  if (['PK', 'PENDIDIKAN KESIHATAN'].includes(upper)) return 'PENDIDIKAN KESIHATAN'
-  if (['SEJARAH', 'SEJ'].includes(upper)) return 'SEJARAH'
-  if (['RBT', 'REKA BENTUK DAN TEKNOLOGI'].includes(upper)) return 'REKA BENTUK DAN TEKNOLOGI'
+  if (['PJ', 'PENDIDIKANJASMANI', 'JASMANI', 'PE', '体育'].includes(clean)) return 'PENDIDIKAN JASMANI'
+  if (['PM', 'PENDIDIKANMORAL', 'MORAL', '道德'].includes(clean)) return 'PENDIDIKAN MORAL'
+  if (['PI', 'PENDIDIKANISLAM', 'ISLAM', '宗教'].includes(clean)) return 'PENDIDIKAN ISLAM'
+  if (['PSV', 'PENDIDIKANSENIVISUAL', 'SENI', 'VISUAL', 'ART', '美术'].includes(clean)) return 'PENDIDIKAN SENI VISUAL'
+  if (['MZ', 'PMUZIK', 'PENDIDIKANMUZIK', 'MUZIK', 'MUSIC', '音乐'].includes(clean)) return 'PENDIDIKAN MUZIK'
+  if (['PK', 'PENDIDIKANKESIHATAN', 'KESIHATAN', 'HEALTH', '健教', '健康教育'].includes(clean)) return 'PENDIDIKAN KESIHATAN'
+  if (['SEJARAH', 'SEJ', 'HIST', '历史'].includes(clean)) return 'SEJARAH'
+  if (['RBT', 'REKABENTUKDANTEKNOLOGI', 'REKABENTUK', '设计与工艺'].includes(clean)) return 'REKA BENTUK DAN TEKNOLOGI'
   
-  return upper
+  return clean
+}
+
+const isSubjectMatch = (subjA, subjB) => {
+  if (!subjA || !subjB) return false
+  const stdA = standardizeSubjectName(subjA)
+  const stdB = standardizeSubjectName(subjB)
+  if (stdA && stdB && stdA === stdB) return true
+  
+  const cA = cleanString(subjA)
+  const cB = cleanString(subjB)
+  return cA === cB || cA.includes(cB) || cB.includes(cA)
+}
+
+const toggleSort = (key) => {
+  if (sortKey.value === key) {
+    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    sortKey.value = key
+    sortOrder.value = 'asc'
+  }
+}
+
+const getSortIcon = (key) => {
+  if (sortKey.value !== key) return '↕'
+  return sortOrder.value === 'asc' ? '▲' : '▼'
 }
 
 const onGradeChange = () => {
@@ -360,41 +407,68 @@ const uniqueSubjects = computed(() => {
   return Array.from(subs)
 })
 
+// 🚀 核心破解武器：无限分页获取数据函数，彻底突破 Supabase 1000 条硬限制！
+const fetchAllRows = async (tableName) => {
+  let allData = []
+  let from = 0
+  const limit = 1000 // 每次安全拉取 1000 条
+  
+  while (true) {
+    const { data, error } = await supabase
+      .from(tableName)
+      .select('*')
+      .range(from, from + limit - 1)
+      
+    if (error) throw error
+    if (data) allData.push(...data)
+    
+    // 如果拿到的数据少于 1000 条，说明拿到底了，立刻停止循环
+    if (!data || data.length < limit) break
+    from += limit
+  }
+  return allData
+}
+
 const loadAnalyticsData = async () => {
   loading.value = true
   try {
-    const { data: targets, error: targetErr } = await supabase.from('subject_targets').select('*').order('grade', { ascending: true })
-    if (targetErr) throw targetErr
+    const { data: targets } = await supabase.from('subject_targets').select('*').order('grade', { ascending: true })
     allTargets.value = targets || []
 
-    const { data: classes, error: classErr } = await supabase.from('classes').select('*')
-    if (classErr) throw classErr
+    const { data: classes } = await supabase.from('classes').select('*')
     allClasses.value = classes || []
 
-    const { data: interruptions, error: intErr } = await supabase.from('mmi_interruptions').select('*')
-    if (intErr) throw intErr
-
-    const { data: timetables, error: timeErr } = await supabase.from('timetable').select('*')
-    if (timeErr) throw timeErr
-
-    const { data: teachers, error: teachErr } = await supabase.from('teachers').select('*')
-    if (teachErr) throw teachErr
+    const { data: teachers } = await supabase.from('teachers').select('*')
     allTeachers.value = teachers || []
 
-    const { data: weeks, error: weekErr } = await supabase.from('school_weeks').select('*').order('week_number', { ascending: true })
-    if (!weekErr) allSchoolWeeks.value = weeks || []
+    const { data: weeks } = await supabase.from('school_weeks').select('*').order('week_number', { ascending: true })
+    allSchoolWeeks.value = weeks || []
+
+    // 🌟 用分页函数拉取超大数据表，保证每一条数据都不会漏掉！
+    const timetables = await fetchAllRows('timetable')
+    const interruptions = await fetchAllRows('mmi_interruptions')
+    const leaveRequests = await fetchAllRows('leave_requests')
+
+    console.log(`【系统日志】分页防截断机制成功！拉取完整排课表条数: ${timetables.length} 条`)
 
     const teacherMap = {}
     if (teachers) {
       teachers.forEach(tch => {
-        teacherMap[tch.id] = tch
+        if (tch.id) teacherMap[String(tch.id)] = tch
+        if (tch.name) teacherMap[cleanString(tch.name)] = tch
       })
     }
 
-    const enrichedTimetables = (timetables || []).map(item => ({
-      ...item,
-      teacher_info: teacherMap[item.teacher_id] || {}
-    }))
+    const enrichedTimetables = (timetables || []).map(item => {
+      const tIdKey = item.teacher_id ? String(item.teacher_id) : ''
+      const tNameKey = item.teacher_name ? cleanString(item.teacher_name) : ''
+      const teacherObj = teacherMap[tIdKey] || teacherMap[tNameKey] || {}
+      return {
+        ...item,
+        teacher_info: teacherObj,
+        resolved_teacher_name: teacherObj.name || item.teacher_name || item.teacher || ''
+      }
+    })
 
     let results = []
     const currentRatio = progressRatio.value
@@ -408,54 +482,81 @@ const loadAnalyticsData = async () => {
         const standardizedTargetSubject = standardizeSubjectName(t.subject_name)
 
         let assignedTeacherName = ''
+        let assignedTeacherId = null
 
-        // 🚀 核心优化 1：智能支持合班课匹配任课教师（如 3A/3B 也能被 3A 和 3B 匹配到）
-        const matchedTimetableEntry = enrichedTimetables.find(item => {
-          const itemClass = (item.class_name || '').trim().toUpperCase()
-          const clsName = (cls.class_name || '').trim().toUpperCase()
-          const itemSubj = standardizeSubjectName(item.teacher_info?.subject_name || item.subject_name || item.subject || '')
-
+        const matchedEntries = enrichedTimetables.filter(item => {
+          const itemClass = cleanString(item.class_name)
+          const clsName = cleanString(cls.class_name)
           const isClassMatched = itemClass === clsName || itemClass.includes(clsName) || clsName.includes(itemClass)
-          return isClassMatched && itemSubj === standardizedTargetSubject
+          if (!isClassMatched) return false
+
+          const rawSubj = item.subject || item.subject_name || item.teacher_info?.subject_name || ''
+          return isSubjectMatch(rawSubj, standardizedTargetSubject)
         })
 
-        if (matchedTimetableEntry && matchedTimetableEntry.teacher_info) {
-          assignedTeacherName = matchedTimetableEntry.teacher_info.name || ''
+        if (matchedEntries.length > 0) {
+          const validEntry = matchedEntries.find(e => e.resolved_teacher_name) || matchedEntries[0]
+          assignedTeacherName = validEntry.resolved_teacher_name || ''
+          assignedTeacherId = validEntry.teacher_id || validEntry.teacher_info?.id || null
         }
 
         let lostCount = 0
+
+        if (leaveRequests && leaveRequests.length > 0) {
+          leaveRequests.forEach(req => {
+            const reqClass = cleanString(req.class_name)
+            const clsName = cleanString(cls.class_name)
+            const isClassMatched = reqClass === clsName || reqClass.includes(clsName) || clsName.includes(reqClass)
+            const isSubjMatched = isSubjectMatch(req.subject, standardizedTargetSubject)
+
+            const reqTeacherName = cleanString(req.teacher_name)
+            const curTeacherName = cleanString(assignedTeacherName)
+
+            const isTeacherMatched = 
+              (assignedTeacherId && req.teacher_id && String(req.teacher_id) === String(assignedTeacherId)) ||
+              (curTeacherName && reqTeacherName && curTeacherName === reqTeacherName)
+
+            if (isTeacherMatched && isClassMatched && isSubjMatched) {
+              lostCount += 1
+            }
+          })
+        }
+
         if (interruptions && interruptions.length > 0) {
           interruptions.forEach(int => {
-            const intScope = int.scope ? int.scope.trim() : 'all'
-            const intGrade = Number(int.grade)
-            const intClass = int.class_name ? int.class_name.trim().toUpperCase() : ''
-            const clsName = cls.class_name ? cls.class_name.trim().toUpperCase() : ''
-            
-            const startP = Number(int.start_period) || 1
-            const endP = Number(int.end_period) || 1
+            if (int.type === 'class') {
+              const startP = Number(int.start_period) || 1
+              const endP = Number(int.end_period) || 1
+              const intScope = int.scope ? int.scope.trim() : ''
+              const targetDisp = int.target_display ? int.target_display.trim() : ''
+              const intGrade = Number(int.grade)
+              const intClass = cleanString(int.class_name)
+              const clsName = cleanString(cls.class_name)
 
-            const isClassAffected = 
-              intScope === 'all' || 
-              (intScope === 'grade' && intGrade === Number(cls.grade)) ||
-              (intScope === 'class' && (intClass.includes(clsName) || clsName.includes(intClass)))
+              const isClassAffected = 
+                intScope === 'all' || 
+                targetDisp.includes('全校') ||
+                (intScope === 'grade' && intGrade === Number(cls.grade)) ||
+                targetDisp.includes(`Tahun ${cls.grade}`) ||
+                (intScope === 'class' && (intClass.includes(clsName) || clsName.includes(intClass))) ||
+                targetDisp.includes(clsName)
 
-            if (isClassAffected) {
-              // 🚀 核心优化 2：计算合班受影响课时节数
-              const affectedPeriodsInTimetable = enrichedTimetables.filter(item => {
-                const itemClass = (item.class_name || '').trim().toUpperCase()
-                const itemPeriod = Number(item.period)
-                const teacherObj = item.teacher_info || {}
-                const itemSubject = standardizeSubjectName(teacherObj.subject_name || item.subject_name || item.subject || '')
+              if (isClassAffected) {
+                const affectedPeriods = enrichedTimetables.filter(item => {
+                  const itemClass = cleanString(item.class_name)
+                  const itemPeriod = Number(item.period)
+                  const rawSubj = item.subject || item.subject_name || item.teacher_info?.subject_name || ''
 
-                const matchClass = itemClass === clsName || itemClass.includes(clsName) || clsName.includes(itemClass)
-                const matchPeriod = itemPeriod >= startP && itemPeriod <= endP
-                const matchSubject = itemSubject === standardizedTargetSubject
+                  const matchClass = itemClass === clsName || itemClass.includes(clsName) || clsName.includes(itemClass)
+                  const matchPeriod = itemPeriod >= startP && itemPeriod <= endP
+                  const matchSubject = isSubjectMatch(rawSubj, standardizedTargetSubject)
 
-                return matchClass && matchPeriod && matchSubject
-              })
+                  return matchClass && matchPeriod && matchSubject
+                })
 
-              lostCount += affectedPeriodsInTimetable.length
-            } 
+                lostCount += affectedPeriods.length
+              }
+            }
           })
         }
 
@@ -489,12 +590,30 @@ const loadAnalyticsData = async () => {
 }
 
 const filteredAnalysisList = computed(() => {
-  return analysisList.value.filter(item => {
+  let list = analysisList.value.filter(item => {
     const matchGrade = filterGrade.value === 'all' || Number(item.grade) === Number(filterGrade.value)
     const matchClass = filterClass.value === 'all' || item.class_name === filterClass.value
     const matchSubject = filterSubject.value === 'all' || standardizeSubjectName(filterSubject.value) === standardizeSubjectName(item.subject_name)
-    const matchTeacher = filterTeacher.value === 'all' || (item.teacher_name && item.teacher_name.trim().toUpperCase() === filterTeacher.value.trim().toUpperCase())
+    const matchTeacher = filterTeacher.value === 'all' || (item.teacher_name && cleanString(item.teacher_name) === cleanString(filterTeacher.value))
     return matchGrade && matchClass && matchSubject && matchTeacher
+  })
+
+  return list.sort((a, b) => {
+    let valA = a[sortKey.value]
+    let valB = b[sortKey.value]
+
+    if (valA === undefined || valA === null) valA = ''
+    if (valB === undefined || valB === null) valB = ''
+
+    if (typeof valA === 'number' && typeof valB === 'number') {
+      return sortOrder.value === 'asc' ? valA - valB : valB - valA
+    } else {
+      const strA = String(valA)
+      const strB = String(valB)
+      return sortOrder.value === 'asc' 
+        ? strA.localeCompare(strB, 'zh-CN') 
+        : strB.localeCompare(strA, 'zh-CN')
+    }
   })
 })
 
