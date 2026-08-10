@@ -9,6 +9,56 @@
       <p class="text-slate-500 text-sm mt-2 font-medium">配置学校作息参数、管理基础班级、设置MMI目标，支持上线前数据清理与备份</p>
     </div>
 
+    <!-- 卡片：学校 Logo 与外观设置 -->
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md">
+      <h2 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+        <span class="w-8 h-8 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center">🖼️</span>
+        学校 Logo 与外观设置
+      </h2>
+      <p class="text-slate-500 text-xs mb-6">修改学校徽标（Logo）与校名，保存后全系统顶部导航栏与登录页将实时更新。</p>
+
+      <div class="space-y-6">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-2">当前学校名称</label>
+          <input 
+            v-model="schoolNameSetting" 
+            type="text" 
+            placeholder="输入学校名称..." 
+            class="w-full sm:w-96 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-2">更换学校 Logo (支持本地上传)</label>
+          
+          <div class="flex items-center gap-6">
+            <!-- 预览图 -->
+            <div class="w-20 h-20 rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-center p-2 overflow-hidden shadow-inner shrink-0">
+              <img :src="schoolLogoSetting || '/logo.png'" alt="Logo Preview" class="w-full h-full object-contain" />
+            </div>
+
+            <!-- 上传按钮与说明 -->
+            <div class="flex-1 space-y-2">
+              <label class="relative inline-flex cursor-pointer bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition shadow-md items-center gap-2">
+                <span>📂 选择新 Logo 图片</span>
+                <input type="file" accept="image/*" @change="handleSettingsLogoUpload" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+              </label>
+              <p class="text-[11px] text-slate-400">支持 PNG, JPG 格式，图片会自动转换，小于 2MB 为佳。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-10 pt-6 border-t border-slate-100 flex justify-end">
+        <button 
+          @click="saveSchoolIdentity" 
+          class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-full text-sm font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+        >
+          保存 Logo 与校名修改
+        </button>
+      </div>
+    </div>
+
     <!-- 卡片一：学校作息配置 -->
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md">
       <h2 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
@@ -238,7 +288,41 @@
       </div>
     </div>
 
-    <!-- 卡片五：正式上线数据清理、备份与维护面板 -->
+    <!-- 卡片五：本地数据备份与恢复 -->
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md">
+      <h2 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+        <span class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">💾</span>
+        本地数据备份与恢复
+      </h2>
+      <p class="text-slate-500 text-xs mb-6">定期将全校的所有核心数据打包备份到本地电脑，安全无忧。</p>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- 导出备份 -->
+        <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col justify-between space-y-4">
+          <div>
+            <h3 class="text-sm font-bold text-slate-900">导出全量数据备份</h3>
+            <p class="text-slate-500 text-xs mt-1">一键下载包含全校所有核心数据的 JSON 备份文件。</p>
+          </div>
+          <button @click="exportFullBackup" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer">
+            📤 导出系统完整备份
+          </button>
+        </div>
+
+        <!-- 恢复备份 -->
+        <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col justify-between space-y-4">
+          <div>
+            <h3 class="text-sm font-bold text-slate-900">恢复系统数据</h3>
+            <p class="text-slate-500 text-xs mt-1">通过之前备份的 JSON 文件恢复全校数据。</p>
+          </div>
+          <label class="relative block w-full text-center cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl text-xs font-bold transition shadow-sm">
+            <span>📥 选择备份文件并恢复</span>
+            <input type="file" accept=".json" @change="importFullBackup" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 卡片六：正式上线数据清理、备份与维护面板 -->
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md">
       <h2 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center">🛠️</span>
@@ -301,14 +385,12 @@
       <div v-if="uploadProgress.show" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 select-none">
         <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100 text-center space-y-6">
           
-          <!-- 顶部状态图标 -->
           <div class="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl transition-all duration-300"
                :class="uploadProgress.percent === 100 ? 'bg-emerald-100 text-emerald-600' : 'bg-indigo-50 text-indigo-600 animate-bounce'">
             <span v-if="uploadProgress.percent < 100">📂</span>
             <span v-else>🎉</span>
           </div>
 
-          <!-- 标题与当前状态文字 -->
           <div>
             <h3 class="text-lg font-extrabold text-slate-900">
               {{ uploadProgress.percent === 100 ? '模板导入成功！' : '正在导入模板数据...' }}
@@ -318,9 +400,7 @@
             </p>
           </div>
 
-          <!-- 数字百分比进度条主体 -->
           <div class="space-y-2">
-            <!-- 填充条 -->
             <div class="w-full h-3.5 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200/80 shadow-inner">
               <div 
                 class="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 rounded-full transition-all duration-300 shadow-sm"
@@ -328,7 +408,6 @@
               ></div>
             </div>
             
-            <!-- 数字百分比提示 -->
             <div class="flex justify-between items-center text-xs font-bold px-1">
               <span class="text-slate-400">处理进度</span>
               <span class="text-indigo-600 font-black text-sm">{{ uploadProgress.percent }}%</span>
@@ -360,10 +439,8 @@ const uploadProgress = ref({
   statusText: ''
 })
 
-// 延迟辅助函数
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
-// 打开并启动进度条
 const startProgress = (initialText = '正在读取模板文件...') => {
   uploadProgress.value = {
     show: true,
@@ -372,13 +449,11 @@ const startProgress = (initialText = '正在读取模板文件...') => {
   }
 }
 
-// 更新百分比和状态文字
 const updateProgress = (percent, text) => {
   uploadProgress.value.percent = percent
   if (text) uploadProgress.value.statusText = text
 }
 
-// 完成进度并平滑关闭
 const finishProgress = async (successMsg = '导入完成') => {
   uploadProgress.value.percent = 100
   uploadProgress.value.statusText = successMsg
@@ -430,6 +505,7 @@ onMounted(() => {
   }
   fetchClasses()
   fetchSchoolWeeks()
+  fetchSchoolIdentity()
 })
 
 const saveConfig = () => {
@@ -538,7 +614,6 @@ const downloadWeekTemplate = () => {
   toast.success("周历模板下载成功！")
 }
 
-// 📂 集成数字百分比进度条：批量导入上课周历
 const handleWeekFileUpload = async (event) => {
   const file = event.target.files[0]
   if (!file) return
@@ -623,7 +698,6 @@ const downloadTemplate = () => {
   toast.success("目标模板下载成功！")
 }
 
-// 📂 集成数字百分比进度条：批量导入科目目标
 const handleFileUpload = async (event) => {
   const file = event.target.files[0]
   if (!file) return
@@ -764,5 +838,160 @@ const clearEverything = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// --- 学校名称与 Logo 设置状态 ---
+const schoolNameSetting = ref('')
+const schoolLogoSetting = ref('')
+
+const fetchSchoolIdentity = async () => {
+  try {
+    const { data } = await supabase.from('school_settings').select('*').eq('id', 1).single()
+    if (data) {
+      schoolNameSetting.value = data.school_name || ''
+      schoolLogoSetting.value = data.logo_url || ''
+    }
+  } catch (err) {
+    schoolNameSetting.value = localStorage.getItem('school_name') || ''
+    schoolLogoSetting.value = localStorage.getItem('school_logo') || ''
+  }
+}
+
+const handleSettingsLogoUpload = (event) => {
+  const file = event.target.files[0]
+  if (!file) return
+
+  if (file.size > 2 * 1024 * 1024) {
+    return toast.error("Logo 图片体积过大，请选择小于 2MB 的图片")
+  }
+
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    schoolLogoSetting.value = e.target.result
+    toast.success("新 Logo 读取成功，请点击下方保存按钮！")
+  }
+  reader.readAsDataURL(file)
+}
+
+const saveSchoolIdentity = async () => {
+  try {
+    const { error } = await supabase
+      .from('school_settings')
+      .update({
+        school_name: schoolNameSetting.value.trim(),
+        logo_url: schoolLogoSetting.value
+      })
+      .eq('id', 1)
+
+    if (error) throw error
+
+    localStorage.setItem('school_logo', schoolLogoSetting.value)
+    localStorage.setItem('school_name', schoolNameSetting.value.trim())
+
+    toast.success("学校 Logo 与名称修改成功！全系统已实时更新。")
+
+    setTimeout(() => {
+      window.location.reload()
+    }, 600)
+  } catch (err) {
+    toast.error("保存失败: " + err.message)
+  }
+}
+
+// 📦 导出全量系统备份（Supabase 云端版）
+const exportFullBackup = async () => {
+  try {
+    toast.success("正在打包云端系统数据...")
+    
+    const [teachers, classes, schoolWeeks, subjectTargets, timetable, leaveRequests, substituteAssignments, schoolSettings] = await Promise.all([
+      supabase.from('teachers').select('*'),
+      supabase.from('classes').select('*'),
+      supabase.from('school_weeks').select('*'),
+      supabase.from('subject_targets').select('*'),
+      supabase.from('timetable').select('*'),
+      supabase.from('leave_requests').select('*'),
+      supabase.from('substitute_assignments').select('*'),
+      supabase.from('school_settings').select('*')
+    ])
+
+    const backupPackage = {
+      version: "2.0-supabase",
+      exportDate: new Date().toISOString(),
+      data: {
+        teachers: teachers.data || [],
+        classes: classes.data || [],
+        schoolWeeks: schoolWeeks.data || [],
+        subjectTargets: subjectTargets.data || [],
+        timetable: timetable.data || [],
+        leaveRequests: leaveRequests.data || [],
+        substituteAssignments: substituteAssignments.data || [],
+        schoolSettings: schoolSettings.data || []
+      }
+    }
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupPackage, null, 2))
+    const downloadAnchor = document.createElement('a')
+    downloadAnchor.setAttribute("href", dataStr)
+    downloadAnchor.setAttribute("download", `SJKC_Supabase_Backup_${new Date().toISOString().slice(0, 10)}.json`)
+    document.body.appendChild(downloadAnchor)
+    downloadAnchor.click()
+    downloadAnchor.remove()
+
+    toast.success("全系统备份导出成功！")
+  } catch (err) {
+    toast.error("导出备份失败: " + err.message)
+  }
+}
+
+// 📥 恢复全量系统备份（Supabase 云端版）
+const importFullBackup = async (event) => {
+  const file = event.target.files[0]
+  if (!file) return
+
+  if (!confirm("⚠️ 警告：恢复备份会覆盖当前云端数据库中的现有数据！确定要导入此备份文件吗？")) {
+    event.target.value = ''
+    return
+  }
+
+  const reader = new FileReader()
+  reader.onload = async (e) => {
+    try {
+      const backupPackage = JSON.parse(e.target.result)
+      if (!backupPackage.data) {
+        throw new Error("备份文件格式不正确")
+      }
+
+      const d = backupPackage.data
+
+      if (d.schoolSettings && d.schoolSettings.length > 0) {
+        await supabase.from('school_settings').upsert(d.schoolSettings)
+      }
+      if (d.classes && d.classes.length > 0) {
+        await supabase.from('classes').upsert(d.classes)
+      }
+      if (d.teachers && d.teachers.length > 0) {
+        await supabase.from('teachers').upsert(d.teachers)
+      }
+      if (d.schoolWeeks && d.schoolWeeks.length > 0) {
+        await supabase.from('school_weeks').upsert(d.schoolWeeks)
+      }
+      if (d.subjectTargets && d.subjectTargets.length > 0) {
+        await supabase.from('subject_targets').upsert(d.subjectTargets)
+      }
+      if (d.timetable && d.timetable.length > 0) {
+        await supabase.from('timetable').upsert(d.timetable)
+      }
+
+      toast.success("系统数据恢复成功！页面即将刷新...")
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000)
+    } catch (err) {
+      toast.error("恢复备份失败（文件可能损坏）: " + err.message)
+    } finally {
+      event.target.value = ''
+    }
+  }
+  reader.readAsText(file)
 }
 </script>

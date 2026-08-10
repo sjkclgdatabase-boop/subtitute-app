@@ -2,14 +2,14 @@
   <nav class="sticky top-0 z-40 w-full backdrop-blur-xl bg-white/70 border-b border-slate-200/50 supports-backdrop-blur:bg-white/60">
     <div class="max-w-7xl mx-auto px-6 flex justify-between h-16 items-center">
       
-      <!-- Logo 区域 -->
+      <!-- Logo 区域：绑定动态 currentLogo 和 currentSchoolName -->
       <div class="flex items-center gap-3 cursor-pointer" @click="router.push('/')">
         <img 
-          src="/logo.png" 
+          :src="currentLogo" 
           alt="Logo" 
-          class="w-20 h-20 object-contain"
+          class="w-14 h-14 object-contain rounded-xl"
         />
-        <span class="font-bold text-lg tracking-tight text-slate-900">智能教务统筹系统</span>
+        <span class="font-bold text-lg tracking-tight text-slate-900">{{ currentSchoolName }}</span>
       </div>
       
       <!-- PC 端导航链接 -->
@@ -45,7 +45,7 @@
     </div>
 
     <!-- 移动端下拉菜单 -->
-    <div v-if="isMenuOpen" class="md:hidden px-4 pt-2 pb-4 space-y-2 bg-white/95 border-b border-slate-200">
+    <div v-if="isMenuOpen" class="md:hidden px-4 pt-2 pb-4 space-y-2 bg-white/95 border-b border-slate-200 shadow-lg absolute w-full left-0">
       <router-link 
         v-for="(item, index) in navItems" 
         :key="index"
@@ -65,7 +65,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '../services/supabase'
 import { useToast } from '../utils/toast'
@@ -73,6 +73,45 @@ import { useToast } from '../utils/toast'
 const router = useRouter()
 const toast = useToast()
 const isMenuOpen = ref(false)
+
+const currentLogo = ref('/logo.png')
+const currentSchoolName = ref('智能教务统筹系统')
+
+// 🚀 核心：加载时先读本地缓存，再从 Supabase 云端同步最新的 Logo 和 校名
+const loadNavbarIdentity = async () => {
+  // 1. 先读缓存（防闪烁）
+  const cachedLogo = localStorage.getItem('school_logo')
+  const cachedName = localStorage.getItem('school_name')
+  
+  if (cachedLogo && cachedLogo.trim() !== '') {
+    currentLogo.value = cachedLogo
+  }
+  if (cachedName && cachedName.trim() !== '') {
+    currentSchoolName.value = cachedName
+  }
+
+  // 2. 从 Supabase 拉取最新配置
+  try {
+    const { data, error } = await supabase.from('school_settings').select('*').eq('id', 1).single()
+    
+    if (data) {
+      if (data.logo_url && data.logo_url.trim() !== '') {
+        currentLogo.value = data.logo_url
+        localStorage.setItem('school_logo', data.logo_url)
+      }
+      if (data.school_name && data.school_name.trim() !== '') {
+        currentSchoolName.value = data.school_name
+        localStorage.setItem('school_name', data.school_name)
+      }
+    }
+  } catch (err) {
+    console.error('加载 Navbar 设置失败:', err)
+  }
+}
+
+onMounted(() => {
+  loadNavbarIdentity()
+})
 
 const navItems = [
   { name: '调度总览', path: '/' },

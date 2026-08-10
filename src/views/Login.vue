@@ -7,11 +7,11 @@
 
     <div class="w-full max-w-md bg-white/90 backdrop-blur-2xl border border-slate-100 px-10 py-12 rounded-3xl shadow-2xl shadow-indigo-100/60 flex flex-col items-center relative z-10">
       
-      <!-- Logo 展示 -->
+      <!-- Logo 动态展示 -->
       <div class="w-36 h-36 mb-4 flex items-center justify-center relative">
         <img 
-          src="/logo.png" 
-          alt="SJKC LADANG GRISEK" 
+          :src="currentLogo || '/logo.png'" 
+          :alt="currentSchoolName" 
           class="w-full h-full object-contain relative z-10 rounded-2xl"
         />
       </div>
@@ -21,9 +21,9 @@
         智能教务统筹系统
       </h1>
       
-      <!-- 学校副标题 -->
-      <p class="text-xs font-extrabold tracking-[0.25em] text-slate-500 mt-2 uppercase mb-8">
-        SJKC LADANG GRISEK
+      <!-- 动态学校副标题 -->
+      <p class="text-xs font-extrabold tracking-[0.25em] text-slate-500 mt-2 uppercase mb-8 text-center">
+        {{ currentSchoolName }}
       </p>
 
       <!-- 登录表单 -->
@@ -87,7 +87,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '../services/supabase'
 import { useToast } from '../utils/toast'
@@ -98,6 +98,36 @@ const toast = useToast()
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
+
+// 动态学校名称与 Logo 状态
+const currentSchoolName = ref('SJKC LADANG GRISEK')
+const currentLogo = ref('/logo.png')
+
+// 页面加载时从本地缓存及 Supabase 云端同步最新校名与 Logo
+onMounted(async () => {
+  // 1. 优先读取本地缓存秒显
+  const cachedLogo = localStorage.getItem('school_logo')
+  const cachedName = localStorage.getItem('school_name')
+  if (cachedLogo && cachedLogo.trim() !== '') currentLogo.value = cachedLogo
+  if (cachedName && cachedName.trim() !== '') currentSchoolName.value = cachedName
+
+  // 2. 从 Supabase 实时拉取最新配置
+  try {
+    const { data, error } = await supabase.from('school_settings').select('*').eq('id', 1).single()
+    if (data) {
+      if (data.school_name) {
+        currentSchoolName.value = data.school_name
+        localStorage.setItem('school_name', data.school_name)
+      }
+      if (data.logo_url && data.logo_url.trim() !== '') {
+        currentLogo.value = data.logo_url
+        localStorage.setItem('school_logo', data.logo_url)
+      }
+    }
+  } catch (err) {
+    console.error('❌ 登录页同步学校信息失败:', err)
+  }
+})
 
 const handleLogin = async () => {
   loading.value = true
