@@ -943,7 +943,7 @@ const exportFullBackup = async () => {
   }
 }
 
-// 📥 恢复全量系统备份（Supabase 云端版）
+// 📥 恢复全量系统备份（WebApp 云端专用 - 兼容本地与云端JSON）
 const importFullBackup = async (event) => {
   const file = event.target.files[0]
   if (!file) return
@@ -953,45 +953,95 @@ const importFullBackup = async (event) => {
     return
   }
 
+  toast.info("开始读取并校验备份文件...")
   const reader = new FileReader()
+  
   reader.onload = async (e) => {
     try {
-      const backupPackage = JSON.parse(e.target.result)
-      if (!backupPackage.data) {
-        throw new Error("备份文件格式不正确")
+      const raw = JSON.parse(e.target.result)
+      let d = {}
+
+      // 1. 自动兼容两种备份格式
+      if (raw.data) {
+        d = raw.data // 格式1：本地打包备份
+      } else if (typeof raw === 'object' && !Array.isArray(raw)) {
+        d = raw      // 格式2：Supabase裸导出
+      } else {
+        throw new Error("文件格式不支持，仅支持系统完整备份或全站导出JSON")
       }
 
-      const d = backupPackage.data
-
-      if (d.schoolSettings && d.schoolSettings.length > 0) {
+      // 2. 批量 upsert，带有智能数据清洗（防止本地字段污染云端）
+      
+      if (Array.isArray(d.schoolSettings) && d.schoolSettings.length > 0) {
         await supabase.from('school_settings').upsert(d.schoolSettings)
       }
-      if (d.classes && d.classes.length > 0) {
+      
+      if (Array.isArray(d.classes) && d.classes.length > 0) {
         await supabase.from('classes').upsert(d.classes)
       }
-      if (d.teachers && d.teachers.length > 0) {
-        await supabase.from('teachers').upsert(d.teachers)
-      }
-      if (d.schoolWeeks && d.schoolWeeks.length > 0) {
-        await supabase.from('school_weeks').upsert(d.schoolWeeks)
-      }
-      if (d.subjectTargets && d.subjectTargets.length > 0) {
-        await supabase.from('subject_targets').upsert(d.subjectTargets)
-      }
-      if (d.timetable && d.timetable.length > 0) {
-        await supabase.from('timetable').upsert(d.timetable)
+
+      if (Array.isArray(d.teachers) && d.teachers.length > 0) {
+        // 🌟 清洗教师表：剔除云端不需要的本地账号/密码字段，兼容节数字段
+        const cleanTeachers = d.teachers.map(t => ({
+          id: t.id,
+          name: t.name,
+          max_substitute_per_week: t.max_substitute_per_week || t.max_lessons_per_day || 6,
+          is_active: t.is_active ?? true,
+          session: t.session || 'morning'
+        }))
+        await supabase.from('teachers').upsert(cleanTeachers)
       }
 
-      toast.success("系统数据恢复成功！页面即将刷新...")
+      if (Array.isArray(d.schoolWeeks) && d.schoolWeeks.length > 0) {
+        // 🌟 清洗周历：确保 is_school_week 绝对是 boolean 类型
+        const cleanWeeks = d.schoolWeeks.map(w => ({
+          ...w,
+          is_school_week: (w.is_school_week === true || w.is_school_week === 1 || w.is_school_week === 'true')
+        }))
+        await supabase.from('school_weeks').upsert(cleanWeeks)
+      }
+
+      if (Array.isArray(d.subjectTargets) && d.subjectTargets.length > 0) {
+        await supabase.from('subject_targets').upsert(d.subjectTargets)
+      }
+
+      if (Array.isArray(d.timetable) && d.timetable.length > 0) {
+        // 🌟 清洗课表：统一字段名 (云端是 weekday, period)
+        const cleanTimetable = d.timetable.map(tt => ({
+          id: tt.id,
+          teacher_id: tt.teacher_id,
+          class_name: tt.class_name || tt.class_id, 
+          subject: tt.subject || tt.subject_name,
+          weekday: tt.weekday || tt.day_of_week,
+          period: tt.period || tt.period_number
+        }))
+        await supabase.from('timetable').upsert(cleanTimetable)
+      }
+
+      // 可选扩展表
+      if (Array.isArray(d.leaveRequests) && d.leaveRequests.length > 0) {
+        await supabase.from('leave_requests').upsert(d.leaveRequests)
+      }
+      if (Array.isArray(d.substituteAssignments) && d.substituteAssignments.length > 0) {
+        await supabase.from('substitute_assignments').upsert(d.substituteAssignments)
+      }
+      if (Array.isArray(d.mmiInterruptions) && d.mmiInterruptions.length > 0) {
+        await supabase.from('mmi_interruptions').upsert(d.mmiInterruptions)
+      }
+
+      toast.success("云端系统数据恢复成功！页面即将刷新...")
       setTimeout(() => {
         window.location.reload()
       }, 1000)
+      
     } catch (err) {
-      toast.error("恢复备份失败（文件可能损坏）: " + err.message)
+      console.error("导入完整错误详情：", err)
+      toast.error("恢复失败（可能存在字段冲突）: " + err.message)
     } finally {
-      event.target.value = ''
+      event.target.value = '' // 清除文件缓存，允许重复点击
     }
   }
+  
   reader.readAsText(file)
 }
 </script>

@@ -291,7 +291,7 @@
             <hr class="border-slate-200" />
 
             <div>
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">✨ 智能推荐候选列表（Top 3）</h3>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">✨ 智能推荐候选列表（Top 6）</h3>
               
               <div v-if="loading" class="flex flex-col items-center justify-center py-6 space-y-3">
                 <div class="w-6 h-6 border-4 border-indigo-500/30 border-t-indigo-600 rounded-full animate-spin"></div>
@@ -314,14 +314,12 @@
                         <span class="text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">{{ teacher.subject }}</span>
                       </div>
                       <div class="text-[11px] text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
-                        <span>得分: <span class="font-bold text-indigo-600">{{ teacher.score }}</span></span>
-                        <span>·</span>
-                        <span>本身原排: <span class="font-bold text-slate-700">{{ teacher.originalClasses }}节</span></span>
+                        <span>原有节数: <span class="font-bold text-slate-700">{{ teacher.originalClasses }}节</span></span>
                         <span>·</span>
                         <span>当天已代: <span class="font-bold text-orange-600">{{ teacher.todaySubCount }}节</span></span>
                         <span>·</span>
-                        <span>本周代: <span class="font-bold text-slate-700">{{ teacher.currentSubCount }}/{{ teacher.max_substitute_per_week }}</span></span>
-                      </div>
+                        <span>本周已代: <span class="font-bold text-slate-700">{{ teacher.currentSubCount }}/{{ teacher.max_substitute_per_week }}</span></span>
+                      </div>    
                     </div>
                   </div>
                   <button @click="assignSubstitute(teacher.id)" class="bg-slate-900 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer">

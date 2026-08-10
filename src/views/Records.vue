@@ -104,8 +104,14 @@
                     <div class="text-[10px] uppercase leading-tight whitespace-normal break-words font-bold px-0.5">
                       {{ displayTeachersList[slotIndex - 1].name }}
                     </div>
-                    <div v-if="displayTeachersList[slotIndex - 1].reason" class="text-[8px] text-slate-500 font-normal mt-0.5 truncate">
-                      ({{ displayTeachersList[slotIndex - 1].reason }})
+                    <div v-if="displayTeachersList[slotIndex - 1].reason" class="mt-0.5 flex flex-col items-center text-slate-500 font-normal w-full px-0.5">
+                      <span 
+                        v-for="(word, wIndex) in displayTeachersList[slotIndex - 1].reason.trim().split(/\s+/)" 
+                        :key="wIndex" 
+                        class="text-[6.5px] leading-none tracking-tighter text-center max-w-full break-words"
+                      >
+                        {{ wIndex === 0 ? '(' : '' }}{{ word }}{{ wIndex === displayTeachersList[slotIndex - 1].reason.trim().split(/\s+/).length - 1 ? ')' : '' }}
+                      </span>
                     </div>
                   </td>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]" style="width: 80px;">KELAS</td>
@@ -209,7 +215,7 @@
             <hr class="border-slate-200" />
 
             <div>
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">✨ 智能推荐候选列表（Top 3）</h3>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">✨ 智能推荐候选列表（Top 6）</h3>
               
               <div v-if="loadingRecs" class="flex flex-col items-center justify-center py-6 space-y-3">
                 <div class="w-6 h-6 border-4 border-indigo-500/30 border-t-indigo-600 rounded-full animate-spin"></div>
@@ -231,13 +237,11 @@
                         {{ teacher.name }} 
                       </div>
                       <div class="text-[11px] text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
-                        <span>得分: <span class="font-bold text-indigo-600">{{ teacher.score }}</span></span>
-                        <span>·</span>
-                        <span>本身原排: <span class="font-bold text-slate-700">{{ teacher.originalClasses }}节</span></span>
+                        <span>原有节数: <span class="font-bold text-slate-700">{{ teacher.originalClasses }}节</span></span>
                         <span>·</span>
                         <span>当天已代: <span class="font-bold text-orange-600">{{ teacher.todaySubCount }}节</span></span>
                         <span>·</span>
-                        <span>本周代: <span class="font-bold text-slate-700">{{ teacher.currentSubCount }}/{{ teacher.max_substitute_per_week }}</span></span>
+                        <span>本周已代: <span class="font-bold text-slate-700">{{ teacher.currentSubCount }}/{{ teacher.max_substitute_per_week }}</span></span>
                       </div>
                     </div>
                   </div>

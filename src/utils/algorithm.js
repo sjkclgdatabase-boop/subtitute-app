@@ -126,6 +126,25 @@ export async function recommendSubstitute(leaveRequest) {
     score += (5 - currentWeeklySubCount);
     score -= totalClassesToday * 2;
 
+    // 行政人员狂扣 1000 分，强制沉底
+    if (teacher.is_admin) {
+      score -= 1000;
+    }
+
+    // 👇 新增：辅导老师与普通老师的每日上限保护（软限制） 👇
+    if (teacher.is_counselor) {
+      // 辅导老师：当天已代课 >= 4 节时，强行扣分沉底
+      if (todaySubCount >= 4) {
+        score -= 500;
+      }
+    } else {
+      // 普通老师：当天已代课 >= 1 节时，强行扣分沉底
+      if (todaySubCount >= 1) {
+        score -= 500;
+      }
+    }
+    // 👆 新增结束 👆
+
     candidates.push({ 
       ...teacher, 
       currentSubCount: currentWeeklySubCount, 
@@ -137,5 +156,5 @@ export async function recommendSubstitute(leaveRequest) {
   }
 
   candidates.sort((a, b) => b.score - a.score || a.originalClasses - b.originalClasses);
-  return candidates.slice(0, 3);
+  return candidates.slice(0, 6);
 }

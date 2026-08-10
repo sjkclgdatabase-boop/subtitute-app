@@ -85,7 +85,17 @@
             </td>
           </tr>
           <tr v-for="t in filteredTeachers" :key="t.id" class="hover:bg-slate-50/80 transition border-b border-slate-50 last:border-none">
-            <td class="p-4 font-semibold text-slate-800">{{ t.name }}</td>
+            <td class="p-4 font-semibold text-slate-800">
+              {{ t.name }}
+              <!-- 行政人员标签 -->
+              <span v-if="t.is_admin" class="ml-2 px-2 py-0.5 bg-rose-100 text-rose-700 rounded-md text-[10px] font-bold tracking-widest">
+                行政
+              </span>
+              <!-- 新增：辅导老师标签 -->
+              <span v-if="t.is_counselor" class="ml-2 px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-md text-[10px] font-bold tracking-widest">
+                辅导
+              </span>
+            </td>
             <td class="p-4 text-slate-600">{{ t.subject || '-' }}</td>
             <td class="p-4">
               <span :class="t.session === 'afternoon' ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'" class="px-3 py-1 rounded-full text-xs font-bold">
@@ -108,7 +118,7 @@
 
     <!-- 新增模态框 -->
     <div v-if="showModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div class="bg-white p-6 rounded-3xl w-full max-w-sm shadow-2xl ring-1 ring-slate-900/10">
+      <div class="bg-white p-6 rounded-3xl w-full max-w-sm shadow-2xl ring-1 ring-slate-900/10 max-h-[90vh] overflow-y-auto">
         <h2 class="text-lg font-bold text-slate-900 mb-4">新增教师</h2>
         
         <div class="space-y-3">
@@ -131,6 +141,31 @@
             <label class="block text-xs font-semibold text-slate-500 mb-1">每周代课上限 (节)</label>
             <input v-model.number="form.max_substitute_per_week" type="number" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50" />
           </div>
+
+          <!-- 行政人员开关 -->
+          <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl mt-2">
+            <div>
+              <label class="block text-sm font-semibold text-slate-700">设为行政人员</label>
+              <p class="text-[10px] text-slate-500 mt-0.5">排课时将其优先权降至最低(沉底)</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" v-model="form.is_admin" class="sr-only peer">
+              <div class="w-9 h-5 bg-slate-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-500"></div>
+            </label>
+          </div>
+
+          <!-- 新增：辅导老师开关 -->
+          <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl mt-2">
+            <div>
+              <label class="block text-sm font-semibold text-slate-700">设为辅导老师</label>
+              <p class="text-[10px] text-slate-500 mt-0.5">每日智能代课限制放宽至 4 节</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" v-model="form.is_counselor" class="sr-only peer">
+              <div class="w-9 h-5 bg-slate-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+            </label>
+          </div>
+
         </div>
 
         <div class="mt-6 flex gap-3">
@@ -204,7 +239,8 @@ const teachers = ref([])
 const showModal = ref(false)
 const currentSession = ref('morning')
 
-const form = ref({ name: '', subject: '', max_substitute_per_week: 5, session: 'morning', is_active: true })
+// 新增了 is_admin 和 is_counselor
+const form = ref({ name: '', subject: '', max_substitute_per_week: 5, session: 'morning', is_active: true, is_admin: false, is_counselor: false })
 
 // 📊 上传百分比进度条状态
 const uploadProgress = ref({
@@ -270,8 +306,9 @@ const fetchTeachers = async () => {
   if (data) teachers.value = data
 }
 
+// 模板更新：增加 is_admin 和 is_counselor
 const downloadTemplate = () => {
-  const csvContent = "name,subject,max_substitute_per_week,session\n张三,华文,5,morning\n李四,数学,8,afternoon"
+  const csvContent = "name,subject,max_substitute_per_week,session,is_admin,is_counselor\n张三,华文,5,morning,false,false\n李四(副校长),数学,8,afternoon,true,false\n王五(辅导),B&K,10,morning,false,true"
   const blob = new Blob(['\ufeff', csvContent], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
   
@@ -290,7 +327,8 @@ const saveTeacher = async () => {
   else {
     toast.success("添加成功")
     showModal.value = false
-    form.value = { name: '', subject: '', max_substitute_per_week: 5, session: 'morning', is_active: true }
+    // 保存后重置所有字段，包含 is_admin 和 is_counselor
+    form.value = { name: '', subject: '', max_substitute_per_week: 5, session: 'morning', is_active: true, is_admin: false, is_counselor: false }
     fetchTeachers()
   }
 }
@@ -337,12 +375,15 @@ const handleCsvUpload = async (e) => {
         rawSession = 'morning'
       }
 
+      // 新增解析 is_admin 和 is_counselor
       const teacherPayload = {
         name: trimmedName,
         subject: row.subject ? String(row.subject).trim() : '',
         max_substitute_per_week: parseInt(row.max_substitute_per_week || 5),
         session: rawSession,
-        is_active: true
+        is_active: true,
+        is_admin: row.is_admin ? (String(row.is_admin).trim().toLowerCase() === 'true' || String(row.is_admin).trim() === '1' || row.is_admin === '是') : false,
+        is_counselor: row.is_counselor ? (String(row.is_counselor).trim().toLowerCase() === 'true' || String(row.is_counselor).trim() === '1' || row.is_counselor === '是') : false
       }
 
       const existingTeacher = teachers.value.find(t => t.name.trim() === trimmedName)
