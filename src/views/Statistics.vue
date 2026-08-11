@@ -92,7 +92,7 @@
         :class="currentTab === 'affectedTeacher' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'"
         class="px-4 py-2 rounded-xl text-xs font-bold transition-all"
       >
-        📉 高负荷教师排行  (前 5)
+        📉 教师课堂干扰统计 (前 5)
       </button>
       <button 
         @click="currentTab = 'teacher'" 
@@ -347,7 +347,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onActivated } from 'vue'
 import { supabase } from '../services/supabase'
 
 const currentTab = ref('overview')
@@ -422,11 +422,29 @@ const resetDateFilter = () => {
   loadAllData()
 }
 
-// 🔄 数据加载函数
+// 🔄 数据加载函数（双表融合精准版）
 const loadAllData = async () => {
   const { data: teachers } = await supabase.from('teachers').select('*')
-  const { data: assignments } = await supabase.from('substitute_assignments').select('sub_teacher_id')
+  
+  // 1. 获取代课记录（为了剔除 swap 换课）
+  let assignQuery = supabase
+    .from('substitute_assignments')
+    .select('sub_teacher_id, assignment_type, leave_request_id, leave_requests!inner(leave_date)')
 
+  if (startDate.value) assignQuery = assignQuery.gte('leave_requests.leave_date', startDate.value)
+  if (endDate.value) assignQuery = assignQuery.lte('leave_requests.leave_date', endDate.value)
+
+  const { data: assignments } = await assignQuery
+
+  // 将所有换课(swap)的 leave_request_id 存起来
+  const swapLeaveIds = new Set()
+  assignments?.forEach(a => {
+    if (a.assignment_type === 'swap' && a.leave_request_id) {
+      swapLeaveIds.add(a.leave_request_id)
+    }
+  })
+
+  // 2. 获取 MMI 记录
   let mmiQuery = supabase.from('mmi_interruptions').select('*')
   if (startDate.value) mmiQuery = mmiQuery.gte('interruption_date', startDate.value)
   if (endDate.value) mmiQuery = mmiQuery.lte('interruption_date', endDate.value)
@@ -434,6 +452,13 @@ const loadAllData = async () => {
 
   if (mmiData) interruptionLogs.value = mmiData
 
+  // 3. 获取这段时间内的精准请假记录 (leave_requests)
+  let leaveQuery = supabase.from('leave_requests').select('*')
+  if (startDate.value) leaveQuery = leaveQuery.gte('leave_date', startDate.value)
+  if (endDate.value) leaveQuery = leaveQuery.lte('leave_date', endDate.value)
+  const { data: leaveData } = await leaveQuery
+
+  // ================== 开始统计 ==================
   const teacherMap = {}
   const teacherNameSet = new Set()
   
@@ -442,10 +467,14 @@ const loadAllData = async () => {
     teacherNameSet.add(t.name.trim().toUpperCase())
   })
 
+  // 教师代课量统计 (过滤 swap)
   assignments?.forEach(a => {
-    if (teacherMap[a.sub_teacher_id]) teacherMap[a.sub_teacher_id].count++
+    if (a.assignment_type !== 'swap' && a.sub_teacher_id && teacherMap[a.sub_teacher_id]) {
+      teacherMap[a.sub_teacher_id].count++
+    }
   })
 
+  // 教师受干扰量统计 (基于 MMI)
   const teacherInterruptionMap = {}
   mmiData?.forEach(l => {
     let rawTarget = (l.target_display || '').trim()
@@ -464,9 +493,9 @@ const loadAllData = async () => {
     interruptedCount: teacherInterruptionMap[t.name.trim().toUpperCase()] || 0
   }))
 
+  // MMI 项目占比分析与高峰日期
   if (mmiData) {
-    const totalPAll = interruptionLogs.value.reduce((acc, cur) => acc + ((cur.end_period || 0) - (cur.start_period || 0) + 1), 0)
-    
+    const totalPAll = mmiData.reduce((acc, cur) => acc + ((cur.end_period || 0) - (cur.start_period || 0) + 1), 0)
     const reasons = {}
     mmiData.forEach(l => { const pCount = (l.end_period || 0) - (l.start_period || 0) + 1; reasons[l.reason] = (reasons[l.reason] || 0) + pCount })
     reasonStats.value = Object.entries(reasons).map(([reason, count]) => ({ reason, count, percentage: totalPAll > 0 ? ((count / totalPAll) * 100).toFixed(1) : 0 })).sort((a, b) => b.count - a.count)
@@ -475,20 +504,81 @@ const loadAllData = async () => {
     const daysCount = {}
     mmiData.forEach(l => { const dIndex = new Date(l.interruption_date).getDay() || 7; const dName = dayNames[dIndex] || '其他'; const pCount = (l.end_period || 0) - (l.start_period || 0) + 1; daysCount[dName] = (daysCount[dName] || 0) + pCount })
     dayOfWeekStats.value = ['星期一', '星期二', '星期三', '星期四', '星期五'].map(day => ({ day, count: daysCount[day] || 0, percentage: totalPAll > 0 ? (((daysCount[day] || 0) / totalPAll) * 100).toFixed(1) : 0 }))
-
-    const classMap = {}
-    mmiData.forEach(l => { let rawTarget = (l.target_display || '').trim(); if (rawTarget.includes('教师') || teacherNameSet.has(rawTarget.toUpperCase())) return; const cName = rawTarget || '全校/未指定'; const pCount = (l.end_period || 0) - (l.start_period || 0) + 1; classMap[cName] = (classMap[cName] || 0) + pCount })
-    classStats.value = Object.entries(classMap).map(([className, totalPeriods]) => ({ className, totalPeriods, percentage: totalPAll > 0 ? ((totalPeriods / totalPAll) * 100).toFixed(1) : 0 })).sort((a, b) => b.totalPeriods - a.totalPeriods)
-
-    const subjectMap = {}
-    mmiData.forEach(l => { const remarks = l.remarks || ''; const matches = remarks.match(/\((.*?)\)/g); if (matches) { matches.forEach(m => { let sub = m.replace(/[()]/g, '').trim(); if (sub && !sub.includes('涉及节次') && !sub.includes('自动同步') && !sub.includes('请假')) subjectMap[sub] = (subjectMap[sub] || 0) + 1 }) } })
-    subjectStats.value = Object.entries(subjectMap).map(([subjectName, totalPeriods]) => ({ subjectName, totalPeriods })).sort((a, b) => b.totalPeriods - a.totalPeriods)
-    
-    affectedTeacherStats.value = stats.value.filter(t => t.interruptedCount > 0).map(t => ({ teacherName: t.name, totalPeriods: t.interruptedCount })).sort((a, b) => b.totalPeriods - a.totalPeriods)
   }
+
+  // ================== 核心升级：双表融合计算班级和科目干扰 ==================
+  const classMap = {}
+  const subjectMap = {}
+  let totalClassPeriods = 0
+
+  // 步骤A：融入单纯的班级活动 (来自 MMI 表)
+  mmiData?.forEach(l => { 
+    let rawTarget = (l.target_display || '').trim(); 
+    // 忽略属于教师请假的记录，后面用请假表精准算
+    if (rawTarget.includes('教师') || teacherNameSet.has(rawTarget.toUpperCase())) return; 
+    
+    const pCount = (l.end_period || 0) - (l.start_period || 0) + 1; 
+    
+    // 如果录入时包含多个班级 (如 "班级: 3A, 3B")，拆解开来
+    if (rawTarget.startsWith('班级:')) {
+      const cNames = rawTarget.replace('班级:', '').split(',');
+      cNames.forEach(c => {
+        const cleanC = c.trim();
+        if (cleanC) {
+          classMap[cleanC] = (classMap[cleanC] || 0) + pCount;
+          totalClassPeriods += pCount;
+        }
+      });
+    } else {
+      const cName = rawTarget || '全校/未指定'; 
+      classMap[cName] = (classMap[cName] || 0) + pCount; 
+      totalClassPeriods += pCount;
+    }
+  })
+
+  // 步骤B：融入教师请假对班级的冲击 (来自 leave_requests 表)
+  leaveData?.forEach(req => {
+    // 🚨 剔除换课：如果是换课就不算班级损失和科目损失！
+    if (swapLeaveIds.has(req.id)) return;
+
+    // 计算班级损失 (自动拆解合班 3E/3F)
+    const cNames = req.class_name ? req.class_name.split('/') : ['未知班级'];
+    cNames.forEach(c => {
+      const cleanName = c.trim();
+      if (cleanName) {
+        classMap[cleanName] = (classMap[cleanName] || 0) + 1; // 一条记录就是1节课
+        totalClassPeriods += 1;
+      }
+    })
+
+    // 计算科目损失
+    const sub = req.subject ? req.subject.trim() : '未知科目';
+    if (sub && sub !== '未知科目') {
+      subjectMap[sub] = (subjectMap[sub] || 0) + 1;
+    }
+  })
+
+  // 渲染视图数据
+  classStats.value = Object.entries(classMap)
+    .map(([className, totalPeriods]) => ({ 
+      className, 
+      totalPeriods, 
+      percentage: totalClassPeriods > 0 ? ((totalPeriods / totalClassPeriods) * 100).toFixed(1) : 0 
+    }))
+    .sort((a, b) => b.totalPeriods - a.totalPeriods)
+
+  subjectStats.value = Object.entries(subjectMap)
+    .map(([subjectName, totalPeriods]) => ({ subjectName, totalPeriods }))
+    .sort((a, b) => b.totalPeriods - a.totalPeriods)
+  
+  affectedTeacherStats.value = stats.value.filter(t => t.interruptedCount > 0).map(t => ({ teacherName: t.name, totalPeriods: t.interruptedCount })).sort((a, b) => b.totalPeriods - a.totalPeriods)
 }
 
 onMounted(loadAllData)
+
+onActivated(() => {
+  loadAllData()
+})
 
 // 🖨️ 默认强制 A4 纵向 (Portrait) 打印
 const exportSinglePdf = () => {

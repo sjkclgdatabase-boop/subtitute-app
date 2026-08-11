@@ -369,8 +369,8 @@ const loadTeacherSubjects = async () => {
         const existing = periodMap.get(s.period)
         if (!existing.class_name.includes(s.class_name)) {
           existing.class_name = `${existing.class_name}/${s.class_name}`
+          existing.is_combined = true // ✅ 移到这里面来，只有当班级名字真的不同并拼接时，才算合班！
         }
-        existing.is_combined = true
       }
     })
 

@@ -119,15 +119,17 @@
                     {{ getTeacherPeriodData(displayTeachersList[slotIndex - 1].id, p, 'class_subject') }}
                   </td>
                 </tr>
-                <!-- 第二行：GURU GANTI -->
+                <!-- 第二行：GURU GANTI (已修改：无课格子不显示编辑状态) -->
                 <tr>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]">GURU GANTI</td>
                   <td v-for="p in currentPeriodTimes.length" :key="p" 
-                      @click="handleCellClick(displayTeachersList[slotIndex - 1].id, p)"
-                      class="print:hover:bg-transparent border border-black p-1 font-bold text-indigo-900 align-middle h-8 overflow-hidden text-[11px] cursor-pointer hover:bg-indigo-50 transition group relative">
+                      @click="hasLeavePeriod(displayTeachersList[slotIndex - 1].id, p) ? handleCellClick(displayTeachersList[slotIndex - 1].id, p) : null"
+                      :class="hasLeavePeriod(displayTeachersList[slotIndex - 1].id, p) ? 'cursor-pointer hover:bg-indigo-50 group' : ''"
+                      class="print:hover:bg-transparent border border-black p-1 font-bold text-indigo-900 align-middle h-8 overflow-hidden text-[11px] transition relative">
                     <div class="w-full h-full flex items-center justify-center">
+                      <!-- 此处会渲染老师姓名，并自动判断是否显示(换课)字眼 -->
                       <span>{{ getTeacherPeriodData(displayTeachersList[slotIndex - 1].id, p, 'substitute_name') }}</span>
-                      <span class="print:hidden hidden group-hover:inline-block text-[9px] text-indigo-500 ml-1">✏️</span>
+                      <span v-if="hasLeavePeriod(displayTeachersList[slotIndex - 1].id, p)" class="print:hidden hidden group-hover:inline-block text-[9px] text-indigo-500 ml-1">✏️</span>
                     </div>
                   </td>
                 </tr>
@@ -138,20 +140,39 @@
                 </tr>
               </template>
 
-              <!-- 若该槽位没有请假老师，渲染完全空白的占位行（不显示任何字，直接留空） -->
+              <!-- 若该槽位没有请假老师，渲染完全空白的占位行（支持云端草稿本记忆功能） -->
               <template v-else>
                 <tr>
-                  <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8" rowspan="3" style="width: 120px;"></td>
+                  <!-- 左侧缺席老师名字框 -->
+                  <td contenteditable="true" 
+                      @blur="saveManualEntry(slotIndex, 'name', 0, $event)" 
+                      v-text="getManualEntry(slotIndex, 'name', 0)" 
+                      class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors" rowspan="3" style="width: 120px;"></td>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]" style="width: 80px;">KELAS</td>
-                  <td v-for="p in currentPeriodTimes.length" :key="p" class="border border-black p-1 align-middle h-8"></td>
+                  <!-- KELAS 格子 -->
+                  <td v-for="p in currentPeriodTimes.length" :key="'kelas-'+p" 
+                      contenteditable="true" 
+                      @blur="saveManualEntry(slotIndex, 'kelas', p, $event)" 
+                      v-text="getManualEntry(slotIndex, 'kelas', p)" 
+                      class="border border-black p-1 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[11px] font-semibold"></td>
                 </tr>
                 <tr>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]">GURU GANTI</td>
-                  <td v-for="p in currentPeriodTimes.length" :key="p" class="border border-black p-1 align-middle h-8"></td>
+                  <!-- GURU GANTI 格子 -->
+                  <td v-for="p in currentPeriodTimes.length" :key="'ganti-'+p" 
+                      contenteditable="true" 
+                      @blur="saveManualEntry(slotIndex, 'ganti', p, $event)" 
+                      v-text="getManualEntry(slotIndex, 'ganti', p)" 
+                      class="border border-black p-1 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[11px] font-bold text-indigo-900"></td>
                 </tr>
                 <tr>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[8px] whitespace-nowrap">T/TANGAN</td>
-                  <td v-for="p in currentPeriodTimes.length" :key="p" class="border border-black p-1 align-middle h-8"></td>
+                  <!-- T/TANGAN 格子 -->
+                  <td v-for="p in currentPeriodTimes.length" :key="'ttangan-'+p" 
+                      contenteditable="true" 
+                      @blur="saveManualEntry(slotIndex, 'ttangan', p, $event)" 
+                      v-text="getManualEntry(slotIndex, 'ttangan', p)" 
+                      class="border border-black p-1 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors"></td>
                 </tr>
               </template>
 
@@ -177,6 +198,21 @@
           </div>
           
           <div class="p-8 bg-slate-50/50 space-y-6 overflow-y-auto">
+
+            <!-- ⭐️ 新增：任务指派性质选择 -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+              <h3 class="text-xs font-bold text-slate-700 mb-3 uppercase tracking-wider">🏷️ 指派性质:</h3>
+              <div class="flex flex-col sm:flex-row gap-4">
+                <label class="flex items-center gap-2 cursor-pointer bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 hover:bg-indigo-50 transition">
+                  <input type="radio" v-model="assignmentType" value="substitute" class="text-indigo-600 focus:ring-indigo-500 w-4 h-4" />
+                  <span class="text-sm font-semibold text-slate-800">正式代课 <span class="text-xs text-slate-400 font-normal ml-1">(计入负荷统计)</span></span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 hover:bg-indigo-50 transition">
+                  <input type="radio" v-model="assignmentType" value="swap" class="text-indigo-600 focus:ring-indigo-500 w-4 h-4" />
+                  <span class="text-sm font-semibold text-slate-800">对调换课 <span class="text-xs text-slate-400 font-normal ml-1">(不计入统计)</span></span>
+                </label>
+              </div>
+            </div>
             
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
               <span class="text-xs font-bold text-slate-700 whitespace-nowrap">📍 地点/特殊备注:</span>
@@ -227,7 +263,12 @@
               </div>
 
               <div v-else class="space-y-3">
-                <div v-for="(teacher, index) in recommendations" :key="teacher.id" class="group flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-white border border-slate-200 rounded-2xl hover:border-indigo-300 hover:shadow-sm transition-all">
+                <div v-for="(teacher, index) in recommendations" 
+                    :key="teacher.id" 
+                    :class="[
+                      'group flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-white border border-slate-200 rounded-2xl hover:border-indigo-300 hover:shadow-sm transition-all',
+                      { 'force-page-break': (index + 1) % 5 === 0 }
+                    ]">
                   <div class="flex items-center gap-3 mb-3 sm:mb-0">
                     <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-100 to-violet-100 text-indigo-700 font-extrabold flex items-center justify-center text-xs">
                       #{{ index + 1 }}
@@ -253,7 +294,7 @@
             </div>
 
             <div v-if="currentLeaveItem && substituteAssignmentsMap[currentLeaveItem.id]" class="pt-2 border-t border-slate-100 flex justify-between items-center">
-              <span class="text-xs text-red-500 font-medium">当前格子已有代课安排</span>
+              <span class="text-xs text-red-500 font-medium">当前格子已有代课/换课安排</span>
               <button @click="removeAssignment" class="text-xs text-red-600 hover:text-red-800 font-bold px-3 py-1 bg-red-50 rounded-lg">
                 取消当前指派
               </button>
@@ -263,6 +304,96 @@
         </div>
       </div>
     </transition>
+
+    <!-- ========================================== -->
+<!-- ⭐️ 动态附加的空白可编辑附页区域（支持无限新增，打印时自动换页） -->
+<!-- ========================================== -->
+<div v-for="(sheet, sIndex) in extraCustomSheets" :key="sheet.id" class="print-custom-sheet mt-12 pt-8 border-t-4 border-dashed border-slate-300">
+  
+  <!-- 网页端专属操作栏：打印时自动隐藏 -->
+  <div class="print:hidden flex justify-between items-center mb-4 bg-amber-50 p-3 rounded-2xl border border-amber-200">
+    <span class="text-xs font-bold text-amber-900">📄 附加自定义手写/编辑备用表 #{{ sIndex + 1 }}</span>
+    <button @click="removeCustomSheet(sheet.id)" class="text-xs text-red-600 bg-white hover:bg-red-50 px-3 py-1.5 rounded-xl font-bold shadow-sm transition">
+      删除此附页
+    </button>
+  </div>
+
+  <!-- 预览/打印专属区域：完美复刻官方 JADUAL GURU GANTI 表格版式 -->
+  <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 print:shadow-none print:ring-0 print:p-0 print:rounded-none">
+    
+    <!-- 表头区域 -->
+    <div class="text-center mb-6">
+      <h2 class="text-xl font-black tracking-wider text-black font-serif">SJK (C) LADANG GRISEK</h2>
+      <h3 class="text-lg font-bold tracking-widest text-black mt-1 font-serif underline">
+        JADUAL GURU GANTI ({{ currentSession === 'morning' ? 'SESI PAGI' : 'SESI PETANG' }})
+      </h3>
+    </div>
+
+    <!-- 日期与星期栏（可直接点击编辑或打印手写） -->
+    <div class="flex justify-between items-center mb-4 font-bold text-sm font-serif border-b-2 border-black pb-2">
+      <div>
+        <span class="underline underline-offset-4">TARIKH :</span> 
+        <input v-model="sheet.date" type="text" placeholder="输入日期" class="ml-2 border-b border-black px-2 py-0.5 text-sm font-normal w-32 focus:outline-none" />
+      </div>
+      <div>
+        <span class="underline underline-offset-4">HARI :</span> 
+        <input v-model="sheet.day" type="text" placeholder="输入星期" class="ml-2 border-b border-black px-2 py-0.5 text-sm font-normal w-28 uppercase focus:outline-none" />
+      </div>
+    </div>
+
+    <!-- 核心矩阵表格（1:1 克隆你官方表的 5 行槽位和 11 节次结构） -->
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse border-2 border-black text-center text-xs font-serif table-fixed">
+        <thead>
+          <tr class="bg-slate-100 print:bg-white">
+            <th class="border border-black p-1 w-28 font-bold" colspan="2">MASA</th>
+            <th v-for="(time, index) in currentPeriodTimes" :key="index" class="border border-black p-1">
+              <div class="font-bold">{{ index + 1 }}</div>
+              <div class="text-[7px] font-normal mt-0.5 truncate">{{ time }}</div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <template v-for="slotIndex in 5" :key="slotIndex">
+            <tr>
+              <!-- 左侧缺席老师名字框（可直接在线编辑） -->
+              <td contenteditable="true" 
+                  class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors" 
+                  rowspan="3" style="width: 120px;"></td>
+              <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]" style="width: 80px;">KELAS</td>
+              <!-- KELAS 格子 -->
+              <td v-for="p in currentPeriodTimes.length" :key="'kelas-'+p" 
+                  contenteditable="true" 
+                  class="border border-black p-1 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[11px] font-semibold"></td>
+            </tr>
+            <tr>
+              <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]">GURU GANTI</td>
+              <!-- GURU GANTI 格子 -->
+              <td v-for="p in currentPeriodTimes.length" :key="'ganti-'+p" 
+                  contenteditable="true" 
+                  class="border border-black p-1 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[11px] font-bold text-indigo-900"></td>
+            </tr>
+            <tr>
+              <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[8px] whitespace-nowrap">T/TANGAN</td>
+              <!-- T/TANGAN 格子 -->
+              <td v-for="p in currentPeriodTimes.length" :key="'ttangan-'+p" 
+                  contenteditable="true" 
+                  class="border border-black p-1 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors"></td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- ⭐️ 放置在最底部的增加按钮（网页可见，打印时自动隐藏） -->
+<div class="print:hidden mt-8 mb-12 flex justify-center">
+  <button @click="addBlankSheet" class="flex items-center gap-2 bg-slate-900 hover:bg-indigo-600 text-white px-6 py-3 rounded-2xl text-xs font-bold shadow-md transition-all">
+    <span class="text-base font-extrabold">+</span> 增加一张官方版空白代课备用表
+  </button>
+</div>
 
   </div>
 </template>
@@ -300,6 +431,7 @@ const loadingRecs = ref(false)
 const recommendations = ref([])
 const currentLeaveItem = ref(null)
 const assignmentRemark = ref('')
+const assignmentType = ref('substitute') // ⭐️ 新增：默认是正式代课
 const manualSelectedTeacherId = ref('')
 
 // ⚡ 自动排课加载状态
@@ -330,7 +462,59 @@ const displayTeachersList = computed(() => {
   return Object.values(map)
 })
 
+// ================= 新增：草稿本逻辑 =================
+const manualEntries = ref({})
+
+const fetchManualDrafts = async () => {
+  manualEntries.value = {} 
+  try {
+    const { data, error } = await supabase
+      .from('jadual_manual_drafts')
+      .select('draft_data')
+      .eq('target_date', targetDate.value)
+      .eq('session', currentSession.value)
+      .maybeSingle() 
+    
+    if (data && data.draft_data) {
+      manualEntries.value = data.draft_data
+    }
+  } catch (err) {
+    console.error("读取草稿失败:", err)
+  }
+}
+
+const saveManualEntry = async (slotIndex, type, period, event) => {
+  const text = event.target.innerText.trim()
+  const key = `${slotIndex}-${type}-${period}`
+  
+  if (manualEntries.value[key] === text) return;
+  
+  manualEntries.value[key] = text
+
+  try {
+    const { error } = await supabase
+      .from('jadual_manual_drafts')
+      .upsert({ 
+        target_date: targetDate.value,
+        session: currentSession.value,
+        draft_data: manualEntries.value
+      }, { onConflict: 'target_date,session' }) 
+      
+    if (error) throw error
+  } catch (err) {
+    console.error("保存临时草稿失败:", err)
+  }
+}
+
+const getManualEntry = (slotIndex, type, period) => {
+  const key = `${slotIndex}-${type}-${period}`
+  return manualEntries.value[key] || ''
+}
+// ==================================================
+
 const fetchData = async () => {
+  await fetchManualDrafts()
+
   const { data: tData } = await supabase.from('teachers').select('*')
   if (tData) {
     tData.forEach(t => { teachersMap.value[t.id] = t })
@@ -363,6 +547,10 @@ const fetchData = async () => {
   }
 }
 
+const hasLeavePeriod = (teacherId, periodNum) => {
+  return leaveRequests.value.some(r => r.teacher_id === teacherId && Number(r.period) === Number(periodNum))
+}
+
 const getTeacherPeriodData = (teacherId, periodNum, type) => {
   const leaveItem = leaveRequests.value.find(r => r.teacher_id === teacherId && Number(r.period) === Number(periodNum))
   if (!leaveItem) return ''
@@ -374,14 +562,20 @@ const getTeacherPeriodData = (teacherId, periodNum, type) => {
   if (type === 'substitute_name') {
     const subItem = substituteAssignmentsMap.value[leaveItem.id]
     if (!subItem || !subItem.sub_teacher_id) return ''
+    
     const subTeacher = teachersMap.value[subItem.sub_teacher_id]
-    const name = subTeacher ? subTeacher.name : ''
+    let name = subTeacher ? subTeacher.name : ''
+    
+    // ⭐️ 视觉提示：如果是换课，自动加上标记，方便打印识别
+    if (subItem.assignment_type === 'swap') {
+      name += ' (换课)'
+    }
+    
     return subItem.remark ? `${name} (${subItem.remark})` : name
   }
   return ''
 }
 
-// 点击矩阵格子触发
 const handleCellClick = async (teacherId, periodNum) => {
   const leaveItem = leaveRequests.value.find(r => r.teacher_id === teacherId && Number(r.period) === Number(periodNum))
   if (!leaveItem) {
@@ -392,11 +586,13 @@ const handleCellClick = async (teacherId, periodNum) => {
   currentLeaveItem.value = leaveItem
   assignmentRemark.value = ''
   manualSelectedTeacherId.value = ''
+  assignmentType.value = 'substitute' // 每次点开默认是代课
 
   const existingSub = substituteAssignmentsMap.value[leaveItem.id]
   if (existingSub) {
     assignmentRemark.value = existingSub.remark || ''
     manualSelectedTeacherId.value = existingSub.sub_teacher_id || ''
+    assignmentType.value = existingSub.assignment_type || 'substitute' // ⭐️ 读取之前选择的类型
   }
 
   showModal.value = true
@@ -425,17 +621,23 @@ const handleCellClick = async (teacherId, periodNum) => {
   }
 }
 
-// 指派保存
 const assignSubstitute = async (teacherId) => {
   if (!teacherId || !currentLeaveItem.value) return
   try {
     const leaveId = currentLeaveItem.value.id
     const existing = substituteAssignmentsMap.value[leaveId]
 
+    // ⭐️ 保存时带上 assignment_type
+    const payload = {
+      sub_teacher_id: teacherId, 
+      remark: assignmentRemark.value ? assignmentRemark.value.trim() : null,
+      assignment_type: assignmentType.value 
+    }
+
     if (existing) {
       const { error } = await supabase
         .from('substitute_assignments')
-        .update({ sub_teacher_id: teacherId, remark: assignmentRemark.value ? assignmentRemark.value.trim() : null })
+        .update(payload)
         .eq('id', existing.id)
       if (error) throw error
     } else {
@@ -443,15 +645,14 @@ const assignSubstitute = async (teacherId) => {
         .from('substitute_assignments')
         .insert({
           leave_request_id: leaveId,
-          sub_teacher_id: teacherId,
-          remark: assignmentRemark.value ? assignmentRemark.value.trim() : null
+          ...payload
         })
       if (error) throw error
     }
 
     await supabase.from('leave_requests').update({ status: 'assigned' }).eq('id', leaveId)
 
-    toast.success("代课指派成功！")
+    toast.success(assignmentType.value === 'swap' ? "换课指派成功！" : "代课指派成功！")
     showModal.value = false
     fetchData()
   } catch (err) {
@@ -459,7 +660,6 @@ const assignSubstitute = async (teacherId) => {
   }
 }
 
-// 移除指派
 const removeAssignment = async () => {
   if (!currentLeaveItem.value) return
   try {
@@ -505,7 +705,8 @@ const handleAutoAssignAll = async () => {
           .insert({
             leave_request_id: req.id,
             sub_teacher_id: bestTeacherId,
-            remark: null
+            remark: null,
+            assignment_type: 'substitute' // 自动排课永远按“正式代课”算
           })
         
         if (!insertErr) {
@@ -535,16 +736,67 @@ onMounted(() => {
 const handlePrint = () => {
   window.print()
 }
+
+// ⭐️ 改用一个对象来分别记录上午班和下午班各自的附页列表
+const sessionCustomSheets = ref({
+  morning: [],
+  afternoon: []
+})
+
+// 当前显示的附页列表（根据当前 session 自动切换）
+const extraCustomSheets = computed(() => {
+  return sessionCustomSheets.value[currentSession.value] || []
+})
+
+// 添加空白表（自动区分当前是 morning 还是 afternoon）
+const addBlankSheet = () => {
+  sessionCustomSheets.value[currentSession.value].push({
+    id: Date.now(),
+    date: '',
+    day: '',
+  })
+}
+
+// 删除对应班次的某张附页
+const removeCustomSheet = (id) => {
+  const list = sessionCustomSheets.value[currentSession.value]
+  const index = list.findIndex(sheet => sheet.id === id)
+  if (index !== -1) {
+    list.splice(index, 1)
+  }
+}
+
 </script>
 
+<!-- 在你的 .vue 文件中，直接这样写： -->
+
 <style scoped>
+/* 你的组件内部私有样式保留在这里 */
+/* 例如: .my-table { width: 100%; } */
+</style>
+
+<style>
 @media print {
   @page {
-    size: A4 landscape;
-    margin: 10mm;
+    size: A4 landscape !important;
+    margin: 5mm !important;
   }
+  
   body {
-    background: white;
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* 1. 之前设定的：每满 5 个老师自动切新页 */
+  .force-page-break {
+    break-after: page !important;
+    page-break-after: always !important;
+  }
+
+  /* 2. 新增的：让每一张动态新增的自定义附页强制在新的一页打印 */
+  .print-custom-sheet {
+    break-before: page !important;
+    page-break-before: always !important;
   }
 }
 </style>

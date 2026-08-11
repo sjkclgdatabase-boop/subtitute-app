@@ -303,7 +303,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onActivated } from 'vue'
 import { supabase } from '../services/supabase'
 import { useToast } from '../utils/toast'
 
@@ -407,11 +407,10 @@ const uniqueSubjects = computed(() => {
   return Array.from(subs)
 })
 
-// 🚀 核心破解武器：无限分页获取数据函数，彻底突破 Supabase 1000 条硬限制！
 const fetchAllRows = async (tableName) => {
   let allData = []
   let from = 0
-  const limit = 1000 // 每次安全拉取 1000 条
+  const limit = 1000 
   
   while (true) {
     const { data, error } = await supabase
@@ -422,7 +421,6 @@ const fetchAllRows = async (tableName) => {
     if (error) throw error
     if (data) allData.push(...data)
     
-    // 如果拿到的数据少于 1000 条，说明拿到底了，立刻停止循环
     if (!data || data.length < limit) break
     from += limit
   }
@@ -444,12 +442,9 @@ const loadAnalyticsData = async () => {
     const { data: weeks } = await supabase.from('school_weeks').select('*').order('week_number', { ascending: true })
     allSchoolWeeks.value = weeks || []
 
-    // 🌟 用分页函数拉取超大数据表，保证每一条数据都不会漏掉！
     const timetables = await fetchAllRows('timetable')
     const interruptions = await fetchAllRows('mmi_interruptions')
     const leaveRequests = await fetchAllRows('leave_requests')
-
-    console.log(`【系统日志】分页防截断机制成功！拉取完整排课表条数: ${timetables.length} 条`)
 
     const teacherMap = {}
     if (teachers) {
@@ -481,9 +476,7 @@ const loadAnalyticsData = async () => {
         const expected = Number((totalTarget * currentRatio).toFixed(1))
         const standardizedTargetSubject = standardizeSubjectName(t.subject_name)
 
-        let assignedTeacherName = ''
-        let assignedTeacherId = null
-
+        // ⭐️ 核心升级：支持多位老师共同执教同一门合班课
         const matchedEntries = enrichedTimetables.filter(item => {
           const itemClass = cleanString(item.class_name)
           const clsName = cleanString(cls.class_name)
@@ -494,11 +487,9 @@ const loadAnalyticsData = async () => {
           return isSubjectMatch(rawSubj, standardizedTargetSubject)
         })
 
-        if (matchedEntries.length > 0) {
-          const validEntry = matchedEntries.find(e => e.resolved_teacher_name) || matchedEntries[0]
-          assignedTeacherName = validEntry.resolved_teacher_name || ''
-          assignedTeacherId = validEntry.teacher_id || validEntry.teacher_info?.id || null
-        }
+        const assignedTeacherNames = [...new Set(matchedEntries.map(e => e.resolved_teacher_name).filter(Boolean))]
+        const assignedTeacherIds = [...new Set(matchedEntries.map(e => e.teacher_id || e.teacher_info?.id).filter(Boolean))]
+        const assignedTeacherName = assignedTeacherNames.length > 0 ? assignedTeacherNames.join(' / ') : '未指派'
 
         let lostCount = 0
 
@@ -509,15 +500,35 @@ const loadAnalyticsData = async () => {
             const isClassMatched = reqClass === clsName || reqClass.includes(clsName) || clsName.includes(reqClass)
             const isSubjMatched = isSubjectMatch(req.subject, standardizedTargetSubject)
 
-            const reqTeacherName = cleanString(req.teacher_name)
-            const curTeacherName = cleanString(assignedTeacherName)
-
+            // ⭐️ 核心升级：只要请假老师是该合班课多位老师中的任意一位，即告匹配
+            const reqTeacherNameClean = cleanString(req.teacher_name)
             const isTeacherMatched = 
-              (assignedTeacherId && req.teacher_id && String(req.teacher_id) === String(assignedTeacherId)) ||
-              (curTeacherName && reqTeacherName && curTeacherName === reqTeacherName)
+              assignedTeacherIds.some(id => req.teacher_id && String(req.teacher_id) === String(id)) ||
+              assignedTeacherNames.some(name => reqTeacherNameClean && cleanString(name) === reqTeacherNameClean)
 
             if (isTeacherMatched && isClassMatched && isSubjMatched) {
-              lostCount += 1
+              if (req.leave_date) {
+                const leaveDateObj = new Date(req.leave_date)
+                const leaveWeekday = leaveDateObj.getDay()
+                
+                const hasClassOnThatDay = enrichedTimetables.some(item => {
+                  const itemClass = cleanString(item.class_name)
+                  const itemSubj = item.subject || item.subject_name || item.teacher_info?.subject_name || ''
+                  const itemWeekday = Number(item.weekday)
+                  
+                  const matchCls = itemClass === clsName || itemClass.includes(clsName) || clsName.includes(itemClass)
+                  const matchSubj = isSubjectMatch(itemSubj, standardizedTargetSubject)
+                  const matchWd = itemWeekday === leaveWeekday || itemWeekday === (leaveWeekday === 0 ? 7 : leaveWeekday)
+                  
+                  return matchCls && matchSubj && matchWd
+                })
+
+                if (hasClassOnThatDay) {
+                  lostCount += 1
+                }
+              } else {
+                lostCount += 1
+              }
             }
           })
         }
@@ -533,12 +544,15 @@ const loadAnalyticsData = async () => {
               const intClass = cleanString(int.class_name)
               const clsName = cleanString(cls.class_name)
 
+              const intDate = new Date(int.interruption_date)
+              const intWeekday = intDate.getDay()
+
               const isClassAffected = 
                 intScope === 'all' || 
                 targetDisp.includes('全校') ||
                 (intScope === 'grade' && intGrade === Number(cls.grade)) ||
                 targetDisp.includes(`Tahun ${cls.grade}`) ||
-                (intScope === 'class' && (intClass.includes(clsName) || clsName.includes(intClass))) ||
+                (intScope === 'class' && (intClass.includes(clsName) || clsName.includes(inClass || ''))) ||
                 targetDisp.includes(clsName)
 
               if (isClassAffected) {
@@ -546,12 +560,14 @@ const loadAnalyticsData = async () => {
                   const itemClass = cleanString(item.class_name)
                   const itemPeriod = Number(item.period)
                   const rawSubj = item.subject || item.subject_name || item.teacher_info?.subject_name || ''
+                  const itemWeekday = Number(item.weekday)
 
                   const matchClass = itemClass === clsName || itemClass.includes(clsName) || clsName.includes(itemClass)
                   const matchPeriod = itemPeriod >= startP && itemPeriod <= endP
                   const matchSubject = isSubjectMatch(rawSubj, standardizedTargetSubject)
+                  const matchWeekday = itemWeekday === intWeekday || itemWeekday === (intWeekday === 0 ? 7 : intWeekday)
 
-                  return matchClass && matchPeriod && matchSubject
+                  return matchClass && matchPeriod && matchSubject && matchWeekday
                 })
 
                 lostCount += affectedPeriods.length
@@ -580,7 +596,7 @@ const loadAnalyticsData = async () => {
     }
 
     analysisList.value = results
-    toast.success("分析中心数据已刷新！")
+    toast.success("多师合班分析数据已精准刷新！")
   } catch (err) {
     console.error("加载分析数据异常:", err)
     toast.error("加载数据失败: " + err.message)
@@ -687,6 +703,10 @@ const deleteTarget = async (id) => {
 }
 
 onMounted(() => {
+  loadAnalyticsData()
+})
+
+onActivated(() => {
   loadAnalyticsData()
 })
 </script>

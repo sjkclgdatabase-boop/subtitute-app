@@ -292,8 +292,8 @@ const fetchDailyTimetable = async () => {
         const existing = periodMap.get(cls.period)
         if (!existing.class_name.includes(cls.class_name)) {
           existing.class_name = `${existing.class_name}/${cls.class_name}`
+          existing.is_combined = true // ✅ 已经移到这里面了！
         }
-        existing.is_combined = true
       }
     })
 
