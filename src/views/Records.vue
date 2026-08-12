@@ -568,7 +568,7 @@ const getTeacherPeriodData = (teacherId, periodNum, type) => {
     
     // ⭐️ 视觉提示：如果是换课，自动加上标记，方便打印识别
     if (subItem.assignment_type === 'swap') {
-      name += ' (换课)'
+      name += ' ✦'
     }
     
     return subItem.remark ? `${name} (${subItem.remark})` : name
