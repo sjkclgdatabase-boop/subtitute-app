@@ -165,7 +165,16 @@
                   {{ item.gap >= 0 ? '+' + item.gap : item.gap }} 节
                 </td>
                 <td class="py-3 px-4 text-center font-bold">
-                  {{ item.status }}
+                  <span 
+                    class="px-2.5 py-1 rounded-lg text-xs"
+                    :class="{
+                      'bg-red-50 text-red-700': item.status === '未达目标',
+                      'bg-emerald-50 text-emerald-700': item.status === '超过目标',
+                      'bg-slate-100 text-slate-700': item.status === '已达目标'
+                    }"
+                  >
+                    {{ item.status }}
+                  </span>
                 </td>
               </tr>
             </tbody>
@@ -465,18 +474,22 @@ const loadAnalyticsData = async () => {
       }
     })
 
+    // 🌟 动态计算当前的真实上课周数
+    const today = new Date().toISOString().split('T')[0]
+    const currentWeek = (weeks || []).filter(w => w.is_school_week && w.end_date <= today).length || 27
+// 🌟 新增：动态计算全年有效的总上课周数（保底默认为 42 周）
+    const validWeeksCount = (weeks || []).filter(w => w.is_school_week).length
+    const totalSchoolWeeks = validWeeksCount > 0 ? validWeeksCount : 42
     let results = []
-    const currentRatio = progressRatio.value
     
     for (const cls of (classes || [])) {
       const gradeTargets = (targets || []).filter(t => Number(t.grade) === Number(cls.grade))
 
       for (const t of gradeTargets) {
         const totalTarget = t.planned_periods || 215 
-        const expected = Number((totalTarget * currentRatio).toFixed(1))
         const standardizedTargetSubject = standardizeSubjectName(t.subject_name)
 
-        // ⭐️ 核心升级：支持多位老师共同执教同一门合班课
+        // ⭐️ 核心升级：支持多位老师共同执教同一门合班课，且包含名称智能匹配
         const matchedEntries = enrichedTimetables.filter(item => {
           const itemClass = cleanString(item.class_name)
           const clsName = cleanString(cls.class_name)
@@ -491,8 +504,13 @@ const loadAnalyticsData = async () => {
         const assignedTeacherIds = [...new Set(matchedEntries.map(e => e.teacher_id || e.teacher_info?.id).filter(Boolean))]
         const assignedTeacherName = assignedTeacherNames.length > 0 ? assignedTeacherNames.join(' / ') : '未指派'
 
+        // 🌟 核心修复：利用 Set 按“星期-节次”去重，完美解决双师同堂导致节数 Double 的问题！
+        const uniquePeriods = new Set(matchedEntries.map(e => `${e.weekday}-${e.period}`))
+        const weeklyPeriods = uniquePeriods.size
+
         let lostCount = 0
 
+        // 完整保留：请假干扰损失计算
         if (leaveRequests && leaveRequests.length > 0) {
           leaveRequests.forEach(req => {
             const reqClass = cleanString(req.class_name)
@@ -500,7 +518,6 @@ const loadAnalyticsData = async () => {
             const isClassMatched = reqClass === clsName || reqClass.includes(clsName) || clsName.includes(reqClass)
             const isSubjMatched = isSubjectMatch(req.subject, standardizedTargetSubject)
 
-            // ⭐️ 核心升级：只要请假老师是该合班课多位老师中的任意一位，即告匹配
             const reqTeacherNameClean = cleanString(req.teacher_name)
             const isTeacherMatched = 
               assignedTeacherIds.some(id => req.teacher_id && String(req.teacher_id) === String(id)) ||
@@ -533,6 +550,7 @@ const loadAnalyticsData = async () => {
           })
         }
 
+        // 完整保留：班级级干扰损失计算
         if (interruptions && interruptions.length > 0) {
           interruptions.forEach(int => {
             if (int.type === 'class') {
@@ -552,7 +570,7 @@ const loadAnalyticsData = async () => {
                 targetDisp.includes('全校') ||
                 (intScope === 'grade' && intGrade === Number(cls.grade)) ||
                 targetDisp.includes(`Tahun ${cls.grade}`) ||
-                (intScope === 'class' && (intClass.includes(clsName) || clsName.includes(inClass || ''))) ||
+                (intScope === 'class' && (intClass.includes(clsName) || clsName.includes(intClass || ''))) ||
                 targetDisp.includes(clsName)
 
               if (isClassAffected) {
@@ -576,9 +594,32 @@ const loadAnalyticsData = async () => {
           })
         }
 
-        const actual = Math.max(0, Number((expected - lostCount).toFixed(1)))
-        const gap = Number((actual - expected).toFixed(1))
-        const status = actual >= (expected * 0.8) ? '达标' : '未达标'
+        // ==========================================================
+        // 🎯 核心计算逻辑：基于你的确切要求
+        // ==========================================================
+        
+        // 1. 计划累计 = 当前周次(27) * 每周固定节数(支持合班)
+        const plannedAccumulated = currentWeek * weeklyPeriods
+
+        // 2. 实际执行 = 计划累计 - 受干扰损失
+        const actual = Math.max(0, Number((plannedAccumulated - lostCount).toFixed(1)))
+        
+        // 3. 理论应到进度 (教育部标准线) = KPM小时 × (当前周次 / 当年动态总周数)
+        const moeTarget = t.kpm_min_hours || 160
+        const theoryProgress = Math.round(moeTarget * (currentWeek / totalSchoolWeeks))
+        
+        // 4. 差距 = 实际执行节数 - 理论应到进度
+        const gap = Number((actual - theoryProgress).toFixed(1))
+        
+        // 5. 严格的三段式状态判定
+        let status = '已达目标'
+        if (gap < 0) {
+          status = '未达目标'
+        } else if (gap > 0) {
+          status = '超过目标'
+        } else {
+          status = '已达目标'
+        }
 
         results.push({
           grade: cls.grade,
@@ -586,7 +627,7 @@ const loadAnalyticsData = async () => {
           subject_name: t.subject_name,
           teacher_name: assignedTeacherName,
           target: totalTarget,
-          expected: expected,
+          expected: theoryProgress, // 报表上显示的“理论应到进度”
           lostCount: lostCount,
           actual: actual,
           gap: gap,
@@ -596,7 +637,7 @@ const loadAnalyticsData = async () => {
     }
 
     analysisList.value = results
-    toast.success("多师合班分析数据已精准刷新！")
+    toast.success("数据分析已精准刷新！")
   } catch (err) {
     console.error("加载分析数据异常:", err)
     toast.error("加载数据失败: " + err.message)
@@ -635,8 +676,10 @@ const filteredAnalysisList = computed(() => {
 
 const analysisSummary = computed(() => {
   const total = filteredAnalysisList.value.length
-  const met = filteredAnalysisList.value.filter(i => i.status === '达标').length
-  const unmet = total - met
+  // 🌟 修改点 1：精确匹配“已达目标”和“超过目标”
+  const met = filteredAnalysisList.value.filter(i => i.status === '已达目标' || i.status === '超过目标').length
+  // 🌟 修改点 2：明确统计“未达目标”
+  const unmet = filteredAnalysisList.value.filter(i => i.status === '未达目标').length
   return { total, met, unmet }
 })
 
@@ -647,8 +690,9 @@ const completionRate = computed(() => {
 
 const getGradeStats = (g) => {
   const list = filteredAnalysisList.value.filter(i => Number(i.grade) === Number(g))
-  const met = list.filter(i => i.status === '达标').length
-  const unmet = list.length - met
+  // 🌟 修改点 3：同步修改图表数据里的状态匹配
+  const met = list.filter(i => i.status === '已达目标' || i.status === '超过目标').length
+  const unmet = list.filter(i => i.status === '未达目标').length
   return { met, unmet, total: list.length }
 }
 
