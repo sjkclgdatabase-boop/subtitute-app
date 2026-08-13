@@ -237,10 +237,9 @@
       </button>
     </div>
 
-    <!-- ⭐️ 优化版：干扰日志历史记录表格区 (集成顶部筛选器、列宽固定、弹窗与导出) -->
+    <!-- ⭐️ 优化版：干扰日志历史记录表格区 -->
     <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5">
       
-      <!-- 头部工具栏：标题 + 筛选区 + 导出按钮 -->
       <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
         <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
           <span>📊 MMI 干扰事件历史记录表</span>
@@ -249,29 +248,24 @@
           </span>
         </h2>
 
-        <!-- 筛选与搜索控件区 -->
         <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-          <!-- 按类型筛选 -->
           <select v-model="typeFilter" class="bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none">
             <option value="all">所有类型</option>
             <option value="class">班级干扰</option>
             <option value="teacher">教师干扰</option>
           </select>
 
-          <!-- 1. 快捷时间范围筛选 -->
           <select v-model="dateRangeFilter" class="bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none">
             <option value="all">所有时间范围</option>
             <option value="week">📅 本周 (最近 7 天)</option>
             <option value="month">📅 本月 (当前月份)</option>
           </select>
 
-          <!-- 2. 独立出来的按月份筛选 -->
           <select v-model="selectedMonth" class="bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none">
             <option value="all">🗓️ 所有月份 (全年)</option>
             <option v-for="m in 12" :key="m" :value="String(m)">{{ m }} 月</option>
           </select>
 
-          <!-- 关键词搜索框 -->
           <div class="relative flex-1 sm:w-48">
             <input 
               type="text" 
@@ -281,7 +275,6 @@
             />
           </div>
 
-          <!-- 导出按钮 -->
           <button 
             @click="exportLogsToExcel" 
             class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
@@ -291,13 +284,10 @@
         </div>
       </div>
 
-      <!-- 核心表格：固定宽度 + 自适应布局 -->
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse text-sm table-fixed">
           <thead>
             <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-widest font-semibold border-b border-slate-100 select-none">
-              
-              <!-- 日期表头 (保持靠左) -->
               <th @click="handleSort('interruption_date')" class="py-3 px-4 w-36 cursor-pointer hover:bg-slate-100 transition">
                 <div class="flex items-center justify-start gap-1">
                   <span>日期</span>
@@ -306,8 +296,6 @@
                   </span>
                 </div>
               </th>
-
-              <!-- 事件类型表头 (居中) -->
               <th @click="handleSort('type')" class="p-3 w-28 cursor-pointer hover:bg-slate-100 transition">
                 <div class="flex items-center justify-center gap-1">
                   <span>事件类型</span>
@@ -316,8 +304,6 @@
                   </span>
                 </div>
               </th>
-
-              <!-- 影响对象表头 (居中) -->
               <th @click="handleSort('target_display')" class="p-3 w-100 cursor-pointer hover:bg-slate-100 transition">
                 <div class="flex items-center justify-center gap-1">
                   <span>影响对象 / 范围</span>
@@ -326,8 +312,6 @@
                   </span>
                 </div>
               </th>
-
-              <!-- 受影响节次表头 (居中) -->
               <th @click="handleSort('start_period')" class="p-3 w-32 cursor-pointer hover:bg-slate-100 transition">
                 <div class="flex items-center justify-center gap-1">
                   <span>受影响节次</span>
@@ -336,8 +320,6 @@
                   </span>
                 </div>
               </th>
-
-              <!-- 干扰原因表头 (居中) -->
               <th @click="handleSort('reason')" class="p-3 min-w-[180px] cursor-pointer hover:bg-slate-100 transition">
                 <div class="flex items-center justify-center gap-1">
                   <span>干扰原因</span>
@@ -346,8 +328,6 @@
                   </span>
                 </div>
               </th>
-
-              <!-- 操作表头 (改为居中) -->
               <th class="p-3 w-20 text-center">操作</th>
             </tr>
           </thead>
@@ -358,30 +338,20 @@
               </td>
             </tr>
             <tr v-for="log in filteredLogs" :key="log.id" class="hover:bg-slate-50/50 transition">
-              
-              <!-- 日期列 (保持靠左) -->
               <td class="py-3 px-4 w-36 font-bold text-slate-900 truncate">{{ log.interruption_date }}</td>
-              
-              <!-- 事件类型列 (已居中) -->
               <td class="p-3 text-center truncate">
                 <span :class="log.type === 'class' ? 'bg-indigo-50 text-indigo-700' : 'bg-violet-50 text-violet-700'" class="px-2.5 py-1 rounded-full text-xs font-bold inline-block">
                   {{ log.type === 'class' ? '班级干扰' : '教师干扰' }}
                 </span>
               </td>
-              
-              <!-- 影响对象/范围列 (保持靠左) -->
               <td class="p-3 font-semibold text-slate-800 truncate" :title="log.target_display">
                 {{ log.target_display }}
               </td>
-              
-              <!-- 受影响节次列 (已居中) -->
               <td class="p-3 text-center truncate">
                 <span class="bg-slate-100 px-2.5 py-0.5 rounded text-xs text-slate-600 font-medium inline-block">
                   第 {{ log.start_period }} - {{ log.end_period }} 节
                 </span>
               </td>
-              
-              <!-- 干扰原因：查看详情按钮 (已居中) -->
               <td class="p-3 text-center truncate">
                 <span v-if="!log.reason || log.reason === '-'">-</span>
                 <button 
@@ -393,8 +363,6 @@
                   <span>🔍</span>
                 </button>
               </td>
-              
-              <!-- 操作列 (保持靠右) -->
               <td class="p-3 text-right truncate">
                 <button @click="deleteLog(log)" class="text-xs text-red-600 hover:text-red-800 font-semibold px-2 py-1 bg-red-50 rounded-lg cursor-pointer transition">
                   删除
@@ -413,7 +381,7 @@
           <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
             <span>📝 干扰事件详细说明</span>
           </h3>
-          <button @click="showDetailModal = false" class="text-slate-400 hover:text-slate-600 font-bold text-sm bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center">
+          <button @click="showDetailModal = false" class="text-slate-400 hover:text-slate-600 font-bold text-sm bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center cursor-pointer">
             ✕
           </button>
         </div>
@@ -427,14 +395,33 @@
             <span class="font-bold text-slate-400 block mb-1">⚠️ 干扰原因：</span>
             <span class="font-semibold text-slate-900">{{ currentDetailLog?.reason }}</span>
           </div>
+          
+          <!-- ⭐️ 统一UI版：完整备注与自动同步课程内容 -->
           <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
             <span class="font-bold text-indigo-900 block mb-1">📄 完整备注与自动同步课程内容：</span>
-            <p class="text-slate-800 leading-relaxed font-medium whitespace-pre-wrap">{{ currentDetailLog?.remarks }}</p>
+            
+            <!-- 如果是教师干扰，直接显示原来的 remarks -->
+            <p v-if="currentDetailLog?.type === 'teacher'" class="text-slate-800 leading-relaxed font-medium whitespace-pre-wrap">
+              {{ currentDetailLog?.remarks }}
+            </p>
+            
+            <!-- 如果是班级干扰，将 remarks 与排课数据融为一体 -->
+            <div v-if="currentDetailLog?.type === 'class'" class="text-slate-800 leading-relaxed font-medium whitespace-pre-wrap">
+              <!-- 先显示用户手写的备注（如果有的话） -->
+              <span v-if="currentDetailLog?.remarks">{{ currentDetailLog.remarks }}<br/><br/></span>
+              
+              <!-- 再紧接着显示自动排课数据，保持同一种颜色和字体 -->
+              <span v-if="loadingDetail" class="animate-pulse inline-flex items-center gap-1">
+                <svg class="animate-spin h-3 w-3 text-slate-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                正在匹配当日排课表...
+              </span>
+              <span v-else>{{ currentDetailAffectedClasses || '暂无受影响的排课数据' }}</span>
+            </div>
           </div>
         </div>
 
         <div class="flex justify-end">
-          <button @click="showDetailModal = false" class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-xl text-xs font-bold transition">
+          <button @click="showDetailModal = false" class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-xl text-xs font-bold transition cursor-pointer">
             关闭窗口
           </button>
         </div>
@@ -496,15 +483,13 @@ const loadingSubjects = ref(false)
 
 const interruptionLogs = ref([])
 
-// 筛选与搜索状态管理
 const searchQuery = ref('')
-const typeFilter = ref('all')         // 'all', 'class', 'teacher'
-const dateRangeFilter = ref('all')    // 'all', 'week', 'month'
-const selectedMonth = ref('all')      // 'all', '1', '2', ..., '12'
+const typeFilter = ref('all')         
+const dateRangeFilter = ref('all')    
+const selectedMonth = ref('all')      
 
-// ⭐️ 排序状态管理
-const sortField = ref('interruption_date') // 默认按日期排序
-const sortOrder = ref('desc')             // 'asc' 升序, 'desc' 降序
+const sortField = ref('interruption_date')
+const sortOrder = ref('desc')             
 
 const handleSort = (field) => {
   if (sortField.value === field) {
@@ -515,16 +500,74 @@ const handleSort = (field) => {
   }
 }
 
-// ⭐️ 详情弹窗状态
+// ⭐️ 详情弹窗状态 & 自动查课表所需状态
 const showDetailModal = ref(false)
 const currentDetailLog = ref(null)
+const currentDetailAffectedClasses = ref('')
+const loadingDetail = ref(false)
 
-const openDetailModal = (log) => {
+const openDetailModal = async (log) => {
   currentDetailLog.value = log
   showDetailModal.value = true
+  currentDetailAffectedClasses.value = ''
+
+  // 如果是班级干扰，实时匹配排课表
+  if (log.type === 'class') {
+    loadingDetail.value = true
+    try {
+      const { data: timetables, error } = await supabase.from('timetable').select('*')
+      if (error) throw error
+
+      if (timetables && timetables.length > 0) {
+        const logDate = new Date(log.interruption_date)
+        const weekdayNum = logDate.getDay() 
+        const startP = Number(log.start_period)
+        const endP = Number(log.end_period)
+        const targetDisp = log.target_display || ''
+
+        const matched = timetables.filter(t => {
+          const itemWeekday = Number(t.weekday)
+          const matchWd = itemWeekday === weekdayNum || itemWeekday === (weekdayNum === 0 ? 7 : weekdayNum)
+          if (!matchWd) return false
+
+          const p = Number(t.period)
+          if (p < startP || p > endP) return false
+
+          if (targetDisp.includes('全校')) return true
+          
+          if (targetDisp.includes('全年级')) {
+            const match = targetDisp.match(/Tahun (\d)/)
+            const grade = match ? match[1] : null
+            return grade && String(t.class_name).startsWith(grade)
+          }
+          
+          if (targetDisp.includes('班级:')) {
+            const classesStr = targetDisp.replace('班级:', '').trim()
+            const classList = classesStr.split(',').map(c => c.trim())
+            return classList.some(c => t.class_name === c || t.class_name.includes(c) || c.includes(t.class_name))
+          }
+          return false
+        })
+
+        if (matched.length > 0) {
+          matched.sort((a, b) => Number(a.period) - Number(b.period))
+          const periods = [...new Set(matched.map(m => m.period))].sort((a, b) => a - b).join(', ')
+          const classes = matched.map(m => `${m.class_name}(${m.subject || m.subject_name})`).join(', ')
+          
+          currentDetailAffectedClasses.value = `自动同步排课记录 (涉及节次: 第 ${periods} 节 | 课程: ${classes})`
+        } else {
+          currentDetailAffectedClasses.value = '该时段未排课或无受影响记录'
+        }
+      }
+    } catch (err) {
+      console.error("加载详情失败:", err)
+      currentDetailAffectedClasses.value = '加载受影响课程失败'
+    } finally {
+      loadingDetail.value = false
+    }
+  }
 }
 
-// ⭐️ 核心计算属性：组合筛选 + 搜索 + 点击表头排序
 const filteredLogs = computed(() => {
   const result = interruptionLogs.value.filter(log => {
     const query = searchQuery.value.toLowerCase().trim()
@@ -561,7 +604,6 @@ const filteredLogs = computed(() => {
     return matchesSearch && matchesType && matchesDateRange && matchesMonth
   })
 
-  // 排序执行
   return result.sort((a, b) => {
     let valA = a[sortField.value] || ''
     let valB = b[sortField.value] || ''
