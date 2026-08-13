@@ -5,7 +5,8 @@ export async function recommendSubstitute(leaveRequest) {
 
   // 0. 根据请假日期精准计算星期几（适配柔佛州学制：0=周日->1, 1=周一->2 ...）
   const dateObj = new Date(leave_date);
-  const weekday = dateObj.getDay() + 1;
+  const currentDayNum = dateObj.getDay();
+  const weekday = currentDayNum === 0 ? 7 : currentDayNum;
 
   // 1. 获取当前请假老师的班次（morning 或 afternoon）
   const { data: absentTeacher, error: absentErr } = await supabase

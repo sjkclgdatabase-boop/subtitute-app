@@ -400,9 +400,9 @@
           <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
             <span class="font-bold text-indigo-900 block mb-1">📄 完整备注与自动同步课程内容：</span>
             
-            <!-- 如果是教师干扰，直接显示原来的 remarks -->
+            <!-- 如果是教师干扰，直接显示原来的 remarks，并用 replace 魔法把旧数据的前缀擦除掉 -->
             <p v-if="currentDetailLog?.type === 'teacher'" class="text-slate-800 leading-relaxed font-medium whitespace-pre-wrap">
-              {{ currentDetailLog?.remarks }}
+              {{ currentDetailLog?.remarks?.replace('自动同步自请假录入 ', '') }}
             </p>
             
             <!-- 如果是班级干扰，将 remarks 与排课数据融为一体 -->
@@ -554,7 +554,7 @@ const openDetailModal = async (log) => {
           const periods = [...new Set(matched.map(m => m.period))].sort((a, b) => a - b).join(', ')
           const classes = matched.map(m => `${m.class_name}(${m.subject || m.subject_name})`).join(', ')
           
-          currentDetailAffectedClasses.value = `自动同步排课记录 (涉及节次: 第 ${periods} 节 | 课程: ${classes})`
+          currentDetailAffectedClasses.value = `(涉及节次: 第 ${periods} 节 | 课程: ${classes})`
         } else {
           currentDetailAffectedClasses.value = '该时段未排课或无受影响记录'
         }
@@ -720,7 +720,8 @@ const submitTeacherInterruption = async () => {
       start_period: startP,
       end_period: endP,
       reason: teacherForm.value.reason || '教师离校/受干扰',
-      remarks: `受影响课程: ${subjectSummary}`
+      // 🌟 统一成极简版括号格式
+      remarks: `(涉及节次: 第 ${periods.join(', ')} 节 | 课程: ${subjectSummary})`
     })
 
     if (error) throw error

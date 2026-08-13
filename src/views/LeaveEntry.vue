@@ -388,7 +388,8 @@ const submitLeaveRequests = async () => {
         end_period: maxPeriod,
         reason: `教师请假: ${leaveReason.value || '未填写'}`,
         target_display: `教师: ${teacherName}`,
-        remarks: `自动同步自请假录入 (涉及节次: 第 ${periodsForMMI.join(', ')} 节 | 课程: ${requests.map(c => `${c.class_name}(${c.subject})`).join(', ')})`
+        // 🌟 终极极简版：只保留括号和里面的节次、课程信息
+        remarks: `(涉及节次: 第 ${periodsForMMI.join(', ')} 节 | 课程: ${requests.map(c => `${c.class_name}(${c.subject})`).join(', ')})`
       }
 
       const { error: mmiError } = await supabase.from('mmi_interruptions').insert([mmiLogPayload])
