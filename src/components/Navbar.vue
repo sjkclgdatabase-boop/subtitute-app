@@ -7,9 +7,18 @@
         <img 
           :src="currentLogo" 
           alt="Logo" 
-          class="w-14 h-14 object-contain rounded-xl"
+          class="w-14 h-14 object-contain rounded-xl shadow-sm"
         />
-        <span class="font-bold text-lg tracking-tight text-slate-900">{{ currentSchoolName }}</span>
+        <div class="flex flex-col justify-center">
+          <!-- 上半部分：学校名字（从数据库读取） -->
+          <span class="font-extrabold text-lg tracking-tight text-slate-900 leading-tight">
+            {{ currentSchoolName }}
+          </span>
+          <!-- 下半部分：固定显示的系统名字（带点颜色点缀，更美观） -->
+          <span class="text-xs font-bold text-indigo-600 tracking-widest mt-0.5 uppercase">
+            智能教务统筹系统
+          </span>
+        </div>
       </div>
       
       <!-- PC 端导航链接 -->
