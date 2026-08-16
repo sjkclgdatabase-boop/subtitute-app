@@ -1,45 +1,47 @@
 <template>
-  <aside class="w-64 bg-white border-r border-slate-200 h-screen sticky top-0 flex flex-col shrink-0 z-40 print:hidden">
+  <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col h-screen sticky top-0 left-0 shrink-0 z-40 border-r border-slate-800 print:hidden shadow-xl">
     
     <!-- 顶部 Logo 与系统名称 -->
-    <div class="p-6 border-b border-slate-100 cursor-pointer" @click="router.push('/')">
-      <div class="flex items-center gap-3">
-        <img :src="currentLogo" alt="Logo" class="w-12 h-12 object-contain rounded-xl shadow-sm" />
-        <div class="flex flex-col">
-          <span class="font-extrabold text-sm text-slate-900 leading-tight truncate">{{ currentSchoolName }}</span>
-          <span class="text-[10px] font-bold text-indigo-600 mt-0.5 uppercase tracking-wider">智能教务统筹系统</span>
-        </div>
+    <div class="p-5 border-b border-slate-800 flex items-center gap-3 cursor-pointer select-none" @click="router.push('/')">
+      <img :src="currentLogo" alt="Logo" class="w-10 h-10 object-contain rounded-xl bg-slate-800 p-1 shadow-sm shrink-0" />
+      <div class="flex flex-col justify-center overflow-hidden">
+        <span class="font-extrabold text-xs tracking-tight text-white leading-tight truncate">{{ currentSchoolName }}</span>
+        <span class="text-[9px] font-bold text-indigo-400 mt-0.5 uppercase tracking-wider">智能教务统筹系统</span>
       </div>
     </div>
 
     <!-- 导航菜单 -->
-    <div class="flex-1 overflow-y-auto p-4 space-y-1">
+    <div class="flex-1 overflow-y-auto px-3 py-4 space-y-1.5 scrollbar-thin scrollbar-thumb-slate-700">
       <router-link 
         v-for="(item, index) in navItems" 
         :key="index"
         :to="item.path" 
-        class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all duration-200"
-        exact-active-class="!text-indigo-700 bg-indigo-50"
+        class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-800/80 group"
+        exact-active-class="!text-white bg-indigo-600 shadow-md shadow-indigo-600/20"
       >
-        {{ item.name }}
+        <span class="text-base shrink-0 group-hover:scale-110 transition-transform">{{ item.icon }}</span>
+        <span class="truncate">{{ item.name }}</span>
       </router-link>
     </div>
 
     <!-- 底部操作区 -->
-    <div class="p-4 border-t border-slate-100 space-y-2">
+    <div class="p-4 border-t border-slate-800 bg-slate-950/40 space-y-2">
       
       <!-- 切换到马来文版按钮 -->
-      <button @click="switchToMalay" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer">
+      <button @click="switchToMalay" class="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300 transition-colors cursor-pointer">
         <span>🌐</span>
-        Bahasa Melayu
+        <span>Bahasa Melayu</span>
       </button>
 
       <!-- 退出登录 -->
-      <button @click="logout" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer">
+      <button @click="logout" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors cursor-pointer">
+        <div class="flex items-center gap-2">
+          <span>🚪</span>
+          <span>退出登录</span>
+        </div>
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
         </svg>
-        退出登录
       </button>
     </div>
   </aside>
@@ -74,16 +76,17 @@ const loadIdentity = async () => {
 
 onMounted(loadIdentity)
 
+// 🚀 补充了与马来文版一致的 Icon 图标
 const navItems = [
-  { name: '调度总览', path: '/' },
-  { name: '教师请假登记', path: '/leave-entry' },
-  { name: '教师档案', path: '/teachers' },
-  { name: '全校课表', path: '/timetable' },
-  { name: '代课记录', path: '/records' },
-  { name: '统计报表', path: '/statistics' },
-  { name: 'MMI冲突干预', path: '/mmi-interruption' }, 
-  { name: '学科学情分析', path: '/subject-analysis' },
-  { name: '⚙️ 系统设置', path: '/settings' } 
+  { name: '调度总览', path: '/', icon: '📊' },
+  { name: '教师请假登记', path: '/leave-entry', icon: '📝' },
+  { name: '教师档案', path: '/teachers', icon: '👩‍🏫' },
+  { name: '全校课表', path: '/timetable', icon: '📅' },
+  { name: '代课记录', path: '/records', icon: '🔄' },
+  { name: '统计报表', path: '/statistics', icon: '📈' },
+  { name: 'MMI冲突干预', path: '/mmi-interruption', icon: '⚠️' }, 
+  { name: '学科学情分析', path: '/subject-analysis', icon: '🎯' },
+  { name: '系统设置', path: '/settings', icon: '⚙️' } 
 ]
 
 // 🚀 核心跳转逻辑：带上 Token 跳去马来文版
