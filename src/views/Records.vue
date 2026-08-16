@@ -100,18 +100,20 @@
               <template v-if="displayTeachersList[slotIndex - 1]">
                 <!-- 第一行：KELAS -->
                 <tr>
-                  <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center" rowspan="3" style="width: 120px;">
-                    <div class="text-[10px] uppercase leading-tight whitespace-normal break-words font-bold px-0.5">
-                      {{ displayTeachersList[slotIndex - 1].name }}
-                    </div>
-                    <div v-if="displayTeachersList[slotIndex - 1].reason" class="mt-0.5 flex flex-col items-center text-slate-500 font-normal w-full px-0.5">
-                      <span 
-                        v-for="(word, wIndex) in displayTeachersList[slotIndex - 1].reason.trim().split(/\s+/)" 
-                        :key="wIndex" 
-                        class="text-[6.5px] leading-none tracking-tighter text-center max-w-full break-words"
-                      >
-                        {{ wIndex === 0 ? '(' : '' }}{{ word }}{{ wIndex === displayTeachersList[slotIndex - 1].reason.trim().split(/\s+/).length - 1 ? ')' : '' }}
+                  <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center" rowspan="3" style="width: 120px; max-width: 120px;">
+                    <!-- 用 flex 垂直排列，并且强制 overflow-hidden 防撑破 -->
+                    <div class="flex flex-col items-center justify-center w-full px-0.5 overflow-hidden">
+                      
+                      <!-- 第一行：老师名字 -->
+                      <span class="text-[10px] font-bold text-slate-900 truncate w-full text-center uppercase">
+                        {{ displayTeachersList[slotIndex - 1].name }}
                       </span>
+                      
+                      <!-- 第二行：地点/原因 (去掉了原来复杂的拆字逻辑，直接用 truncate) -->
+                      <span v-if="displayTeachersList[slotIndex - 1].reason" class="text-[8.5px] font-normal text-slate-500 truncate w-full text-center tracking-tighter mt-0.5 uppercase">
+                        ({{ displayTeachersList[slotIndex - 1].reason }})
+                      </span>
+                      
                     </div>
                   </td>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]" style="width: 80px;">KELAS</td>
@@ -147,7 +149,8 @@
                   <td contenteditable="true" 
                       @blur="saveManualEntry(slotIndex, 'name', 0, $event)" 
                       v-text="getManualEntry(slotIndex, 'name', 0)" 
-                      class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors" rowspan="3" style="width: 120px;"></td>
+                      class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors overflow-hidden whitespace-nowrap text-[10px] uppercase" 
+                      rowspan="3" style="width: 120px; max-width: 120px;"></td>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]" style="width: 80px;">KELAS</td>
                   <!-- KELAS 格子 -->
                   <td v-for="p in currentPeriodTimes.length" :key="'kelas-'+p" 
