@@ -508,14 +508,15 @@ const loadAnalyticsData = async () => {
         const uniquePeriods = new Set(matchedEntries.map(e => `${e.weekday}-${e.period}`))
         const weeklyPeriods = uniquePeriods.size
 
-        let lostCount = 0
+        // 🌟 核心升级：引入时间槽去重 Set，防止同一节课同时被“请假”和“MMI干扰”重复计算两次
+        const lostSlotSet = new Set()
 
-        // 完整保留：请假干扰损失计算
+        // 1. 请假干扰损失收集
         if (leaveRequests && leaveRequests.length > 0) {
           leaveRequests.forEach(req => {
             const reqClass = cleanString(req.class_name)
             const clsName = cleanString(cls.class_name)
-            const isClassMatched = reqClass === clsName || reqClass.includes(clsName) || clsName.includes(reqClass)
+            const isClassMatched = reqClass === clsName || reqClass.includes(clsName) || clsName.includes(itemClass => clsName.includes(reqClass))
             const isSubjMatched = isSubjectMatch(req.subject, standardizedTargetSubject)
 
             const reqTeacherNameClean = cleanString(req.teacher_name)
@@ -528,7 +529,7 @@ const loadAnalyticsData = async () => {
                 const leaveDateObj = new Date(req.leave_date)
                 const leaveWeekday = leaveDateObj.getDay()
                 
-                const hasClassOnThatDay = enrichedTimetables.some(item => {
+                enrichedTimetables.forEach(item => {
                   const itemClass = cleanString(item.class_name)
                   const itemSubj = item.subject || item.subject_name || item.teacher_info?.subject_name || ''
                   const itemWeekday = Number(item.weekday)
@@ -537,20 +538,20 @@ const loadAnalyticsData = async () => {
                   const matchSubj = isSubjectMatch(itemSubj, standardizedTargetSubject)
                   const matchWd = itemWeekday === leaveWeekday || itemWeekday === (leaveWeekday === 0 ? 7 : leaveWeekday)
                   
-                  return matchCls && matchSubj && matchWd
+                  if (matchCls && matchSubj && matchWd) {
+                    // ⭐️ 以“日期-节次”作为唯一凭证存入 Set
+                    lostSlotSet.add(`${req.leave_date}-P${item.period}`)
+                  }
                 })
-
-                if (hasClassOnThatDay) {
-                  lostCount += 1
-                }
               } else {
-                lostCount += 1
+                // 如果没有具体日期，作为保底直接计入一个标记
+                lostSlotSet.add(`NODATE-${Math.random()}`)
               }
             }
           })
         }
 
-        // 完整保留：班级级干扰损失计算
+        // 2. MMI 活动干扰损失收集
         if (interruptions && interruptions.length > 0) {
           interruptions.forEach(int => {
             if (int.type === 'class') {
@@ -569,12 +570,12 @@ const loadAnalyticsData = async () => {
                 intScope === 'all' || 
                 targetDisp.includes('全校') ||
                 (intScope === 'grade' && intGrade === Number(cls.grade)) ||
-                targetDisp.includes(`Tahun ${cls.grade}`) ||
+                targetDisp.includes(`Tahun ${cls.grade}`) || targetDisp.includes(`TAHUN ${cls.grade}`) ||
                 (intScope === 'class' && (intClass.includes(clsName) || clsName.includes(intClass || ''))) ||
                 targetDisp.includes(clsName)
 
               if (isClassAffected) {
-                const affectedPeriods = enrichedTimetables.filter(item => {
+                enrichedTimetables.forEach(item => {
                   const itemClass = cleanString(item.class_name)
                   const itemPeriod = Number(item.period)
                   const rawSubj = item.subject || item.subject_name || item.teacher_info?.subject_name || ''
@@ -585,14 +586,18 @@ const loadAnalyticsData = async () => {
                   const matchSubject = isSubjectMatch(rawSubj, standardizedTargetSubject)
                   const matchWeekday = itemWeekday === intWeekday || itemWeekday === (intWeekday === 0 ? 7 : intWeekday)
 
-                  return matchClass && matchPeriod && matchSubject && matchWeekday
+                  if (matchClass && matchPeriod && matchSubject && matchWeekday) {
+                    // ⭐️ 同样以“日期-节次”存入 Set，自动过滤掉和前面“请假”重叠的同一节课
+                    lostSlotSet.add(`${int.interruption_date}-P${item.period}`)
+                  }
                 })
-
-                lostCount += affectedPeriods.length
               }
             }
           })
         }
+
+        // 3. 最终该科目的总受干扰损失节数 = 去重后的时间槽总大小
+        let lostCount = lostSlotSet.size
 
         // ==========================================================
         // 🎯 核心计算逻辑：基于你的确切要求
