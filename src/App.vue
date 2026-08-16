@@ -9,35 +9,13 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { supabase } from './services/supabase'
 import Sidebar from './components/Sidebar.vue'
-import Toast from './utils/toast'
+import Toast from './components/Toast.vue' // 注意这里我帮你把路径改回 components 了
 
 const route = useRoute()
-const showSidebar = computed(() => route.path !== '/login')
 
-// 🚀 核心：页面加载时拦截 URL 中的 Token，自动注入登录状态
-onMounted(async () => {
-  const urlParams = new URLSearchParams(window.location.search)
-  const accessToken = urlParams.get('access_token')
-  const refreshToken = urlParams.get('refresh_token')
-
-  if (accessToken && refreshToken) {
-    try {
-      const { error } = await supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken
-      })
-
-      if (!error) {
-        // 注入成功后清除网址上的 Token 尾巴，保持干净
-        window.history.replaceState({}, document.title, window.location.pathname)
-      }
-    } catch (err) {
-      console.error('Memulihkan sesi gagal:', err)
-    }
-  }
-})
+// 🚀 核心加强：不管路由是 /login 还是 /Login，只要包含 login 就绝对隐藏侧边栏！
+const showSidebar = computed(() => !route.path.toLowerCase().includes('/login'))
 </script>
