@@ -111,7 +111,10 @@ const logout = async () => {
   try {
     await supabase.auth.signOut()
     toast.success("已安全退出")
-    router.push('/login')
+    
+    // 🚀 核心修改：使用原生 window.location 强制跳回登录页，彻底销毁旧界面！
+    window.location.href = '/login'
+    
   } catch (error) {
     toast.error("退出失败：" + error.message)
   }
