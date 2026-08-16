@@ -91,12 +91,15 @@ const switchToMalay = async () => {
   try {
     const { data: { session } } = await supabase.auth.getSession()
     
-    // ⚠️ 记得把这个网址换成你马来文版部署后的真实网址
+    // 👇 加上这行弹窗或打印
+    console.log("当前检查到的 Session:", session)
+
     const malayAppUrl = 'https://subtitute-app-bm.vercel.app' 
 
     if (session) {
       window.location.href = `${malayAppUrl}/?access_token=${session.access_token}&refresh_token=${session.refresh_token}`
     } else {
+      alert("⚠️ 严重提示：当前代码没有检测到登录 Session，所以没带 Token！")
       window.location.href = malayAppUrl
     }
   } catch (error) {
