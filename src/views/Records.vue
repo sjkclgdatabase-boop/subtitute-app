@@ -11,6 +11,7 @@
       </div>
 
       <div class="flex flex-wrap items-center gap-3">
+        <!-- ⚡ 一键智能自动排课按钮 -->
         <button 
           @click="handleAutoAssignAll"
           :disabled="isAutoAssigning"
@@ -20,6 +21,7 @@
           <span>⚡ 一键智能分配代课</span>
         </button>
 
+        <!-- 班次切换标签 -->
         <div class="flex bg-white p-1 rounded-xl shadow-sm ring-1 ring-slate-900/5">
           <button 
             @click="currentSession = 'morning'" 
@@ -37,6 +39,7 @@
           </button>
         </div>
 
+        <!-- 选择日期 -->
         <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl shadow-sm ring-1 ring-slate-900/5">
           <span class="text-xs font-bold text-slate-500">选择日期：</span>
           <input 
@@ -59,7 +62,7 @@
     <!-- 主表：预览/打印专属区域 -->
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 print:shadow-none print:ring-0 print:p-0 print:rounded-none print:break-inside-avoid">
       
-      <!-- ⭐️ 缩减打印时的底部外边距，给表格腾出空间 -->
+      <!-- ⭐️ 缩减打印时的底部外边距 -->
       <div class="text-center mb-6 print:mb-2">
         <h2 class="text-xl font-black tracking-wider text-black font-serif">SJK (C) LADANG GRISEK</h2>
         <h3 class="text-lg font-bold tracking-widest text-black mt-1 font-serif underline">
@@ -87,7 +90,6 @@
               </th>
             </tr>
           </thead>
-          <!-- ⭐️ 核心魔法：取消包裹的 <tbody>，直接循环独立 <tbody> 且禁止跨页断开 -->
           <tbody v-for="slotIndex in 5" :key="slotIndex" style="page-break-inside: avoid; break-inside: avoid;" class="print:break-inside-avoid">
               
               <template v-if="displayTeachersList[slotIndex - 1]">
@@ -134,26 +136,29 @@
 
               <template v-else>
                 <tr>
+                  <!-- ⭐️ 改成了 whitespace-pre-wrap 完美保留回车换行 -->
                   <td contenteditable="true" 
                       @blur="saveManualEntry(slotIndex, 'name', 0, $event)" 
                       v-text="getManualEntry(slotIndex, 'name', 0)" 
-                      class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors overflow-hidden whitespace-normal break-words leading-tight uppercase text-[10px]" 
+                      class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors overflow-hidden whitespace-pre-wrap break-words leading-tight uppercase text-[10px]" 
                       rowspan="3" style="width: 120px; max-width: 120px;"></td>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]" style="width: 80px;">KELAS</td>
+                  <!-- ⭐️ 改成了 whitespace-pre-wrap 完美保留回车换行 -->
                   <td v-for="p in currentPeriodTimes.length" :key="'kelas-'+p" 
                       contenteditable="true" 
                       @blur="saveManualEntry(slotIndex, 'kelas', p, $event)" 
                       v-text="getManualEntry(slotIndex, 'kelas', p)" 
-                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[11px] font-semibold overflow-hidden whitespace-normal break-words leading-tight"
+                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[11px] font-semibold overflow-hidden whitespace-pre-wrap break-words leading-tight"
                       style="max-width: 0;"></td>
                 </tr>
                 <tr>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]">GURU GANTI</td>
+                  <!-- ⭐️ 改成了 whitespace-pre-wrap 完美保留回车换行 -->
                   <td v-for="p in currentPeriodTimes.length" :key="'ganti-'+p" 
                       contenteditable="true" 
                       @blur="saveManualEntry(slotIndex, 'ganti', p, $event)" 
                       v-text="getManualEntry(slotIndex, 'ganti', p)" 
-                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[10px] font-bold text-indigo-900 overflow-hidden whitespace-normal break-words leading-tight"
+                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[10px] font-bold text-indigo-900 overflow-hidden whitespace-pre-wrap break-words leading-tight"
                       style="max-width: 0;"></td>
                 </tr>
                 <tr>
@@ -291,7 +296,6 @@
     </transition>
 
     <!-- ⭐️ 动态附加的空白可编辑附页区域 -->
-    <!-- 注意这里加入了 print:mt-0 print:pt-0 print:border-none 让附页在打印时紧贴新的一页顶部 -->
     <div v-for="(sheet, sIndex) in extraCustomSheets" :key="sheet.id" class="print-custom-sheet mt-12 print:mt-0 pt-8 print:pt-0 border-t-4 print:border-none border-dashed border-slate-300">
       
       <div class="print:hidden flex justify-between items-center mb-4 bg-amber-50 p-3 rounded-2xl border border-amber-200">
@@ -332,29 +336,31 @@
                 </th>
               </tr>
             </thead>
-            <!-- ⭐️ 核心魔法：取消包裹的 <tbody>，直接循环独立 <tbody> -->
             <tbody v-for="slotIndex in 5" :key="slotIndex" style="page-break-inside: avoid; break-inside: avoid;" class="print:break-inside-avoid">
                 <tr>
+                  <!-- ⭐️ 附页：改成了 whitespace-pre-wrap -->
                   <td contenteditable="true" 
                       @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0, $event)"
                       v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0)"
-                      class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors overflow-hidden whitespace-normal break-words leading-tight uppercase text-[10px]" 
+                      class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors overflow-hidden whitespace-pre-wrap break-words leading-tight uppercase text-[10px]" 
                       rowspan="3" style="width: 120px; max-width: 120px;"></td>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]" style="width: 80px;">KELAS</td>
+                  <!-- ⭐️ 附页：改成了 whitespace-pre-wrap -->
                   <td v-for="p in currentPeriodTimes.length" :key="'kelas-'+p" 
                       contenteditable="true" 
                       @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'kelas', p, $event)"
                       v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'kelas', p)"
-                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[11px] font-semibold overflow-hidden whitespace-normal break-words leading-tight"
+                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[11px] font-semibold overflow-hidden whitespace-pre-wrap break-words leading-tight"
                       style="max-width: 0;"></td>
                 </tr>
                 <tr>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]">GURU GANTI</td>
+                  <!-- ⭐️ 附页：改成了 whitespace-pre-wrap -->
                   <td v-for="p in currentPeriodTimes.length" :key="'ganti-'+p" 
                       contenteditable="true" 
                       @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ganti', p, $event)"
                       v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ganti', p)"
-                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[10px] font-bold text-indigo-900 overflow-hidden whitespace-normal break-words leading-tight"
+                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[10px] font-bold text-indigo-900 overflow-hidden whitespace-pre-wrap break-words leading-tight"
                       style="max-width: 0;"></td>
                 </tr>
                 <tr>
@@ -488,8 +494,10 @@ const saveCustomSheetsToCloud = async () => {
 }
 
 const saveManualEntry = async (slotIndex, type, period, event) => {
-  const text = event.target.innerText.trim()
+  // ⭐️ 核心修复：.replace(/\n+/g, '\n') 会把所有连续的空行压缩成一个紧凑的换行！
+  const text = event.target.innerText.trim().replace(/\n+/g, '\n')
   const key = `${slotIndex}-${type}-${period}`
+  
   if (manualEntries.value[key] === text) return;
   manualEntries.value[key] = text
 
