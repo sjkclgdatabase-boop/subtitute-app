@@ -4,7 +4,7 @@
     class="bg-slate-900 text-slate-300 flex flex-col h-screen sticky top-0 left-0 shrink-0 z-40 border-r border-slate-800 print:hidden shadow-xl transition-all duration-300"
   >
     
-    <!-- 顶部区域：校名/Logo + 跟你截图一模一样的精美折叠图标按钮 -->
+    <!-- 顶部区域：校名/Logo + 折叠图标按钮 -->
     <div class="p-4 border-b border-slate-800 flex items-center justify-between gap-2 select-none">
       
       <!-- 校名与 Logo (折叠时隐藏) -->
@@ -21,7 +21,7 @@
         <img :src="currentLogo" alt="Logo" class="w-8 h-8 object-contain rounded-xl bg-slate-800 p-1 shrink-0 shadow-sm" />
       </div>
 
-      <!-- ⭐️ 跟你截图一模一样的侧边栏缩放/折叠 SVG 图标按钮 -->
+      <!-- 侧边栏缩放/折叠 SVG 图标按钮 -->
       <button 
         @click="toggleSidebar" 
         class="w-9 h-9 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition cursor-pointer shrink-0 shadow-sm"
@@ -34,7 +34,7 @@
       </button>
     </div>
 
-    <!-- 导航菜单 -->
+    <!-- 导航菜单（全中文） -->
     <div class="flex-1 overflow-y-auto px-3 py-4 space-y-1.5 scrollbar-thin scrollbar-thumb-slate-700">
       <router-link 
         v-for="(item, index) in navItems" 
@@ -49,20 +49,30 @@
       </router-link>
     </div>
 
-    <!-- 底部操作区 -->
+    <!-- 底部操作区：多语言跳转 + 退出登录 -->
     <div class="p-3 border-t border-slate-800 bg-slate-950/40 space-y-1.5">
       
-      <!-- 切换到马来文版按钮 -->
+      <!-- 1. 切换到马来文版按钮 -->
       <button 
-        @click="switchToMalay" 
+        @click="switchToLanguage('https://subtitute-app-bm.vercel.app')" 
         class="w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300 transition-colors cursor-pointer"
         :title="isSidebarCollapsed ? 'Bahasa Melayu' : ''"
       >
-        <span class="text-base shrink-0">🌐</span>
+        <span class="text-base shrink-0">🇲🇾</span>
         <span v-show="!isSidebarCollapsed" class="truncate">Bahasa Melayu</span>
       </button>
 
-      <!-- 退出登录 -->
+      <!-- 2. 切换到英文版按钮 -->
+      <button 
+        @click="switchToLanguage('https://subtitute-app-en.vercel.app')" 
+        class="w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300 transition-colors cursor-pointer"
+        :title="isSidebarCollapsed ? 'English' : ''"
+      >
+        <span class="text-base shrink-0">🇬🇧</span>
+        <span v-show="!isSidebarCollapsed" class="truncate">English</span>
+      </button>
+
+      <!-- 3. 退出登录 -->
       <button 
         @click="logout" 
         class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors cursor-pointer"
@@ -127,16 +137,14 @@ const navItems = [
   { name: '系统设置', path: '/settings', icon: '⚙️' } 
 ]
 
-const switchToMalay = async () => {
+// 统一的带 Token 免登跳转逻辑
+const switchToLanguage = async (targetUrl) => {
   try {
     const { data: { session } } = await supabase.auth.getSession()
-    const malayAppUrl = 'https://subtitute-app-bm.vercel.app' 
-
     if (session) {
-      window.location.href = `${malayAppUrl}/?access_token=${session.access_token}&refresh_token=${session.refresh_token}`
+      window.location.href = `${targetUrl}/?access_token=${session.access_token}&refresh_token=${session.refresh_token}`
     } else {
-      alert("⚠️ 严重提示：当前代码没有检测到登录 Session，所以没带 Token！")
-      window.location.href = malayAppUrl
+      window.location.href = targetUrl
     }
   } catch (error) {
     toast.error("跳转失败：" + error.message)
