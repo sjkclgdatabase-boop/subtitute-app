@@ -1,61 +1,68 @@
 <template>
-  <div class="p-8 max-w-7xl mx-auto min-h-screen print:p-0 print:max-w-none">
+  <div class="p-8 max-w-7xl mx-auto min-h-screen space-y-8 print:p-0 print:max-w-none">
     
     <!-- 屏幕显示的操作栏 (打印时自动隐藏) -->
-    <div class="print:hidden flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-      <div>
-        <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">
+    <div class="print:hidden bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 flex flex-col gap-6">
+      
+      <!-- 第一/二行：大标题与副标题 -->
+      <div class="space-y-2 max-w-4xl">
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
           每日代课统筹管理
         </h1>
-        <p class="text-slate-500 text-sm mt-2 font-medium">点击表格单元格指派代课教师，支持一键智能生成当日代课排程</p>
+        <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
+          点击表格单元格指派代课教师，支持一键智能生成当日代课排程。
+        </p>
       </div>
 
-      <div class="flex flex-wrap items-center gap-3">
+      <!-- 第三行：所有功能按钮横向平铺排列 -->
+      <div class="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-100">
+        
         <!-- ⚡ 一键智能自动排课按钮 -->
         <button 
           @click="handleAutoAssignAll"
           :disabled="isAutoAssigning"
-          class="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md transition-all flex items-center gap-2 shrink-0"
+          class="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-4 h-11 rounded-2xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer"
         >
-          <span v-if="isAutoAssigning" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          <span v-if="isAutoAssigning" class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
           <span>⚡ 一键智能分配代课</span>
         </button>
 
         <!-- 班次切换标签 -->
-        <div class="flex bg-white p-1 rounded-xl shadow-sm ring-1 ring-slate-900/5">
+        <div class="flex bg-slate-100 p-1.5 rounded-2xl ring-1 ring-slate-900/5 h-11 items-center shrink-0 shadow-inner">
           <button 
             @click="currentSession = 'morning'" 
-            :class="currentSession === 'morning' ? 'bg-slate-900 text-white shadow' : 'text-slate-600 hover:text-slate-900'"
-            class="px-4 py-2 rounded-lg text-xs font-bold transition-all"
+            :class="currentSession === 'morning' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'"
+            class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5"
           >
-            ☀️ 上午班
+            <span>☀️ 上午班</span>
           </button>
           <button 
             @click="currentSession = 'afternoon'" 
-            :class="currentSession === 'afternoon' ? 'bg-slate-900 text-white shadow' : 'text-slate-600 hover:text-slate-900'"
-            class="px-4 py-2 rounded-lg text-xs font-bold transition-all"
+            :class="currentSession === 'afternoon' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'"
+            class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5"
           >
-            🌙 下午班
+            <span>🌙 下午班</span>
           </button>
         </div>
 
         <!-- 选择日期 -->
-        <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl shadow-sm ring-1 ring-slate-900/5">
-          <span class="text-xs font-bold text-slate-500">选择日期：</span>
+        <div class="flex items-center gap-2 bg-slate-50 px-4 h-11 rounded-2xl border border-slate-200/80 shadow-2xs shrink-0">
+          <span class="text-xs font-bold text-slate-500 whitespace-nowrap">选择日期：</span>
           <input 
             type="date" 
             v-model="targetDate" 
-            class="bg-slate-50 border border-slate-200 px-3 py-1 rounded-lg text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+            class="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
           />
         </div>
 
         <button 
           @click="handlePrint"
-          class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-xl text-sm font-semibold shadow-md transition-all hover:shadow-lg flex items-center gap-2 shrink-0"
+          class="bg-slate-900 hover:bg-slate-800 text-white px-5 h-11 rounded-2xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-          打印代课统筹表
+          <span>打印代课统筹表</span>
         </button>
+
       </div>
     </div>
 
@@ -186,7 +193,7 @@
               <h2 class="text-xl font-bold text-slate-900">代课指派中心</h2>
               <p class="text-sm text-slate-500 mt-1">支持智能推荐排序，或在下方直接手动选择任意同班次老师</p>
             </div>
-            <button @click="showModal = false" class="text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full p-2 transition">×</button>
+            <button @click="showModal = false" class="text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full p-2 transition cursor-pointer">×</button>
           </div>
           
           <div class="p-8 bg-slate-50/50 space-y-6 overflow-y-auto">
@@ -210,7 +217,7 @@
                 v-model="assignmentRemark" 
                 type="text" 
                 placeholder="例如: Perpustakaan (若需带去图书馆或合并班级)" 
-                class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
               />
             </div>
 
@@ -221,7 +228,7 @@
               <div class="flex flex-col sm:flex-row items-center gap-3">
                 <select 
                   v-model="manualSelectedTeacherId" 
-                  class="w-full px-3 py-2 bg-white border border-indigo-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  class="w-full px-3.5 py-2.5 bg-white border border-indigo-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
                 >
                   <option value="" disabled>-- 请手动选择同班次教师 --</option>
                   <option v-for="t in allSameSessionTeachers" :key="t.id" :value="t.id">
@@ -231,7 +238,7 @@
                 <button 
                   @click="assignSubstitute(manualSelectedTeacherId)" 
                   :disabled="!manualSelectedTeacherId"
-                  class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-5 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all shrink-0"
+                  class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-5 py-2.5 rounded-xl text-xs font-semibold shadow-sm transition-all shrink-0 cursor-pointer"
                 >
                   确认手动指派
                 </button>
@@ -276,7 +283,7 @@
                       </div>
                     </div>
                   </div>
-                  <button @click="assignSubstitute(teacher.id)" class="bg-slate-900 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all">
+                  <button @click="assignSubstitute(teacher.id)" class="bg-slate-900 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer">
                     智能指派
                   </button>
                 </div>
@@ -285,7 +292,7 @@
 
             <div v-if="currentLeaveItem && substituteAssignmentsMap[currentLeaveItem.id]" class="pt-2 border-t border-slate-100 flex justify-between items-center">
               <span class="text-xs text-red-500 font-medium">当前格子已有代课/换课安排</span>
-              <button @click="removeAssignment" class="text-xs text-red-600 hover:text-red-800 font-bold px-3 py-1 bg-red-50 rounded-lg">
+              <button @click="removeAssignment" class="text-xs text-red-600 hover:text-red-800 font-bold px-3 py-1 bg-red-50 rounded-lg cursor-pointer">
                 取消当前指派
               </button>
             </div>
@@ -300,7 +307,7 @@
       
       <div class="print:hidden flex justify-between items-center mb-4 bg-amber-50 p-3 rounded-2xl border border-amber-200">
         <span class="text-xs font-bold text-amber-900">📄 附加自定义手写/编辑备用表 #{{ sIndex + 1 }}</span>
-        <button @click="removeCustomSheet(sheet.id)" class="text-xs text-red-600 bg-white hover:bg-red-50 px-3 py-1.5 rounded-xl font-bold shadow-sm transition">
+        <button @click="removeCustomSheet(sheet.id)" class="text-xs text-red-600 bg-white hover:bg-red-50 px-3 py-1.5 rounded-xl font-bold shadow-sm transition cursor-pointer">
           删除此附页
         </button>
       </div>
@@ -379,7 +386,7 @@
 
     <!-- 放置在最底部的增加按钮 -->
     <div class="print:hidden mt-8 mb-12 flex justify-center">
-      <button @click="addBlankSheet" class="flex items-center gap-2 bg-slate-900 hover:bg-indigo-600 text-white px-6 py-3 rounded-2xl text-xs font-bold shadow-md transition-all">
+      <button @click="addBlankSheet" class="flex items-center gap-2 bg-slate-900 hover:bg-indigo-600 text-white px-6 py-3 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer">
         <span class="text-base font-extrabold">+</span> 增加一张官方版空白代课备用表
       </button>
     </div>
@@ -766,7 +773,7 @@ const removeCustomSheet = async (id) => {
 </script>
 
 <style scoped>
-/* 组件内部私有样式 */
+/* 组件内部私有样式保留在这里 */
 </style>
 
 <style>

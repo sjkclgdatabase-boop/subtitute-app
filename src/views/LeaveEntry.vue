@@ -1,18 +1,20 @@
 <template>
-  <div class="p-8 max-w-5xl mx-auto min-h-screen">
+  <div class="p-8 max-w-7xl mx-auto min-h-screen space-y-8">
     
-    <!-- 头部区域 -->
-    <div class="mb-10">
-      <h1 class="text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
+    <!-- 头部区域：统一的卡片风格、排版规范与渐变大标题 -->
+    <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 space-y-2">
+      <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
         教师请假登记
       </h1>
-      <p class="text-slate-500 text-sm mt-2 font-medium">适配双班运行模式，选定班次与教师后，自主点选需要安排代课的节次生成任务。</p>
+      <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
+        适配双班运行模式，选定班次与教师后，自主点选需要安排代课的节次生成任务。
+      </p>
     </div>
 
     <!-- 步骤一：基础信息选择 -->
-    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 mb-8">
-      <h2 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-        <span class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">1</span>
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8">
+      <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+        <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">1</span>
         请假基础信息
       </h2>
       
@@ -20,20 +22,20 @@
         
         <!-- 左侧：班次选择 -->
         <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">班次选择</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">班次选择</label>
           <div class="bg-slate-100 p-1.5 rounded-2xl flex items-center shadow-inner">
             <button 
               @click="currentSession = 'morning'; selectedTeacherId = ''; dailyClasses = []" 
-              class="flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
+              class="flex-1 py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
               :class="currentSession === 'morning' 
-                ? 'bg-white text-indigo-600 shadow-sm ring-2 ring-blue-600' 
+                ? 'bg-white text-indigo-600 shadow-sm ring-2 ring-indigo-600' 
                 : 'text-slate-500 hover:text-slate-900'"
             >
               <span>☀️</span> 上午班
             </button>
             <button 
               @click="currentSession = 'afternoon'; selectedTeacherId = ''; dailyClasses = []" 
-              class="flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
+              class="flex-1 py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
               :class="currentSession === 'afternoon' 
                 ? 'bg-white text-orange-600 shadow-sm ring-2 ring-orange-500' 
                 : 'text-slate-500 hover:text-slate-900'"
@@ -45,15 +47,15 @@
 
         <!-- 右侧：教师选择器 -->
         <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">请假教师</label>
-          <div class="relative flex items-center bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm hover:border-slate-300 transition">
-            <div class="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center text-base mr-3 shrink-0">
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">请假教师</label>
+          <div class="relative flex items-center bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 shadow-sm hover:border-slate-300 transition">
+            <div class="w-8 h-8 rounded-2xl bg-white flex items-center justify-center text-base mr-3 shrink-0 shadow-xs">
               👩‍🏫
             </div>
             <select 
               v-model="selectedTeacherId" 
               @change="fetchDailyTimetable"
-              class="w-full bg-transparent border-none text-slate-700 font-semibold focus:ring-0 cursor-pointer text-sm appearance-none outline-none pr-8"
+              class="w-full bg-transparent border-none text-slate-800 font-semibold focus:ring-0 cursor-pointer text-xs appearance-none outline-none pr-8"
             >
               <option value="" disabled>请选择{{ currentSession === 'morning' ? '上午班' : '下午班' }}请假教师</option>
               <option v-for="teacher in filteredTeachersList" :key="teacher.id" :value="teacher.id">
@@ -71,22 +73,22 @@
       <!-- 第二行：选择日期与请假原因 -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
         <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">请假日期（系统自动推算星期）</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">请假日期（系统自动推算星期）</label>
           <input 
             type="date" 
             v-model="leaveDate"
             @change="fetchDailyTimetable"
-            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium text-slate-700"
+            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-semibold text-slate-800 cursor-pointer"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">请假原因 (选填)</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">请假原因 (选填)</label>
           <input 
             type="text" 
             v-model="leaveReason"
             placeholder="示例：病假、事假、公务外出参会"
-            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium text-slate-700"
+            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-semibold text-slate-800"
           />
         </div>
       </div>
@@ -98,22 +100,22 @@
       <div v-if="selectedTeacherId && leaveDate" class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-slate-100 pb-4">
           <div>
-            <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-              <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">2</span>
+            <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <span class="w-8 h-8 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs">2</span>
               点选需要安排代课的节次
             </h2>
-            <p class="text-xs text-slate-400 mt-1">勾选卡片以生成代课任务，未勾选的节次将不安排代课。</p>
+            <p class="text-xs text-slate-500 mt-1 font-medium">勾选卡片以生成代课任务，未勾选的节次将不安排代课。</p>
           </div>
 
           <div class="flex items-center gap-3">
             <!-- 全选 / 反选快捷按键 -->
-            <button @click="selectAll(true)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-bold text-slate-700 cursor-pointer transition">
+            <button @click="selectAll(true)" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-bold text-slate-700 cursor-pointer transition">
               全选
             </button>
-            <button @click="selectAll(false)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-bold text-slate-700 cursor-pointer transition">
+            <button @click="selectAll(false)" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-bold text-slate-700 cursor-pointer transition">
               取消全选
             </button>
-            <span class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-bold">
+            <span class="px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-xs font-bold">
               星期{{ computedWeekdayName }}
             </span>
           </div>
@@ -122,13 +124,13 @@
         <!-- 课表展示区 -->
         <div v-if="loading" class="py-12 text-center">
           <div class="w-8 h-8 border-4 border-indigo-500/30 border-t-indigo-600 rounded-full animate-spin mx-auto"></div>
-          <p class="text-slate-500 text-sm mt-4">正在从数据库检索课表...</p>
+          <p class="text-slate-500 text-xs font-bold mt-4">正在从数据库检索课表...</p>
         </div>
 
         <div v-else-if="dailyClasses.length === 0" class="bg-slate-50 rounded-2xl p-8 text-center border border-slate-100">
           <div class="text-4xl mb-3">🎉</div>
-          <p class="text-slate-800 font-bold">该名教师在这一天没有任何排课</p>
-          <p class="text-slate-500 text-sm mt-1">无需安排代课，行政可以直接批准请假。</p>
+          <p class="text-slate-900 font-bold text-sm">该名教师在这一天没有任何排课</p>
+          <p class="text-slate-500 text-xs mt-1 font-medium">无需安排代课，行政可以直接批准请假。</p>
         </div>
 
         <div v-else class="space-y-3">
@@ -152,18 +154,18 @@
               />
 
               <!-- 节次数字 -->
-              <div class="w-12 h-12 rounded-xl bg-white text-indigo-700 flex flex-col items-center justify-center font-bold shadow-sm ring-1 ring-slate-900/5 shrink-0">
-                <span class="text-[10px] text-slate-400">第</span>
-                <span class="text-lg leading-none">{{ cls.period }}</span>
+              <div class="w-12 h-12 rounded-2xl bg-white text-indigo-700 flex flex-col items-center justify-center font-bold shadow-sm ring-1 ring-slate-900/5 shrink-0">
+                <span class="text-[9px] text-slate-400 font-bold uppercase">第</span>
+                <span class="text-base leading-none">{{ cls.period }}</span>
               </div>
 
               <!-- 班级与科目 -->
               <div>
                 <div class="flex items-center gap-2">
-                  <p class="font-bold text-slate-900 text-lg">{{ cls.class_name }}</p>
+                  <p class="font-bold text-slate-900 text-sm">{{ cls.class_name }}</p>
                   <span v-if="cls.is_combined" class="px-2 py-0.5 bg-violet-100 text-violet-700 rounded text-[10px] font-bold">合班</span>
                 </div>
-                <p class="text-sm text-indigo-600 font-medium">{{ cls.subject }}</p>
+                <p class="text-xs text-indigo-600 font-semibold mt-0.5">{{ cls.subject }}</p>
               </div>
             </div>
 
@@ -171,7 +173,7 @@
             <div>
               <span 
                 :class="cls.selected ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'" 
-                class="text-xs font-bold px-3 py-1 rounded-full transition"
+                class="text-xs font-bold px-3 py-1.5 rounded-full transition"
               >
                 {{ cls.selected ? '已选择代课' : '不安排代课' }}
               </span>
@@ -180,14 +182,14 @@
 
           <!-- 提交按钮与统计 -->
           <div class="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
-            <div class="text-xs text-slate-500 font-medium">
-              已选中 <strong class="text-indigo-600 text-sm font-bold">{{ selectedClassesCount }}</strong> 节待安排代课任务
+            <div class="text-xs text-slate-500 font-bold">
+              已选中 <strong class="text-indigo-600 text-sm font-black">{{ selectedClassesCount }}</strong> 节待安排代课任务
             </div>
 
             <button 
               @click="submitLeaveRequests" 
               :disabled="isSubmitting || selectedClassesCount === 0"
-              class="group flex items-center justify-center px-8 py-3 text-sm font-semibold text-white bg-slate-900 rounded-full hover:bg-slate-800 hover:shadow-lg hover:-translate-y-0.5 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              class="group flex items-center justify-center px-6 py-3 text-xs font-bold text-white bg-slate-900 rounded-2xl hover:bg-slate-800 hover:shadow-lg hover:-translate-y-0.5 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <span v-if="!isSubmitting">生成 {{ selectedClassesCount }} 节代课任务</span>
               <span v-else>正在生成中...</span>

@@ -1,78 +1,87 @@
 <template>
   <div class="p-8 max-w-7xl mx-auto min-h-screen space-y-8">
     
-    <!-- 头部区域 -->
-    <div class="mb-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <div>
-        <h1 class="text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
+    <!-- 头部区域：统一的卡片风格、排版规范与渐变大标题 -->
+    <div class="no-print bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 space-y-6">
+      
+      <!-- 第一部分：大标题与副标题 -->
+      <div class="space-y-2 max-w-4xl">
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
           科目目标与达成率分析中心
         </h1>
-        <p class="text-slate-500 text-sm mt-2 font-medium">
+        <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
           多维度追踪教学目标、MMI 教学干扰与达成情况，支持数据报表、可视化看板及 PDF 报告导出。
         </p>
       </div>
 
-      <!-- 顶部操作栏 -->
-      <div class="flex items-center gap-3">
-        <button @click="exportPdfReport" class="no-print bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-md flex items-center gap-2 cursor-pointer">
-          <span>📥 打印 / 另存为 PDF 报告</span>
-        </button>
-        <button @click="showManageModal = true" class="no-print bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer">
-          ⚙️ 管理目标
-        </button>
-        <button @click="loadAnalyticsData" :disabled="loading" class="no-print bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition shadow-md cursor-pointer">
-          {{ loading ? '计算中...' : '🔄 刷新数据' }}
-        </button>
-      </div>
-    </div>
+      <!-- 第二部分：底部同行对齐（左侧是 Tab 切换，右侧是三个操作按钮） -->
+      <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 pt-4 border-t border-slate-100">
+        
+        <!-- 左侧：视图切换 Tab -->
+        <div class="flex flex-wrap gap-3">
+          <button 
+            @click="activeTab = 'table'" 
+            class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
+            :class="activeTab === 'table' ? 'bg-slate-900 text-white shadow-md' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'"
+          >
+            <span>📊 详细数据报表</span>
+          </button>
+          <button 
+            @click="activeTab = 'chart'" 
+            class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
+            :class="activeTab === 'chart' ? 'bg-slate-900 text-white shadow-md' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'"
+          >
+            <span>📈 可视化图表看板</span>
+          </button>
+        </div>
 
-    <!-- 🗂️ 视图切换 Tab -->
-    <div class="no-print flex border-b border-slate-200 gap-8">
-      <button 
-        @click="activeTab = 'table'" 
-        class="pb-4 text-sm font-bold transition-all relative flex items-center gap-2 cursor-pointer"
-        :class="activeTab === 'table' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-400 hover:text-slate-700'"
-      >
-        <span>📊 详细数据报表</span>
-      </button>
-      <button 
-        @click="activeTab = 'chart'" 
-        class="pb-4 text-sm font-bold transition-all relative flex items-center gap-2 cursor-pointer"
-        :class="activeTab === 'chart' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-400 hover:text-slate-700'"
-      >
-        <span>📈 可视化图表看板</span>
-      </button>
+        <!-- 右侧：三个操作按钮 -->
+        <div class="flex flex-wrap items-center gap-3">
+          <button @click="exportPdfReport" class="no-print bg-emerald-600 hover:bg-emerald-700 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2 cursor-pointer">
+            <span>📥 打印 / 另存为 PDF 报告</span>
+          </button>
+          <button @click="showManageModal = true" class="no-print bg-slate-900 hover:bg-slate-800 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer">
+            ⚙️ 管理目标
+          </button>
+          <button @click="loadAnalyticsData" :disabled="loading" class="no-print bg-indigo-600 hover:bg-indigo-700 text-white px-5 h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer flex items-center gap-2">
+            <span v-if="loading" class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+            <span>{{ loading ? '计算中...' : '🔄 刷新数据' }}</span>
+          </button>
+        </div>
+
+      </div>
+
     </div>
 
     <!-- 🔍 多维度高级筛选面板 -->
-    <div class="no-print bg-white p-6 rounded-3xl border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-4 gap-4">
+    <div class="no-print bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm grid grid-cols-1 sm:grid-cols-4 gap-4">
       <div>
-        <label class="block text-xs font-bold text-slate-500 mb-2">按年级筛选</label>
-        <select v-model="filterGrade" @change="onGradeChange" class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+        <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">按年级筛选</label>
+        <select v-model="filterGrade" @change="onGradeChange" class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
           <option value="all">全校所有年级</option>
           <option v-for="g in [1,2,3,4,5,6]" :key="g" :value="g">{{ g }} 年级</option>
         </select>
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-500 mb-2">按班级筛选</label>
-        <select v-model="filterClass" class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+        <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">按班级筛选</label>
+        <select v-model="filterClass" class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
           <option value="all">该年级所有班级</option>
           <option v-for="c in availableClasses" :key="c.id" :value="c.class_name">{{ c.class_name }}</option>
         </select>
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-500 mb-2">按科目筛选</label>
-        <select v-model="filterSubject" class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+        <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">按科目筛选</label>
+        <select v-model="filterSubject" class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
           <option value="all">所有科目</option>
           <option v-for="s in uniqueSubjects" :key="s" :value="s">{{ s }}</option>
         </select>
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-indigo-600 mb-2">👨‍🏫 按任课老师筛选</label>
-        <select v-model="filterTeacher" class="w-full bg-indigo-50/50 border border-indigo-200 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+        <label class="block text-xs font-bold text-indigo-600 mb-2 uppercase tracking-wider">👨‍🏫 按任课老师筛选</label>
+        <select v-model="filterTeacher" class="w-full bg-indigo-50/50 border border-indigo-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
           <option value="all">全校所有教师</option>
           <option v-for="tch in allTeachers" :key="tch.id" :value="tch.name">{{ tch.name }}</option>
         </select>
@@ -80,7 +89,7 @@
     </div>
 
     <!-- 🎯 核心统计指标卡片容器 -->
-    <div id="pdfContentContainer" class="space-y-8 bg-white p-4 rounded-3xl">
+    <div id="pdfContentContainer" class="space-y-8 bg-white p-8 rounded-3xl shadow-sm ring-1 ring-slate-900/5">
       
       <!-- 打印专属标题抬头 -->
       <div class="print-header bg-slate-50 p-6 rounded-2xl border border-slate-200 mb-4 text-center">
@@ -109,49 +118,49 @@
       <div v-if="activeTab === 'table'" class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
         <div class="p-6 border-b border-slate-100 flex justify-between items-center">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">细化分析报表 (班级、科目与任课老师对照)</h3>
-          <span class="text-[11px] text-slate-500">有效上课周历比例: {{ (progressRatio * 100).toFixed(1) }}%</span>
+          <span class="text-[11px] text-slate-500 font-bold">有效上课周历比例: {{ (progressRatio * 100).toFixed(1) }}%</span>
         </div>
 
         <div>
           <table class="w-full text-left border-collapse print-table">
             <thead>
-              <tr class="bg-slate-100 text-[11px] font-bold text-slate-700 uppercase tracking-wider border-b border-slate-300">
-                <th @click="toggleSort('class_name')" class="py-3 px-4 cursor-pointer hover:bg-slate-200 transition select-none">
+              <tr class="bg-slate-50 text-[11px] font-bold text-slate-700 uppercase tracking-wider border-b border-slate-200">
+                <th @click="toggleSort('class_name')" class="py-3 px-4 cursor-pointer hover:bg-slate-100 transition select-none">
                   年级 / 班级 <span class="text-indigo-600">{{ getSortIcon('class_name') }}</span>
                 </th>
-                <th @click="toggleSort('subject_name')" class="py-3 px-4 cursor-pointer hover:bg-slate-200 transition select-none">
+                <th @click="toggleSort('subject_name')" class="py-3 px-4 cursor-pointer hover:bg-slate-100 transition select-none">
                   科目名称 <span class="text-indigo-600">{{ getSortIcon('subject_name') }}</span>
                 </th>
-                <th @click="toggleSort('teacher_name')" class="py-3 px-4 cursor-pointer hover:bg-slate-200 transition select-none">
+                <th @click="toggleSort('teacher_name')" class="py-3 px-4 cursor-pointer hover:bg-slate-100 transition select-none">
                   任课老师 <span class="text-indigo-600">{{ getSortIcon('teacher_name') }}</span>
                 </th>
-                <th @click="toggleSort('target')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-200 transition select-none">
+                <th @click="toggleSort('target')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
                   学年计划目标 <span class="text-indigo-600">{{ getSortIcon('target') }}</span>
                 </th>
-                <th @click="toggleSort('expected')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-200 transition select-none">
+                <th @click="toggleSort('expected')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
                   理论应到进度 <span class="text-indigo-600">{{ getSortIcon('expected') }}</span>
                 </th>
-                <th @click="toggleSort('lostCount')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-200 transition select-none">
+                <th @click="toggleSort('lostCount')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
                   受干扰损失 <span class="text-indigo-600">{{ getSortIcon('lostCount') }}</span>
                 </th>
-                <th @click="toggleSort('actual')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-200 transition select-none">
+                <th @click="toggleSort('actual')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
                   实际执行 <span class="text-indigo-600">{{ getSortIcon('actual') }}</span>
                 </th>
-                <th @click="toggleSort('gap')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-200 transition select-none">
+                <th @click="toggleSort('gap')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
                   差距 <span class="text-indigo-600">{{ getSortIcon('gap') }}</span>
                 </th>
-                <th @click="toggleSort('status')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-200 transition select-none">
+                <th @click="toggleSort('status')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
                   状态 <span class="text-indigo-600">{{ getSortIcon('status') }}</span>
                 </th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-200 text-xs font-medium text-slate-800">
+            <tbody class="divide-y divide-slate-100 text-xs font-medium text-slate-800">
               <tr v-if="filteredAnalysisList.length === 0">
-                <td colspan="9" class="py-12 text-center text-slate-500">
+                <td colspan="9" class="py-12 text-center text-slate-400 font-medium">
                   没有找到符合该筛选条件的分析记录，请调整筛选条件。
                 </td>
               </tr>
-              <tr v-for="(item, idx) in filteredAnalysisList" :key="idx" class="hover:bg-slate-50">
+              <tr v-for="(item, idx) in filteredAnalysisList" :key="idx" class="hover:bg-slate-50/50 transition">
                 <td class="py-3 px-4 font-bold text-slate-900">
                   Tahun {{ item.grade }} - {{ item.class_name }}
                 </td>
@@ -185,7 +194,7 @@
       <!-- ================= TAB 2: 📈 视觉图表分析看板 ================= -->
       <div v-if="activeTab === 'chart'" class="space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+          <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
             <div class="flex justify-between items-center">
               <h3 class="text-sm font-bold text-slate-800">🎯 全校科目总体达标健康率</h3>
               <span class="text-xs text-indigo-600 font-bold bg-indigo-50 px-2.5 py-1 rounded-lg">实时计算</span>
@@ -203,10 +212,10 @@
             </div>
           </div>
 
-          <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+          <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
             <div class="flex justify-between items-center">
               <h3 class="text-sm font-bold text-slate-800">📊 各年级达标分布概况</h3>
-              <span class="text-xs text-slate-400">达标 vs 未达标</span>
+              <span class="text-xs text-slate-400 font-semibold">达标 vs 未达标</span>
             </div>
 
             <div class="space-y-3 pt-2">
@@ -224,11 +233,11 @@
           </div>
         </div>
 
-        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+        <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
           <div class="flex justify-between items-center">
             <div>
               <h3 class="text-sm font-bold text-slate-800">⚠️ MMI 干扰损失课时最多科目排行</h3>
-              <p class="text-xs text-slate-400 mt-0.5">直观展示各科目因请假、公务活动损失的教学课时</p>
+              <p class="text-xs text-slate-400 mt-0.5 font-medium">直观展示各科目因请假、公务活动损失的教学课时</p>
             </div>
             <span class="text-xs bg-amber-50 text-amber-700 px-3 py-1 rounded-full font-bold">干扰警示</span>
           </div>
@@ -289,7 +298,7 @@
           <div class="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden max-h-60 overflow-y-auto">
             <div v-for="t in allTargets" :key="t.id" class="p-3 flex items-center justify-between bg-white hover:bg-slate-50 transition">
               <div class="flex items-center gap-4 text-xs font-semibold text-slate-700">
-                <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg font-bold">{{ t.grade }}年级</span>
+                <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-xl font-bold">{{ t.grade }}年级</span>
                 <span class="text-slate-900 font-bold">{{ t.subject_name }}</span>
                 <span class="text-slate-500">目标: <strong>{{ t.planned_periods }}</strong> 节</span>
               </div>
@@ -474,10 +483,8 @@ const loadAnalyticsData = async () => {
       }
     })
 
-    // 🌟 动态计算当前的真实上课周数
     const today = new Date().toISOString().split('T')[0]
     const currentWeek = (weeks || []).filter(w => w.is_school_week && w.end_date <= today).length || 27
-// 🌟 新增：动态计算全年有效的总上课周数（保底默认为 42 周）
     const validWeeksCount = (weeks || []).filter(w => w.is_school_week).length
     const totalSchoolWeeks = validWeeksCount > 0 ? validWeeksCount : 42
     let results = []
@@ -489,7 +496,6 @@ const loadAnalyticsData = async () => {
         const totalTarget = t.planned_periods || 215 
         const standardizedTargetSubject = standardizeSubjectName(t.subject_name)
 
-        // ⭐️ 核心升级：支持多位老师共同执教同一门合班课，且包含名称智能匹配
         const matchedEntries = enrichedTimetables.filter(item => {
           const itemClass = cleanString(item.class_name)
           const clsName = cleanString(cls.class_name)
@@ -504,14 +510,11 @@ const loadAnalyticsData = async () => {
         const assignedTeacherIds = [...new Set(matchedEntries.map(e => e.teacher_id || e.teacher_info?.id).filter(Boolean))]
         const assignedTeacherName = assignedTeacherNames.length > 0 ? assignedTeacherNames.join(' / ') : '未指派'
 
-        // 🌟 核心修复：利用 Set 按“星期-节次”去重，完美解决双师同堂导致节数 Double 的问题！
         const uniquePeriods = new Set(matchedEntries.map(e => `${e.weekday}-${e.period}`))
         const weeklyPeriods = uniquePeriods.size
 
-        // 🌟 核心升级：引入时间槽去重 Set，防止同一节课同时被“请假”和“MMI干扰”重复计算两次
         const lostSlotSet = new Set()
 
-        // 1. 请假干扰损失收集
         if (leaveRequests && leaveRequests.length > 0) {
           leaveRequests.forEach(req => {
             const reqClass = cleanString(req.class_name)
@@ -539,19 +542,16 @@ const loadAnalyticsData = async () => {
                   const matchWd = itemWeekday === leaveWeekday || itemWeekday === (leaveWeekday === 0 ? 7 : leaveWeekday)
                   
                   if (matchCls && matchSubj && matchWd) {
-                    // ⭐️ 以“日期-节次”作为唯一凭证存入 Set
                     lostSlotSet.add(`${req.leave_date}-P${item.period}`)
                   }
                 })
               } else {
-                // 如果没有具体日期，作为保底直接计入一个标记
                 lostSlotSet.add(`NODATE-${Math.random()}`)
               }
             }
           })
         }
 
-        // 2. MMI 活动干扰损失收集
         if (interruptions && interruptions.length > 0) {
           interruptions.forEach(int => {
             if (int.type === 'class') {
@@ -587,7 +587,6 @@ const loadAnalyticsData = async () => {
                   const matchWeekday = itemWeekday === intWeekday || itemWeekday === (intWeekday === 0 ? 7 : intWeekday)
 
                   if (matchClass && matchPeriod && matchSubject && matchWeekday) {
-                    // ⭐️ 同样以“日期-节次”存入 Set，自动过滤掉和前面“请假”重叠的同一节课
                     lostSlotSet.add(`${int.interruption_date}-P${item.period}`)
                   }
                 })
@@ -596,27 +595,14 @@ const loadAnalyticsData = async () => {
           })
         }
 
-        // 3. 最终该科目的总受干扰损失节数 = 去重后的时间槽总大小
         let lostCount = lostSlotSet.size
 
-        // ==========================================================
-        // 🎯 核心计算逻辑：基于你的确切要求
-        // ==========================================================
-        
-        // 1. 计划累计 = 当前周次(27) * 每周固定节数(支持合班)
         const plannedAccumulated = currentWeek * weeklyPeriods
-
-        // 2. 实际执行 = 计划累计 - 受干扰损失
         const actual = Math.max(0, Number((plannedAccumulated - lostCount).toFixed(1)))
-        
-        // 3. 理论应到进度 (教育部标准线) = KPM小时 × (当前周次 / 当年动态总周数)
         const moeTarget = t.kpm_min_hours || 160
         const theoryProgress = Math.round(moeTarget * (currentWeek / totalSchoolWeeks))
-        
-        // 4. 差距 = 实际执行节数 - 理论应到进度
         const gap = Number((actual - theoryProgress).toFixed(1))
         
-        // 5. 严格的三段式状态判定
         let status = '已达目标'
         if (gap < 0) {
           status = '未达目标'
@@ -632,7 +618,7 @@ const loadAnalyticsData = async () => {
           subject_name: t.subject_name,
           teacher_name: assignedTeacherName,
           target: totalTarget,
-          expected: theoryProgress, // 报表上显示的“理论应到进度”
+          expected: theoryProgress,
           lostCount: lostCount,
           actual: actual,
           gap: gap,
@@ -681,9 +667,7 @@ const filteredAnalysisList = computed(() => {
 
 const analysisSummary = computed(() => {
   const total = filteredAnalysisList.value.length
-  // 🌟 修改点 1：精确匹配“已达目标”和“超过目标”
   const met = filteredAnalysisList.value.filter(i => i.status === '已达目标' || i.status === '超过目标').length
-  // 🌟 修改点 2：明确统计“未达目标”
   const unmet = filteredAnalysisList.value.filter(i => i.status === '未达目标').length
   return { total, met, unmet }
 })
@@ -695,7 +679,6 @@ const completionRate = computed(() => {
 
 const getGradeStats = (g) => {
   const list = filteredAnalysisList.value.filter(i => Number(i.grade) === Number(g))
-  // 🌟 修改点 3：同步修改图表数据里的状态匹配
   const met = list.filter(i => i.status === '已达目标' || i.status === '超过目标').length
   const unmet = list.filter(i => i.status === '未达目标').length
   return { met, unmet, total: list.length }

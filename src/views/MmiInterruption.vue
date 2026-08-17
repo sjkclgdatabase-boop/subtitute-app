@@ -1,30 +1,30 @@
 <template>
   <div class="p-8 max-w-7xl mx-auto min-h-screen space-y-8">
     
-    <!-- 头部区域 -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-      <div>
-        <h1 class="text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
+    <!-- 头部区域：统一的卡片风格、排版规范与渐变大标题 -->
+    <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      <div class="space-y-2 max-w-3xl">
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
           MMI 教学干扰事件记录中心
         </h1>
-        <p class="text-slate-500 text-sm mt-2 font-medium">
-          Melindungi Masa Instruksional · 按班级、教师记录教学干扰事件，保障教学时间
+        <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
+          Melindungi Masa Instruksional · 按班级、教师记录教学干扰事件，保障教学时间。
         </p>
       </div>
 
       <!-- 模式切换标签 -->
-      <div class="flex bg-white p-1 rounded-2xl shadow-sm ring-1 ring-slate-900/5">
+      <div class="flex bg-slate-100 p-1.5 rounded-2xl shadow-inner shrink-0">
         <button 
           @click="activeTab = 'class'" 
-          :class="activeTab === 'class' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'"
-          class="px-5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
+          :class="activeTab === 'class' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'"
+          class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
         >
           <span>🏫 按班级记录 </span>
         </button>
         <button 
           @click="activeTab = 'teacher'" 
-          :class="activeTab === 'teacher' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'"
-          class="px-5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
+          :class="activeTab === 'teacher' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'"
+          class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
         >
           <span>👩‍🏫 按教师记录</span>
         </button>
@@ -40,19 +40,19 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2">📅 干扰发生日期:</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">📅 干扰发生日期:</label>
           <input 
             type="date" 
             v-model="classForm.date" 
-            class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
           />
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2">⚠️ 干扰类型 / 原因:</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">⚠️ 干扰类型 / 原因:</label>
           <select 
             v-model="classForm.reason" 
-            class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-3 cursor-pointer"
+            class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-3 cursor-pointer"
           >
             <option value="Perhimpunan / 集会">特别集会</option>
             <option value="Program Sekolah / 学校活动">全校活动</option>
@@ -68,30 +68,30 @@
             type="text" 
             v-model="classForm.customReason" 
             placeholder="请在此处自行填写具体的干扰原因..." 
-            class="w-full bg-white border border-indigo-300 px-4 py-2 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
+            class="w-full bg-white border border-indigo-300 px-4 h-11 rounded-2xl text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
           />
         </div>
       </div>
 
       <div class="mb-6 bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
-        <label class="block text-xs font-bold text-slate-700">🎯 选择受影响范围:</label>
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">🎯 选择受影响范围:</label>
         
         <div class="flex flex-wrap gap-4">
           <label class="inline-flex items-center gap-2 cursor-pointer">
-            <input type="radio" v-model="classForm.scopeType" value="specific" class="text-indigo-600 focus:ring-indigo-500" />
+            <input type="radio" v-model="classForm.scopeType" value="specific" class="text-indigo-600 focus:ring-indigo-500 w-4 h-4" />
             <span class="text-xs font-bold text-slate-800">1. 指定班级</span>
           </label>
           <label class="inline-flex items-center gap-2 cursor-pointer">
-            <input type="radio" v-model="classForm.scopeType" value="grade" class="text-indigo-600 focus:ring-indigo-500" />
+            <input type="radio" v-model="classForm.scopeType" value="grade" class="text-indigo-600 focus:ring-indigo-500 w-4 h-4" />
             <span class="text-xs font-bold text-slate-800">2. 整个年级</span>
           </label>
           <label class="inline-flex items-center gap-2 cursor-pointer">
-            <input type="radio" v-model="classForm.scopeType" value="all" class="text-indigo-600 focus:ring-indigo-500" />
+            <input type="radio" v-model="classForm.scopeType" value="all" class="text-indigo-600 focus:ring-indigo-500 w-4 h-4" />
             <span class="text-xs font-bold text-slate-800">3. 全校所有班级</span>
           </label>
         </div>
 
-        <!-- ⭐️ 规整对齐的班级网格卡片流 + 全选/清空按钮 -->
+        <!-- 规整对齐的班级网格卡片流 + 全选/清空按钮 -->
         <div v-if="classForm.scopeType === 'specific'" class="space-y-3 pt-2">
           <!-- 顶部快捷操作栏 -->
           <div class="flex justify-between items-center pb-2 border-b border-slate-200/80 text-xs">
@@ -150,32 +150,32 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2">⏰ 受影响起始节次:</label>
-          <select v-model="classForm.startPeriod" class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-800 cursor-pointer">
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">⏰ 受影响起始节次:</label>
+          <select v-model="classForm.startPeriod" class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 cursor-pointer">
             <option v-for="p in 11" :key="p" :value="p">第 {{ p }} 节</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2">⏰ 受影响结束节次:</label>
-          <select v-model="classForm.endPeriod" class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-800 cursor-pointer">
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">⏰ 受影响结束节次:</label>
+          <select v-model="classForm.endPeriod" class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 cursor-pointer">
             <option v-for="p in 11" :key="p" :value="p">第 {{ p }} 节</option>
           </select>
         </div>
       </div>
 
       <div class="mb-6">
-        <label class="block text-xs font-bold text-slate-700 mb-2">📝 详细说明与补救措施:</label>
+        <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">📝 详细说明与补救措施:</label>
         <input 
           v-model="classForm.remarks" 
           type="text" 
           placeholder="示例：大礼堂举办防登革热讲座。" 
-          class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
       </div>
 
       <button 
         @click="submitClassInterruption" 
-        class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer"
+        class="bg-slate-900 hover:bg-slate-800 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer"
       >
         💾 提交班级干扰记录
       </button>
@@ -190,21 +190,21 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2">📅 干扰发生日期:</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">📅 干扰发生日期:</label>
           <input 
             type="date" 
             v-model="teacherForm.date" 
             @change="loadTeacherSubjects"
-            class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
           />
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2">👩‍🏫 选择受干扰/请假教师:</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">👩‍🏫 选择受干扰/请假教师:</label>
           <select 
             v-model="teacherForm.teacherId" 
             @change="loadTeacherSubjects"
-            class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
           >
             <option value="" disabled>-- 请选择教师 --</option>
             <option v-for="t in teachersList" :key="t.id" :value="t.id">{{ t.name }}</option>
@@ -213,12 +213,12 @@
       </div>
 
       <div class="mb-6">
-        <label class="block text-xs font-bold text-slate-700 mb-2">⚠️ 干扰原因 (如离校公干/带队/会议/病假):</label>
+        <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">⚠️ 干扰原因 (如离校公干/带队/会议/病假):</label>
         <input 
           v-model="teacherForm.reason" 
           type="text" 
           placeholder="例如: 带队参加比赛、出席会议、出席工作坊、病假等" 
-          class="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-800"
+          class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-semibold text-slate-800"
         />
       </div>
 
@@ -228,7 +228,7 @@
           <span v-if="loadingSubjects" class="text-xs font-normal text-indigo-600 animate-pulse">正在提取课程...</span>
         </h3>
 
-        <div v-if="exportedSubjects.length === 0" class="text-xs text-slate-400 py-4 text-center">
+        <div v-if="exportedSubjects.length === 0" class="text-xs text-slate-400 py-4 text-center font-medium">
           请选择日期与教师，自动加载当日受影响科目与班级
         </div>
 
@@ -243,7 +243,7 @@
                 <span class="text-xs font-extrabold text-slate-900">第 {{ sub.period }} 节</span>
                 <span v-if="sub.is_combined" class="px-1.5 py-0.5 bg-violet-100 text-violet-700 rounded text-[9px] font-bold">合班</span>
               </div>
-              <span class="text-xs text-slate-500">{{ sub.class_name }} · {{ sub.subject }}</span>
+              <span class="text-xs text-slate-500 font-medium">{{ sub.class_name }} · {{ sub.subject }}</span>
             </div>
             <span class="text-[10px] px-2 py-0.5 rounded bg-indigo-100 text-indigo-700 font-bold">受干扰</span>
           </div>
@@ -253,13 +253,13 @@
       <button 
         @click="submitTeacherInterruption" 
         :disabled="exportedSubjects.length === 0"
-        class="bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-6 py-3 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer"
+        class="bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer"
       >
         💾 确认并保存该教师干扰事件
       </button>
     </div>
 
-    <!-- ⭐️ 优化版：干扰日志历史记录表格区（上下分层 + 精准对齐 + 完美列宽） -->
+    <!-- 干扰日志历史记录表格区 -->
     <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5">
       
       <!-- 第一行：标题与导出按钮 -->
@@ -273,27 +273,27 @@
 
         <button 
           @click="exportLogsToExcel" 
-          class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 h-11 rounded-2xl text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
         >
           <span>📥 导出 Excel</span>
         </button>
       </div>
 
-      <!-- 第二行：所有筛选与搜索框平铺，保持呼吸感 -->
+      <!-- 第二行：所有筛选与搜索框平铺 -->
       <div class="flex flex-wrap items-center gap-3 mb-6">
-        <select v-model="typeFilter" class="bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none">
+        <select v-model="typeFilter" class="bg-slate-50 border border-slate-200 px-3.5 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none cursor-pointer">
           <option value="all">所有类型</option>
           <option value="class">班级干扰</option>
           <option value="teacher">教师干扰</option>
         </select>
 
-        <select v-model="dateRangeFilter" class="bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none">
+        <select v-model="dateRangeFilter" class="bg-slate-50 border border-slate-200 px-3.5 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none cursor-pointer">
           <option value="all">所有时间范围</option>
           <option value="week">📅 本周 (最近 7 天)</option>
           <option value="month">📅 本月 (当前月份)</option>
         </select>
 
-        <select v-model="selectedMonth" class="bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none">
+        <select v-model="selectedMonth" class="bg-slate-50 border border-slate-200 px-3.5 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none cursor-pointer">
           <option value="all">🗓️ 所有月份 (全年)</option>
           <option v-for="m in 12" :key="m" :value="String(m)">{{ m }} 月</option>
         </select>
@@ -303,12 +303,12 @@
             type="text" 
             v-model="searchQuery" 
             placeholder="搜索老师/班级/原因..." 
-            class="w-full bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
       </div>
 
-      <!-- 表格区域：固定列宽、统一对齐、杜绝溢出滚动条 -->
+      <!-- 表格区域 -->
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse text-xs table-fixed">
           <thead>
@@ -402,7 +402,7 @@
                 <button 
                   v-else 
                   @click="openDetailModal(log)" 
-                  class="text-indigo-600 hover:text-indigo-800 font-bold bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition inline-flex items-center justify-center gap-1 text-xs mx-auto cursor-pointer"
+                  class="text-indigo-600 hover:text-indigo-800 font-bold bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-xl transition inline-flex items-center justify-center gap-1 text-xs mx-auto cursor-pointer"
                 >
                   <span>查看详情</span> 
                   <span>🔍</span>
@@ -411,7 +411,7 @@
 
               <!-- 操作: 居中 -->
               <td class="py-3.5 px-3 text-center truncate">
-                <button @click="deleteLog(log)" class="text-xs text-red-600 hover:text-red-800 font-bold px-2.5 py-1.5 bg-red-50 hover:bg-red-100 rounded-lg cursor-pointer transition">
+                <button @click="deleteLog(log)" class="text-xs text-red-600 hover:text-red-800 font-bold px-3 py-1.5 bg-red-50 hover:bg-red-100 rounded-xl cursor-pointer transition">
                   删除
                 </button>
               </td>
@@ -421,7 +421,7 @@
       </div>
     </div>
 
-    <!-- ⭐️ 备注详情弹窗 -->
+    <!-- 备注详情弹窗 -->
     <div v-if="showDetailModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl ring-1 ring-slate-900/10 animate-in fade-in zoom-in duration-200">
         <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
@@ -481,7 +481,6 @@ import { useToast } from '../utils/toast'
 const toast = useToast()
 const activeTab = ref('class')
 
-// 获取本地时区当前日期的标准函数
 const getLocalToday = () => {
   const now = new Date()
   const year = now.getFullYear()
@@ -504,14 +503,12 @@ const classForm = ref({
 
 const groupedClasses = ref({})
 
-// 班级全选功能
 const selectAllClasses = () => {
   const all = []
   Object.values(groupedClasses.value).forEach(arr => all.push(...arr))
   classForm.value.selectedClasses = all
 }
 
-// 班级清空功能
 const clearAllClasses = () => {
   classForm.value.selectedClasses = []
 }
@@ -832,7 +829,6 @@ const exportLogsToExcel = () => {
   toast.success("导出报表成功！")
 }
 
-// 前端展示清洗函数：自动把 KELAS: 或 班级: 抹掉，只留后面的纯班级名
 const formatTargetDisplay = (text) => {
   if (!text) return ''
   return text.replace(/^(KELAS|班级)[:：]\s*/i, '').trim()

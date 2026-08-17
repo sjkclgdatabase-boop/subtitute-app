@@ -1,62 +1,64 @@
 <template>
-  <div class="p-8 max-w-7xl mx-auto min-h-screen">
+  <div class="p-8 max-w-7xl mx-auto min-h-screen space-y-8">
     
-    <!-- 头部区域 -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-      <div>
-        <h1 class="text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
+    <!-- 头部区域：统一的卡片、排版规范与渐变标题 -->
+    <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      <div class="space-y-2 max-w-3xl">
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
           代课调度中心
         </h1>
-        <p class="text-slate-500 text-sm mt-2 font-medium">实时监控教师请假，跟踪代课任务分配进度</p>
+        <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
+          实时监控教师请假，跟踪代课任务分配进度
+        </p>
       </div>
-      <router-link to="/leave-entry" class="group relative inline-flex items-center justify-center px-6 py-2.5 text-sm font-semibold text-white transition-all duration-200 bg-slate-900 font-display rounded-full hover:bg-slate-800 hover:shadow-lg hover:shadow-slate-900/20 hover:-translate-y-0.5">
+      <router-link to="/leave-entry" class="group relative inline-flex items-center justify-center px-6 h-11 text-xs sm:text-sm font-bold text-white transition-all duration-200 bg-slate-900 rounded-2xl hover:bg-slate-800 hover:shadow-lg hover:shadow-slate-900/20 shrink-0">
         <span>新建请假</span>
         <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
       </router-link>
     </div>
 
     <!-- 核心指标统计卡片 -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <div class="bg-white rounded-2xl p-6 shadow-sm ring-1 ring-slate-900/5 hover:shadow-md transition-all">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-900/5 hover:shadow-md transition-all">
         <div class="flex items-center justify-between">
-          <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider">待分配代课任务</p>
-          <div class="w-10 h-10 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center ring-1 ring-amber-500/20">⏳</div>
+          <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">待分配代课任务</p>
+          <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center ring-1 ring-amber-500/20">⏳</div>
         </div>
-        <p class="text-4xl font-bold text-slate-900 mt-4">{{ pendingCount }}</p>
+        <p class="text-3xl font-black text-slate-900 mt-4">{{ pendingCount }}</p>
       </div>
       
-      <div class="bg-white rounded-2xl p-6 shadow-sm ring-1 ring-slate-900/5 hover:shadow-md transition-all">
+      <div class="bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-900/5 hover:shadow-md transition-all">
         <div class="flex items-center justify-between">
-          <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider">已完成代课</p>
-          <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center ring-1 ring-emerald-500/20">✓</div>
+          <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">已完成代课</p>
+          <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center ring-1 ring-emerald-500/20">✓</div>
         </div>
-        <p class="text-4xl font-bold text-slate-900 mt-4">{{ assignedCount }}</p>
+        <p class="text-3xl font-black text-slate-900 mt-4">{{ assignedCount }}</p>
       </div>
       
-      <div class="bg-white rounded-2xl p-6 shadow-sm ring-1 ring-slate-900/5 hover:shadow-md transition-all">
+      <div class="bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-900/5 hover:shadow-md transition-all">
         <div class="flex items-center justify-between">
-          <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider">历史总任务</p>
-          <div class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center ring-1 ring-indigo-500/20">📊</div>
+          <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">历史总任务</p>
+          <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center ring-1 ring-indigo-500/20">📊</div>
         </div>
-        <p class="text-4xl font-bold text-slate-900 mt-4">{{ leaveRequests.length }}</p>
+        <p class="text-3xl font-black text-slate-900 mt-4">{{ leaveRequests.length }}</p>
       </div>
     </div>
 
     <!-- 过滤器与视图切换栏 -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 bg-white p-4 rounded-2xl shadow-sm ring-1 ring-slate-900/5">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-3xl shadow-sm ring-1 ring-slate-900/5">
       <div class="flex flex-wrap items-center gap-3">
-        <div class="flex bg-slate-100 p-1 rounded-xl">
+        <div class="flex bg-slate-100 p-1.5 rounded-2xl">
           <button 
             @click="viewMode = 'today'"
-            :class="viewMode === 'today' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'"
-            class="px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer"
+            :class="viewMode === 'today' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900'"
+            class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer"
           >
-            📅  仅今日
+            📅 仅今日
           </button>
           <button 
             @click="viewMode = 'grouped'"
-            :class="viewMode === 'grouped' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'"
-            class="px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer"
+            :class="viewMode === 'grouped' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900'"
+            class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer"
           >
             📂 按日期分组
           </button>
@@ -66,23 +68,23 @@
           v-if="viewMode === 'today'"
           type="date" 
           v-model="targetDate"
-          class="bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+          class="bg-slate-50 border border-slate-200 px-3.5 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
         />
       </div>
 
-      <div class="text-xs text-slate-400 font-medium">
-        当前显示 <span class="font-bold text-slate-700">{{ displayedRequests.length }}</span> 条请假任务
+      <div class="text-xs text-slate-500 font-bold">
+        当前显示 <span class="text-slate-900">{{ displayedRequests.length }}</span> 条请假任务
       </div>
     </div>
 
     <!-- 数据表格区域 -->
-    <div class="bg-white rounded-2xl shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
       
       <!-- 模式一：只看今天 -->
       <div v-if="viewMode === 'today'" class="overflow-x-auto">
         <table class="w-full text-left border-collapse whitespace-nowrap">
           <thead>
-            <tr class="bg-slate-50/50 border-b border-slate-100 text-slate-500 text-xs uppercase tracking-widest font-semibold select-none">
+            <tr class="bg-slate-50 border-b border-slate-100 text-slate-500 text-xs uppercase tracking-widest font-semibold select-none">
               <th class="py-4 pl-6 pr-4 cursor-pointer hover:text-indigo-600 transition" @click="handleSort('teacher')">
                 请假老师 <span v-if="sortKey === 'teacher'" class="text-indigo-600 font-bold ml-1">{{ sortOrder === 'asc' ? '▲' : '▼' }}</span>
               </th>
@@ -101,7 +103,7 @@
               <th class="py-4 pr-6 pl-4 text-right">操作</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-100 text-sm">
+          <tbody class="divide-y divide-slate-100 text-xs font-medium text-slate-800">
             <tr v-if="displayedRequests.length === 0">
               <td colspan="6" class="py-12 text-center text-slate-400 font-medium">所选日期 ({{ targetDate }}) 暂无教师请假记录 </td>
             </tr>
@@ -111,14 +113,14 @@
               </td>
               <td class="p-4">
                 <div class="flex items-center gap-2">
-                  <span class="text-slate-900 font-medium">{{ req.class_name }}</span>
+                  <span class="text-slate-900 font-semibold">{{ req.class_name }}</span>
                   <span v-if="req.class_name.includes('/')" class="px-1.5 py-0.5 bg-violet-100 text-violet-700 rounded text-[10px] font-bold">合班</span>
-                  <span class="text-slate-400">·</span>
+                  <span class="text-slate-300">·</span>
                   <span class="text-slate-500">{{ req.subject }}</span>
                 </div>
               </td>
               <td class="p-4">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-600 font-medium text-xs">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold text-xs">
                   第 {{ req.period }} 节
                 </span>
               </td>
@@ -137,7 +139,7 @@
                 <button 
                   v-if="req.status === 'pending'"
                   @click="openRecommendModal(req)"
-                  class="inline-flex items-center justify-center px-4 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 rounded-full hover:bg-indigo-100 transition-all cursor-pointer"
+                  class="inline-flex items-center justify-center px-4 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-all cursor-pointer"
                 >
                   ✨ 智能与手动排课
                 </button>
@@ -159,12 +161,12 @@
             class="w-full flex justify-between items-center px-6 py-4 bg-slate-50 hover:bg-slate-100 transition text-left cursor-pointer"
           >
             <div class="flex items-center gap-3">
-              <span class="font-bold text-slate-900 text-base">📅 {{ date }}</span>
-              <span class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-semibold">
+              <span class="font-bold text-slate-900 text-sm">📅 {{ date }}</span>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-bold">
                 {{ requests.length }} 节任务
               </span>
             </div>
-            <span class="text-slate-400 text-sm font-semibold">
+            <span class="text-slate-400 text-xs font-bold">
               {{ foldedDates[date] ? '展开 ▼' : '收起 ▲' }}
             </span>
           </button>
@@ -191,21 +193,21 @@
                   <th class="py-3 pr-6 pl-3 text-right">操作</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100 text-sm">
+              <tbody class="divide-y divide-slate-100 text-xs font-medium text-slate-800">
                 <tr v-for="req in requests" :key="req.id" class="hover:bg-slate-50/50 transition-colors group">
                   <td class="py-3 pl-6 pr-4 text-slate-900 font-bold w-48">
                     {{ teachersMap[req.teacher_id]?.name || '加载中...' }}
                   </td>
                   <td class="p-3">
                     <div class="flex items-center gap-2">
-                      <span class="text-slate-900 font-medium">{{ req.class_name }}</span>
+                      <span class="text-slate-900 font-semibold">{{ req.class_name }}</span>
                       <span v-if="req.class_name.includes('/')" class="px-1.5 py-0.5 bg-violet-100 text-violet-700 rounded text-[10px] font-bold">合班</span>
-                      <span class="text-slate-400">·</span>
+                      <span class="text-slate-300">·</span>
                       <span class="text-slate-500">{{ req.subject }}</span>
                     </div>
                   </td>
                   <td class="p-3">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-600 font-medium text-xs">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold text-xs">
                       第 {{ req.period }} 节
                     </span>
                   </td>
@@ -224,7 +226,7 @@
                     <button 
                       v-if="req.status === 'pending'"
                       @click="openRecommendModal(req)"
-                      class="inline-flex items-center justify-center px-4 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 rounded-full hover:bg-indigo-100 transition-all cursor-pointer"
+                      class="inline-flex items-center justify-center px-4 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-all cursor-pointer"
                     >
                       ✨ 排课
                     </button>
@@ -260,7 +262,7 @@
                 v-model="assignmentRemark" 
                 type="text" 
                 placeholder="例如: Perpustakaan (若需带去图书馆或合并班级)" 
-                class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
               />
             </div>
 
@@ -271,7 +273,7 @@
               <div class="flex flex-col sm:flex-row items-center gap-3">
                 <select 
                   v-model="manualSelectedTeacherId" 
-                  class="w-full px-3 py-2 bg-white border border-indigo-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                  class="w-full px-3.5 py-2.5 bg-white border border-indigo-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
                 >
                   <option value="" disabled>-- 请手动选择同班次教师 --</option>
                   <option v-for="t in allSameSessionTeachers" :key="t.id" :value="t.id">
@@ -281,7 +283,7 @@
                 <button 
                   @click="assignSubstitute(manualSelectedTeacherId)" 
                   :disabled="!manualSelectedTeacherId"
-                  class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-5 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all shrink-0 cursor-pointer"
+                  class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-5 py-2.5 rounded-xl text-xs font-semibold shadow-sm transition-all shrink-0 cursor-pointer"
                 >
                   确认手动指派
                 </button>
