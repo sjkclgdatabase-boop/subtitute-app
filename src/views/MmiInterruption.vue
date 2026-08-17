@@ -474,15 +474,24 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onActivated } from 'vue'
 import { supabase } from '../services/supabase'
 import { useToast } from '../utils/toast'
 
 const toast = useToast()
 const activeTab = ref('class')
 
+// 获取本地时区当前日期的标准函数
+const getLocalToday = () => {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 const classForm = ref({
-  date: new Date().toISOString().split('T')[0],
+  date: getLocalToday(),
   reason: 'Perhimpunan / 集会',
   customReason: '',
   scopeType: 'specific',
@@ -526,7 +535,7 @@ const fetchClasses = async () => {
 }
 
 const teacherForm = ref({
-  date: new Date().toISOString().split('T')[0],
+  date: getLocalToday(),
   teacherId: '',
   reason: ''
 })
@@ -718,7 +727,6 @@ const submitClassInterruption = async () => {
   let targetDisplay = ''
   if (classForm.value.scopeType === 'specific') {
     if (classForm.value.selectedClasses.length === 0) return toast.error("请至少选择一个班级！")
-    // ⭐️ 直接去掉 "班级: " 前缀，只留班级名称
     targetDisplay = classForm.value.selectedClasses.join(', ')
   } else if (classForm.value.scopeType === 'grade') {
     targetDisplay = `Tahun ${classForm.value.selectedGrade} (全年级)`
@@ -817,7 +825,7 @@ const exportLogsToExcel = () => {
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.setAttribute('href', url)
-  link.setAttribute('download', `MMI_干扰事件历史记录_${new Date().toISOString().split('T')[0]}.csv`)
+  link.setAttribute('download', `MMI_干扰事件历史记录_${getLocalToday()}.csv`)
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
@@ -886,8 +894,18 @@ const deleteLog = async (log) => {
 }
 
 onMounted(() => {
+  const today = getLocalToday()
+  classForm.value.date = today
+  teacherForm.value.date = today
+
   loadTeachers()
   fetchLogs()
   fetchClasses()
+})
+
+onActivated(() => {
+  const today = getLocalToday()
+  classForm.value.date = today
+  teacherForm.value.date = today
 })
 </script>
