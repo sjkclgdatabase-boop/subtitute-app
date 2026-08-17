@@ -1,13 +1,37 @@
 <template>
-  <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col h-screen sticky top-0 left-0 shrink-0 z-40 border-r border-slate-800 print:hidden shadow-xl">
+  <aside 
+    :class="isSidebarCollapsed ? 'w-20' : 'w-72'" 
+    class="bg-slate-900 text-slate-300 flex flex-col h-screen sticky top-0 left-0 shrink-0 z-40 border-r border-slate-800 print:hidden shadow-xl transition-all duration-300"
+  >
     
-    <!-- 顶部 Logo 与系统名称 -->
-    <div class="p-5 border-b border-slate-800 flex items-center gap-3 cursor-pointer select-none" @click="router.push('/')">
-      <img :src="currentLogo" alt="Logo" class="w-10 h-10 object-contain rounded-xl bg-slate-800 p-1 shadow-sm shrink-0" />
-      <div class="flex flex-col justify-center overflow-hidden">
-        <span class="font-extrabold text-xs tracking-tight text-white leading-tight truncate">{{ currentSchoolName }}</span>
-        <span class="text-[9px] font-bold text-indigo-400 mt-0.5 uppercase tracking-wider">智能教务统筹系统</span>
+    <!-- 顶部区域：校名/Logo + 跟你截图一模一样的精美折叠图标按钮 -->
+    <div class="p-4 border-b border-slate-800 flex items-center justify-between gap-2 select-none">
+      
+      <!-- 校名与 Logo (折叠时隐藏) -->
+      <div v-show="!isSidebarCollapsed" class="flex items-center gap-2.5 cursor-pointer overflow-hidden flex-1 min-w-0" @click="router.push('/')">
+        <img :src="currentLogo" alt="Logo" class="w-12 h-12 object-contain rounded-xl bg-slate-800 p-1 shrink-0 shadow-sm" />
+        <div class="flex flex-col justify-center overflow-hidden min-w-0">
+          <span class="font-bold text-[14px] tracking-tight text-white leading-tight truncate">{{ currentSchoolName }}</span>
+          <span class="text-[11px] font-bold text-indigo-400 mt-0.5 uppercase tracking-wider">智能教务统筹系统</span>
+        </div>
       </div>
+
+      <!-- 仅在折叠时显示的居中小 Logo -->
+      <div v-show="isSidebarCollapsed" class="mx-auto cursor-pointer" @click="router.push('/')" title="返回首页">
+        <img :src="currentLogo" alt="Logo" class="w-8 h-8 object-contain rounded-xl bg-slate-800 p-1 shrink-0 shadow-sm" />
+      </div>
+
+      <!-- ⭐️ 跟你截图一模一样的侧边栏缩放/折叠 SVG 图标按钮 -->
+      <button 
+        @click="toggleSidebar" 
+        class="w-9 h-9 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition cursor-pointer shrink-0 shadow-sm"
+        :title="isSidebarCollapsed ? '展开侧边栏' : '收起侧边栏'"
+      >
+        <svg class="w-5 h-5 transition-transform duration-300" :class="isSidebarCollapsed ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="4" />
+          <line x1="9" y1="3" x2="9" y2="21" />
+        </svg>
+      </button>
     </div>
 
     <!-- 导航菜单 -->
@@ -16,30 +40,39 @@
         v-for="(item, index) in navItems" 
         :key="index"
         :to="item.path" 
-        class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-800/80 group"
-        exact-active-class="!text-white bg-indigo-600 shadow-md shadow-indigo-600/20"
+        class="flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-xs font-bold transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-800/80 group/item relative"
+        exact-active-class="!text-white !bg-indigo-600 shadow-md shadow-indigo-600/20"
+        :title="isSidebarCollapsed ? item.name : ''"
       >
-        <span class="text-base shrink-0 group-hover:scale-110 transition-transform">{{ item.icon }}</span>
-        <span class="truncate">{{ item.name }}</span>
+        <span class="text-base shrink-0 group-hover/item:scale-110 transition-transform">{{ item.icon }}</span>
+        <span v-show="!isSidebarCollapsed" class="truncate">{{ item.name }}</span>
       </router-link>
     </div>
 
     <!-- 底部操作区 -->
-    <div class="p-4 border-t border-slate-800 bg-slate-950/40 space-y-2">
+    <div class="p-3 border-t border-slate-800 bg-slate-950/40 space-y-1.5">
       
       <!-- 切换到马来文版按钮 -->
-      <button @click="switchToMalay" class="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300 transition-colors cursor-pointer">
-        <span>🌐</span>
-        <span>Bahasa Melayu</span>
+      <button 
+        @click="switchToMalay" 
+        class="w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300 transition-colors cursor-pointer"
+        :title="isSidebarCollapsed ? 'Bahasa Melayu' : ''"
+      >
+        <span class="text-base shrink-0">🌐</span>
+        <span v-show="!isSidebarCollapsed" class="truncate">Bahasa Melayu</span>
       </button>
 
       <!-- 退出登录 -->
-      <button @click="logout" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors cursor-pointer">
-        <div class="flex items-center gap-2">
-          <span>🚪</span>
-          <span>退出登录</span>
+      <button 
+        @click="logout" 
+        class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors cursor-pointer"
+        :title="isSidebarCollapsed ? '退出登录' : ''"
+      >
+        <div class="flex items-center gap-3.5 truncate">
+          <span class="text-base shrink-0">🚪</span>
+          <span v-show="!isSidebarCollapsed" class="truncate">退出登录</span>
         </div>
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg v-show="!isSidebarCollapsed" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
         </svg>
       </button>
@@ -59,6 +92,12 @@ const toast = useToast()
 const currentLogo = ref('/logo.png')
 const currentSchoolName = ref('智能教务统筹系统')
 
+const isSidebarCollapsed = ref(false)
+
+const toggleSidebar = () => {
+  isSidebarCollapsed.value = !isSidebarCollapsed.value
+}
+
 const loadIdentity = async () => {
   const cachedLogo = localStorage.getItem('school_logo')
   const cachedName = localStorage.getItem('school_name')
@@ -76,7 +115,6 @@ const loadIdentity = async () => {
 
 onMounted(loadIdentity)
 
-// 🚀 补充了与马来文版一致的 Icon 图标
 const navItems = [
   { name: '调度总览', path: '/', icon: '📊' },
   { name: '教师请假登记', path: '/leave-entry', icon: '📝' },
@@ -89,14 +127,9 @@ const navItems = [
   { name: '系统设置', path: '/settings', icon: '⚙️' } 
 ]
 
-// 🚀 核心跳转逻辑：带上 Token 跳去马来文版
 const switchToMalay = async () => {
   try {
     const { data: { session } } = await supabase.auth.getSession()
-    
-    // 👇 加上这行弹窗或打印
-    console.log("当前检查到的 Session:", session)
-
     const malayAppUrl = 'https://subtitute-app-bm.vercel.app' 
 
     if (session) {
@@ -114,10 +147,7 @@ const logout = async () => {
   try {
     await supabase.auth.signOut()
     toast.success("已安全退出")
-    
-    // 🚀 核心修改：使用原生 window.location 强制跳回登录页，彻底销毁旧界面！
     window.location.href = '/login'
-    
   } catch (error) {
     toast.error("退出失败：" + error.message)
   }
