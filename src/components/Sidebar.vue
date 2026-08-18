@@ -129,7 +129,8 @@ const navItems = [
   { name: '调度总览', path: '/', icon: '📊' },
   { name: '教师请假登记', path: '/leave-entry', icon: '📝' },
   { name: '教师档案', path: '/teachers', icon: '👩‍🏫' },
-  { name: '全校课表', path: '/timetable', icon: '📅' },
+  { name: '教师时间表', path: '/timetable', icon: '📅' }, // 原来的老师课表
+  { name: '班级时间表', path: '/class-timetable', icon: '🏫' },
   { name: '代课记录', path: '/records', icon: '🔄' },
   { name: '统计报表', path: '/statistics', icon: '📈' },
   { name: 'MMI冲突干预', path: '/mmi-interruption', icon: '⚠️' }, 
