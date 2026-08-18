@@ -1,7 +1,6 @@
 <template>
   <div class="p-8 max-w-7xl mx-auto min-h-screen space-y-8">
     
-    <!-- 头部区域：统一的卡片风格、排版规范与渐变大标题 -->
     <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 space-y-2">
       <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
         系统全局设置与维护
@@ -11,7 +10,70 @@
       </p>
     </div>
 
-    <!-- 卡片：学校 Logo 与外观设置 -->
+    <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
+      <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+        <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">👤</span>
+        管理员账号管理
+      </h2>
+      <p class="text-slate-500 text-xs font-medium">授权新管理员或老师账号，直接在前端开通或删除登录权限。</p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-900">➕ 添加新管理员</h3>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">新用户邮箱</label>
+            <input 
+              v-model="newUserEmail" 
+              type="email" 
+              placeholder="teacher@school.edu.my" 
+              class="w-full px-4 h-11 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">初始密码</label>
+            <input 
+              v-model="newUserPassword" 
+              type="password" 
+              placeholder="至少 6 位数字母或密码" 
+              class="w-full px-4 h-11 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+            />
+          </div>
+
+          <button 
+            @click="handleCreateUser" 
+            :disabled="creatingUser"
+            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white h-11 rounded-xl text-xs font-bold shadow-sm transition cursor-pointer disabled:opacity-50"
+          >
+            {{ creatingUser ? '正在创建...' : '确认添加新用户' }}
+          </button>
+        </div>
+
+        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4 flex flex-col">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-900">📋 系统现有用户列表</h3>
+            <button @click="fetchUsers" class="text-xs text-indigo-600 font-bold hover:underline cursor-pointer">刷新列表</button>
+          </div>
+
+          <div class="flex-1 overflow-y-auto max-h-56 space-y-2 border border-slate-200 bg-white rounded-xl p-3">
+            <div v-if="userList.length === 0" class="text-center text-xs text-slate-400 py-8">暂无用户或正在加载...</div>
+            <div v-for="u in userList" :key="u.id" class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100 text-xs">
+              <div class="truncate pr-2">
+                <div class="font-bold text-slate-800 truncate">{{ u.email }}</div>
+                <div class="text-[10px] text-slate-400">注册时间: {{ new Date(u.created_at).toLocaleDateString() }}</div>
+              </div>
+              <button 
+                @click="handleDeleteUser(u.id, u.email)" 
+                class="text-rose-500 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-lg font-bold transition shrink-0 cursor-pointer"
+              >
+                删除
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center font-bold text-xs">🖼️</span>
@@ -34,12 +96,10 @@
           <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">更换学校 Logo (支持本地上传)</label>
           
           <div class="flex items-center gap-6">
-            <!-- 预览图 -->
             <div class="w-20 h-20 rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-center p-2 overflow-hidden shadow-inner shrink-0">
               <img :src="schoolLogoSetting || '/logo.png'" alt="Logo Preview" class="w-full h-full object-contain" />
             </div>
 
-            <!-- 上传按钮与说明 -->
             <div class="flex-1 space-y-2">
               <label class="relative inline-flex cursor-pointer bg-slate-900 hover:bg-slate-800 text-white px-5 h-11 rounded-2xl text-xs font-bold transition shadow-sm items-center gap-2">
                 <span>📂 选择新 Logo 图片</span>
@@ -61,7 +121,6 @@
       </div>
     </div>
 
-    <!-- 卡片一：学校作息配置 -->
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">🏫</span>
@@ -104,7 +163,6 @@
       </div>
     </div>
 
-    <!-- 卡片二：学年上课周历与假期维护 -->
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs">📅</span>
@@ -180,7 +238,6 @@
       </div>
     </div>
 
-    <!-- 卡片三：学校班级基础管理 -->
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center font-bold text-xs">📚</span>
@@ -264,7 +321,6 @@
       </div>
     </div>
 
-    <!-- 卡片四：MMI 科目目标模板管理与批量导入 -->
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs">📊</span>
@@ -290,7 +346,6 @@
       </div>
     </div>
 
-    <!-- 卡片五：本地数据备份与恢复 -->
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs">💾</span>
@@ -299,7 +354,6 @@
       <p class="text-slate-500 text-xs font-medium mb-6">定期将全校的所有核心数据打包备份到本地电脑，安全无忧。</p>
       
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <!-- 导出备份 -->
         <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col justify-between space-y-4">
           <div>
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">导出全量数据备份</h3>
@@ -310,7 +364,6 @@
           </button>
         </div>
 
-        <!-- 恢复备份 -->
         <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col justify-between space-y-4">
           <div>
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">恢复系统数据</h3>
@@ -324,7 +377,6 @@
       </div>
     </div>
 
-    <!-- 卡片六：正式上线数据清理、备份与维护面板 -->
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-8 h-8 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center font-bold text-xs">🛠️</span>
@@ -375,7 +427,6 @@
       </div>
     </div>
 
-    <!-- 📊 动态数字百分比进度条弹窗 -->
     <Transition
       enter-active-class="transition duration-300 ease-out"
       enter-from-class="opacity-0 scale-95"
@@ -433,6 +484,74 @@ const config = ref({ daysPerWeek: 5, periodsPerDay: 8 })
 const loading = ref(false)
 const fileInput = ref(null)
 const weekFileInput = ref(null)
+
+// --- 用户管理状态 ---
+const newUserEmail = ref('')
+const newUserPassword = ref('')
+const creatingUser = ref(false)
+const userList = ref([])
+
+const fetchUsers = async () => {
+  try {
+    const { data, error } = await supabase.functions.invoke('create-user?action=list', {
+      method: 'GET'
+    })
+    if (error || data?.error) throw new Error(error?.message || data?.error)
+    if (data?.users) {
+      userList.value = data.users
+    }
+  } catch (err) {
+    console.error("获取用户列表失败:", err.message)
+  }
+}
+
+const handleCreateUser = async () => {
+  if (!newUserEmail.value.trim() || !newUserPassword.value) {
+    return toast.error("请完整填写邮箱与初始密码！")
+  }
+
+  creatingUser.value = true
+  try {
+    const { data, error } = await supabase.functions.invoke('create-user?action=create', {
+      body: { 
+        email: newUserEmail.value.trim(), 
+        password: newUserPassword.value 
+      }
+    })
+
+    if (error || data?.error) {
+      throw new Error(error?.message || data?.error)
+    }
+
+    toast.success("Berjaya cipta pengguna! / 新用户创建成功！")
+    newUserEmail.value = ''
+    newUserPassword.value = ''
+    fetchUsers()
+  } catch (err) {
+    toast.error("创建用户失败: " + err.message)
+  } finally {
+    creatingUser.value = false
+  }
+}
+
+const handleDeleteUser = async (userId, email) => {
+  if (!confirm(`⚠️ 确定要删除管理员账号 ${email} 吗？删除后该用户将无法再登录系统。`)) return
+
+  try {
+    const { data, error } = await supabase.functions.invoke('create-user?action=delete', {
+      body: { userId }
+    })
+
+    if (error || data?.error) {
+      throw new Error(error?.message || data?.error)
+    }
+
+    toast.success("用户已成功删除")
+    fetchUsers()
+  } catch (err) {
+    toast.error("删除用户失败: " + err.message)
+  }
+}
 
 // 📊 上传百分比进度条状态
 const uploadProgress = ref({
@@ -508,6 +627,7 @@ onMounted(() => {
   fetchClasses()
   fetchSchoolWeeks()
   fetchSchoolIdentity()
+  fetchUsers() // 自动加载用户列表
 })
 
 const saveConfig = () => {
