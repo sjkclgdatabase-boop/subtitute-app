@@ -1,9 +1,15 @@
 <template>
-  <div class="min-h-screen bg-slate-50 flex">
-    <Sidebar v-if="showSidebar" />
-    <main class="flex-1 overflow-y-auto">
+  <!-- 锁死整个屏幕，只允许在 main 区域内部出现大滚动条 -->
+  <div class="h-screen w-screen flex bg-slate-50 overflow-hidden print:bg-white">
+    
+    <!-- 侧边栏固定不动 -->
+    <Sidebar v-if="showSidebar" class="shrink-0 h-full z-20" />
+    
+    <!-- 右侧内容区：开启 overflow-auto，只要里面的内容超过宽度，底部立刻出现大横向滚动条 -->
+    <main class="flex-1 h-full overflow-auto">
       <router-view />
     </main>
+
     <Toast />
   </div>
 </template>
@@ -12,10 +18,8 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import Sidebar from './components/Sidebar.vue'
-import Toast from './components/Toast.vue' // 注意这里我帮你把路径改回 components 了
+import Toast from './components/Toast.vue'
 
 const route = useRoute()
-
-// 🚀 核心加强：不管路由是 /login 还是 /Login，只要包含 login 就绝对隐藏侧边栏！
 const showSidebar = computed(() => !route.path.toLowerCase().includes('/login'))
 </script>

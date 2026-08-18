@@ -74,7 +74,7 @@
     </div>
 
     <!-- 🟢 A4 课表渲染区 (纯白无色差、连贯无断开、顶部适当留白) -->
-    <div v-if="selectedClass" class="bg-white p-4 sm:p-8 rounded-3xl shadow-sm ring-1 ring-slate-200 overflow-x-auto print:overflow-visible print:border-none print:shadow-none print:p-0 print:m-0 print-safe-font print:pt-6">
+    <div v-if="selectedClass" class="bg-white p-4 sm:p-8 rounded-3xl shadow-sm ring-1 ring-slate-200 overflow-x-auto print:overflow-visible print:border-none print:shadow-none print:p-0 print:m-0 print-safe-font print:pt-6 print:ring-0 print:rounded-none">
       
       <div class="min-w-[1050px] print:min-w-0 print:w-full mx-auto bg-white text-black relative space-y-3">
         
