@@ -262,9 +262,9 @@ const leaveReason = ref('')
 // 🌟 新增：分类数据（已关联对应的 Lucide 图标）
 const leaveCategory = ref('个人请假')
 const leaveCategories = [
-  { value: '个人请假', iconComponent: UserCheck, label: '个人请假 (Cuti)', desc: '病假/事假/产假等', placeholder: '示例：MC, CRK, CUTI BERSALIN 等' },
-  { value: '离校公干', iconComponent: BriefcaseBusiness, label: '离校公干 (Tugas Luar)', desc: '外出开会/课程/带队', placeholder: '示例：MESYUARAT PPD, KURSUS, PKL 等' },
-  { value: '校内任务', iconComponent: Building2, label: '校内任务 (Tugas Dalam)', desc: '校内看管/活动/开会', placeholder: '示例：MESYUARAT DALAMAN, KAWALAN MURID 等' }
+  { value: '个人请假', iconComponent: UserCheck, label: '个人请假', desc: '病假/事假/产假等', placeholder: '示例：MC, CRK, CUTI BERSALIN 等' },
+  { value: '离校公干', iconComponent: BriefcaseBusiness, label: '离校公干', desc: '外出开会/课程/带队', placeholder: '示例：MESYUARAT PPD, KURSUS, PKL 等' },
+  { value: '校内任务', iconComponent: Building2, label: '校内任务', desc: '校内看管/活动/开会', placeholder: '示例：MESYUARAT DALAMAN, KAWALAN MURID 等' }
 ]
 
 // 动态提示词
