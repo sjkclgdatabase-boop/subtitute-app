@@ -152,7 +152,7 @@ onMounted(loadIdentity)
 
 const navItems = [
   { name: '调度总览', path: '/', icon: LayoutDashboard },
-  { name: '教师请假登记', path: '/leave-entry', icon: CalendarCheck2 },
+  { name: '代课任务登记', path: '/leave-entry', icon: CalendarCheck2 },
   { name: '教师档案', path: '/teachers', icon: UsersRound },
   { name: '教师时间表', path: '/timetable', icon: CalendarDays },
   { name: '班级时间表', path: '/class-timetable', icon: Table2 },
