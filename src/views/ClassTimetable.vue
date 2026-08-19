@@ -4,7 +4,8 @@
     <!-- 🟢 头部区域：与 Teachers.vue 完全一致的卡片风格、排版规范与渐变大标题 -->
     <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 print:hidden">
       <div class="space-y-2 max-w-3xl">
-        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800 flex items-center gap-3">
+          <GraduationCap class="w-8 h-8 text-indigo-700 shrink-0" />
           班级课表预览
         </h1>
         <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
@@ -17,9 +18,9 @@
         <button 
           @click="printTimetable"
           :disabled="!selectedClass || isLoading"
-          class="w-full sm:w-auto whitespace-nowrap inline-flex items-center justify-center px-6 h-11 text-xs font-bold text-white bg-indigo-600 rounded-2xl hover:bg-indigo-700 transition-all shadow-md disabled:opacity-50 cursor-pointer"
+          class="w-full sm:w-auto whitespace-nowrap inline-flex items-center justify-center px-6 h-11 text-xs font-bold text-white bg-indigo-600 rounded-2xl hover:bg-indigo-700 transition-all shadow-md disabled:opacity-50 cursor-pointer gap-2"
         >
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+          <Printer class="w-4 h-4" />
           打印课表
         </button>
       </div>
@@ -34,21 +35,21 @@
           :class="selectedSession === 'pagi' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900'"
           class="flex-1 sm:flex-none py-2.5 px-6 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
         >
-          <span>☀️</span> 上午班
+          <Sun class="w-4 h-4 text-amber-500" /> 上午班
         </button>
         <button 
           @click="selectedSession = 'petang'; selectedClass = ''; gridData = []" 
           :class="selectedSession === 'petang' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900'"
           class="flex-1 sm:flex-none py-2.5 px-6 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
         >
-          <span>🌙</span> 下午班
+          <Moon class="w-4 h-4 text-indigo-400" /> 下午班
         </button>
       </div>
 
       <!-- 班级选择器 -->
       <div class="relative flex items-center bg-slate-50 border border-slate-200 rounded-2xl px-4 h-11 shrink-0 w-full md:w-[320px] shadow-sm hover:border-slate-300 transition overflow-hidden">
-        <div class="w-7 h-7 rounded-xl bg-white flex items-center justify-center text-base mr-3 shrink-0 shadow-xs">
-          🏫
+        <div class="w-7 h-7 rounded-xl bg-white flex items-center justify-center mr-3 shrink-0 shadow-xs text-indigo-600">
+          <School class="w-4 h-4" />
         </div>
         <select 
           v-model="selectedClass" 
@@ -60,15 +61,17 @@
             {{ c.class_name }}
           </option>
         </select>
-        <div class="absolute right-3 pointer-events-none text-slate-500 bg-slate-50 pl-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        <div class="absolute right-3 pointer-events-none text-slate-400">
+          <Clock3 class="w-4 h-4" />
         </div>
       </div>
     </div>
 
     <!-- 未选择班级时的状态提示 -->
-    <div v-if="!selectedClass && !isLoading" class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-16 text-center flex flex-col items-center justify-center print:hidden">
-      <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-3xl mb-4 ring-1 ring-slate-100 shadow-inner">👆</div>
+    <div v-if="!selectedClass && !isLoading" class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-16 text-center flex flex-col items-center justify-center print:hidden space-y-3">
+      <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-indigo-600 mb-1 ring-1 ring-slate-100 shadow-inner">
+        <Clock3 class="w-8 h-8" />
+      </div>
       <h3 class="text-base font-bold text-slate-900">请在上方选择一个班级</h3>
       <p class="text-slate-500 mt-1 text-xs font-medium">选择后即可在此查看和打印班级课表</p>
     </div>
@@ -186,6 +189,14 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { supabase } from '../services/supabase'
+import { 
+  Printer, 
+  Sun, 
+  Moon, 
+  School, 
+  GraduationCap, 
+  Clock3 
+} from 'lucide-vue-next'
 
 const isLoading = ref(false)
 const classList = ref([])

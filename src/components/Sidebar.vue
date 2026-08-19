@@ -34,7 +34,7 @@
       </button>
     </div>
 
-    <!-- 导航菜单（全中文） -->
+    <!-- 导航菜单（Lucide 统一图标） -->
     <div class="flex-1 overflow-y-auto px-3 py-4 space-y-1.5 scrollbar-thin scrollbar-thumb-slate-700">
       <router-link 
         v-for="(item, index) in navItems" 
@@ -44,42 +44,53 @@
         exact-active-class="!text-white !bg-indigo-600 shadow-md shadow-indigo-600/20"
         :title="isSidebarCollapsed ? item.name : ''"
       >
-        <span class="text-base shrink-0 group-hover/item:scale-110 transition-transform">{{ item.icon }}</span>
+        <component
+          :is="item.icon"
+          class="w-5 h-5 shrink-0 transition-transform duration-200 group-hover/item:scale-110"
+        />
         <span v-show="!isSidebarCollapsed" class="truncate">{{ item.name }}</span>
       </router-link>
     </div>
 
-    <!-- 底部操作区：多语言跳转 + 退出登录 -->
+    <!-- 底部操作区：多语言跳转（左右并排两列，使用 Languages 图标） + 退出登录 -->
     <div class="p-3 border-t border-slate-800 bg-slate-950/40 space-y-1.5">
       
-      <!-- 1. 切换到马来文版按钮 -->
-      <button 
-        @click="switchToLanguage('https://subtitute-app-bm.vercel.app')" 
-        class="w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300 transition-colors cursor-pointer"
-        :title="isSidebarCollapsed ? 'Bahasa Melayu' : ''"
-      >
-        <span class="text-base shrink-0">🇲🇾</span>
-        <span v-show="!isSidebarCollapsed" class="truncate">Bahasa Melayu</span>
-      </button>
+      <!-- Language Switcher: BM + EN (左右并排两列，无国旗，使用 Languages 图标) -->
+      <div class="flex gap-1.5">
 
-      <!-- 2. 切换到英文版按钮 -->
-      <button 
-        @click="switchToLanguage('https://subtitute-app-en.vercel.app')" 
-        class="w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300 transition-colors cursor-pointer"
-        :title="isSidebarCollapsed ? 'English' : ''"
-      >
-        <span class="text-base shrink-0">🇬🇧</span>
-        <span v-show="!isSidebarCollapsed" class="truncate">English</span>
-      </button>
+        <!-- 1. 切换到马来文版按钮 -->
+        <button 
+          @click="switchToLanguage('https://subtitute-app-bm.vercel.app')" 
+          class="flex-1 min-w-0 flex items-center justify-center gap-1.5 px-2 py-2.5 rounded-2xl text-xs font-bold text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300 transition-colors cursor-pointer"
+          title="Bahasa Melayu"
+        >
+          <Languages class="w-4 h-4 shrink-0" />
+          <span v-show="!isSidebarCollapsed" class="truncate">BM</span>
+          <span v-show="isSidebarCollapsed" class="text-[10px] font-black">BM</span>
+        </button>
+
+        <!-- 2. 切换到英文版按钮 -->
+        <button 
+          @click="switchToLanguage('https://subtitute-app-en.vercel.app')" 
+          class="flex-1 min-w-0 flex items-center justify-center gap-1.5 px-2 py-2.5 rounded-2xl text-xs font-bold text-amber-400 hover:bg-amber-500/10 hover:text-amber-300 transition-colors cursor-pointer"
+          title="English"
+        >
+          <Languages class="w-4 h-4 shrink-0" />
+          <span v-show="!isSidebarCollapsed" class="truncate">EN</span>
+          <span v-show="isSidebarCollapsed" class="text-[10px] font-black">EN</span>
+        </button>
+
+      </div>
 
       <!-- 3. 退出登录 -->
       <button 
         @click="logout" 
         class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors cursor-pointer"
-        :title="isSidebarCollapsed ? '退出登录' : ''"
+        :class="isSidebarCollapsed ? 'justify-center' : ''"
+        title="退出登录"
       >
         <div class="flex items-center gap-3.5 truncate">
-          <span class="text-base shrink-0">🚪</span>
+          <LogOut class="w-5 h-5 shrink-0" />
           <span v-show="!isSidebarCollapsed" class="truncate">退出登录</span>
         </div>
         <svg v-show="!isSidebarCollapsed" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -95,6 +106,20 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '../services/supabase'
 import { useToast } from '../utils/toast'
+import {
+  LayoutDashboard,
+  CalendarCheck2,
+  UsersRound,
+  CalendarDays,
+  Table2,
+  ArrowLeftRight,
+  ChartNoAxesCombined,
+  TriangleAlert,
+  ChartColumnBig,
+  Settings2,
+  Languages,
+  LogOut
+} from 'lucide-vue-next'
 
 const router = useRouter()
 const toast = useToast()
@@ -126,20 +151,24 @@ const loadIdentity = async () => {
 onMounted(loadIdentity)
 
 const navItems = [
-  { name: '调度总览', path: '/', icon: '📊' },
-  { name: '教师请假登记', path: '/leave-entry', icon: '📝' },
-  { name: '教师档案', path: '/teachers', icon: '👩‍🏫' },
-  { name: '教师时间表', path: '/timetable', icon: '📅' }, // 原来的老师课表
-  { name: '班级时间表', path: '/class-timetable', icon: '🏫' },
-  { name: '代课记录', path: '/records', icon: '🔄' },
-  { name: '统计报表', path: '/statistics', icon: '📈' },
-  { name: 'MMI冲突干预', path: '/mmi-interruption', icon: '⚠️' }, 
-  { name: '学科学情分析', path: '/subject-analysis', icon: '🎯' },
-  { name: '系统设置', path: '/settings', icon: '⚙️' } 
+  { name: '调度总览', path: '/', icon: LayoutDashboard },
+  { name: '教师请假登记', path: '/leave-entry', icon: CalendarCheck2 },
+  { name: '教师档案', path: '/teachers', icon: UsersRound },
+  { name: '教师时间表', path: '/timetable', icon: CalendarDays },
+  { name: '班级时间表', path: '/class-timetable', icon: Table2 },
+  { name: '代课记录', path: '/records', icon: ArrowLeftRight },
+  { name: '统计报表', path: '/statistics', icon: ChartNoAxesCombined },
+  { name: 'MMI冲突干预', path: '/mmi-interruption', icon: TriangleAlert }, 
+  { name: '学科学情分析', path: '/subject-analysis', icon: ChartColumnBig },
+  { name: '系统设置', path: '/settings', icon: Settings2 } 
 ]
 
-// 统一的带 Token 免登跳转逻辑
+// 跨域语言切换：如果当前已经是该语言环境，则直接拦截不跳转
 const switchToLanguage = async (targetUrl) => {
+  if (window.location.origin === targetUrl || window.location.href.includes(targetUrl)) {
+    return
+  }
+
   try {
     const { data: { session } } = await supabase.auth.getSession()
     if (session) {

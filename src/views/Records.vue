@@ -1,51 +1,54 @@
 <template>
-  <div class="p-8 max-w-7xl mx-auto min-h-screen space-y-8 print:p-0 print:max-w-none">
+  <!-- 保持 min-w-[1024px] 确保表格不会无限变宽 -->
+  <div class="p-4 sm:p-8 mx-auto min-h-screen space-y-8 min-w-[1024px] print:p-0 print:min-w-0 print:w-auto print:m-0">
     
-    <!-- 屏幕显示的操作栏 (打印时自动隐藏) -->
-    <div class="print:hidden bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 flex flex-col gap-6">
+    <!-- Screen Action Bar (Automatically hidden during printing) -->
+    <div class="print:hidden bg-white rounded-3xl p-6 sm:p-8 shadow-sm ring-1 ring-slate-900/5 flex flex-col gap-6">
       
-      <!-- 第一/二行：大标题与副标题 -->
-      <div class="space-y-2 max-w-4xl">
-        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
+      <!-- Title & Subtitle -->
+      <div class="space-y-2">
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800 whitespace-nowrap flex items-center gap-3">
+          <UsersRound class="w-8 h-8 text-indigo-700 shrink-0" />
           每日代课统筹管理
         </h1>
-        <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
+        <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed whitespace-nowrap">
           点击表格单元格指派代课教师，支持一键智能生成当日代课排程。
         </p>
       </div>
 
-      <!-- 第三行：所有功能按钮横向平铺排列 -->
-      <div class="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-100">
+      <!-- Action Buttons Bar (🌟 修复：加回 flex-wrap，让按钮在空间不足时优雅换行，绝不刺破卡片) -->
+      <div class="flex flex-wrap items-center gap-4 pt-4 border-t border-slate-100">
         
-        <!-- ⚡ 一键智能自动排课按钮 -->
+        <!-- 1. 一键智能自动排课按钮 -->
         <button 
           @click="handleAutoAssignAll"
           :disabled="isAutoAssigning"
           class="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-4 h-11 rounded-2xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer"
         >
           <span v-if="isAutoAssigning" class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          <Zap v-else class="w-4 h-4" />
           <span>⚡ 一键智能分配代课</span>
         </button>
 
-        <!-- 班次切换标签 -->
+        <!-- 2. Session Switcher Tabs (上午班 / 下午班) -->
         <div class="flex bg-slate-100 p-1.5 rounded-2xl ring-1 ring-slate-900/5 h-11 items-center shrink-0 shadow-inner">
           <button 
             @click="currentSession = 'morning'" 
             :class="currentSession === 'morning' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5"
+            class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap"
           >
-            <span>☀️ 上午班</span>
+            <Sun class="w-4 h-4 text-amber-500" /> 上午班
           </button>
           <button 
             @click="currentSession = 'afternoon'" 
             :class="currentSession === 'afternoon' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5"
+            class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap"
           >
-            <span>🌙 下午班</span>
+            <Moon class="w-4 h-4 text-indigo-400" /> 下午班
           </button>
         </div>
 
-        <!-- 选择日期 -->
+        <!-- 3. Date Picker -->
         <div class="flex items-center gap-2 bg-slate-50 px-4 h-11 rounded-2xl border border-slate-200/80 shadow-2xs shrink-0">
           <span class="text-xs font-bold text-slate-500 whitespace-nowrap">选择日期：</span>
           <input 
@@ -55,18 +58,19 @@
           />
         </div>
 
+        <!-- 4. Print Button -->
         <button 
           @click="handlePrint"
-          class="bg-slate-900 hover:bg-slate-800 text-white px-5 h-11 rounded-2xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer"
+          class="bg-slate-900 hover:bg-slate-800 text-white px-5 h-11 rounded-2xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer whitespace-nowrap"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+          <Printer class="w-4 h-4" />
           <span>打印代课统筹表</span>
         </button>
 
       </div>
     </div>
 
-    <!-- 主表：预览/打印专属区域 -->
+    <!-- Main Table: Preview / Print Dedicated Area -->
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 print:shadow-none print:ring-0 print:p-0 print:rounded-none print:break-inside-avoid">
       
       <div class="text-center mb-6 print:mb-2">
@@ -157,7 +161,6 @@
                 </tr>
                 <tr>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]">GURU GANTI</td>
-                  <!-- ⭐️ 升级：兼容原手动打字与新增的悬浮指派按钮 -->
                   <td v-for="p in currentPeriodTimes.length" :key="'ganti-'+p" 
                       class="border border-black p-0.5 align-middle h-8 relative group" style="max-width: 0;">
                     <div class="w-full h-full relative flex items-center justify-center">
@@ -249,7 +252,10 @@
             <hr class="border-slate-200" />
 
             <div>
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">✨ 智能推荐候选列表（Top 6）</h3>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
+                <Sparkles class="w-4 h-4 text-indigo-600" />
+                智能推荐候选列表（Top 6）
+              </h3>
               
               <div v-if="loadingRecs" class="flex flex-col items-center justify-center py-6 space-y-3">
                 <div class="w-6 h-6 border-4 border-indigo-500/30 border-t-indigo-600 rounded-full animate-spin"></div>
@@ -361,7 +367,6 @@
                 </tr>
                 <tr>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]">GURU GANTI</td>
-                  <!-- ⭐️ 升级：兼容原手动打字与新增的悬浮指派按钮 (附页版本) -->
                   <td v-for="p in currentPeriodTimes.length" :key="'ganti-'+p" 
                       class="border border-black p-0.5 align-middle h-8 relative group" style="max-width: 0;">
                     <div class="w-full h-full relative flex items-center justify-center">
@@ -457,6 +462,14 @@ import { ref, onMounted, computed, watch } from 'vue'
 import { supabase } from '../services/supabase'
 import { recommendSubstitute } from '../utils/algorithm'
 import { useToast } from '../utils/toast'
+import { 
+  UsersRound, 
+  Sun, 
+  Moon, 
+  Zap, 
+  Printer, 
+  Sparkles 
+} from 'lucide-vue-next'
 
 const toast = useToast()
 const targetDate = ref(new Date().toISOString().split('T')[0])
@@ -515,7 +528,15 @@ const displayTeachersList = computed(() => {
 
     const teacher = teachersMap.value[req.teacher_id]
     if (teacher && (teacher.session || 'morning') === currentSession.value) {
-      map[req.teacher_id] = { id: req.teacher_id, name: teacher.name, reason: req.reason }
+      
+      // 🌟 核心修改点：在这里把原因里的 [个人请假] 等前缀过滤掉，只保留实际原因
+      let cleanReason = (req.reason || '').replace(/\[.*?\]\s*/, '');
+      
+      map[req.teacher_id] = { 
+        id: req.teacher_id, 
+        name: teacher.name, 
+        reason: cleanReason // 这里使用清理干净的原因
+      }
     }
   })
   return Object.values(map)
@@ -999,7 +1020,6 @@ const removeCustomSheet = async (id) => {
 </script>
 
 <style scoped>
-/* 组件内部私有样式保留在这里 */
 </style>
 
 <style>

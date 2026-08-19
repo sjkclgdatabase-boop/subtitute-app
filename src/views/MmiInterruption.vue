@@ -4,7 +4,8 @@
     <!-- 头部区域：统一的卡片风格、排版规范与渐变大标题 -->
     <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
       <div class="space-y-2 max-w-3xl">
-        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800 flex items-center gap-3">
+          <GraduationCap class="w-8 h-8 text-indigo-700 shrink-0" />
           MMI 教学干扰事件记录中心
         </h1>
         <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
@@ -19,14 +20,14 @@
           :class="activeTab === 'class' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'"
           class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
         >
-          <span>🏫 按班级记录 </span>
+          <School class="w-4 h-4" /> 按班级记录 
         </button>
         <button 
           @click="activeTab = 'teacher'" 
           :class="activeTab === 'teacher' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'"
           class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
         >
-          <span>👩‍🏫 按教师记录</span>
+          <Users class="w-4 h-4" /> 按教师记录
         </button>
       </div>
     </div>
@@ -40,7 +41,9 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">📅 干扰发生日期:</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+            <CalendarDays class="w-4 h-4 text-indigo-600" /> 干扰发生日期:
+          </label>
           <input 
             type="date" 
             v-model="classForm.date" 
@@ -49,7 +52,9 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">⚠️ 干扰类型 / 原因:</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+            <AlertTriangle class="w-4 h-4 text-amber-500" /> 干扰类型 / 原因:
+          </label>
           <select 
             v-model="classForm.reason" 
             class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-3 cursor-pointer"
@@ -74,7 +79,9 @@
       </div>
 
       <div class="mb-6 bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
-        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">🎯 选择受影响范围:</label>
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+          <Target class="w-4 h-4 text-indigo-600" /> 选择受影响范围:
+        </label>
         
         <div class="flex flex-wrap gap-4">
           <label class="inline-flex items-center gap-2 cursor-pointer">
@@ -98,11 +105,11 @@
             <span class="font-bold text-slate-500">请勾选受影响的班级：</span>
             <div class="space-x-3">
               <button type="button" @click="selectAllClasses" class="text-indigo-600 hover:text-indigo-800 font-bold cursor-pointer">
-                ☑️ 全选
+                全选
               </button>
               <span class="text-slate-300">|</span>
               <button type="button" @click="clearAllClasses" class="text-slate-500 hover:text-slate-700 font-bold cursor-pointer">
-                ❌ 清空
+                清空
               </button>
             </div>
           </div>
@@ -150,13 +157,17 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">⏰ 受影响起始节次:</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+            <Clock class="w-4 h-4 text-indigo-600" /> 受影响起始节次:
+          </label>
           <select v-model="classForm.startPeriod" class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 cursor-pointer">
             <option v-for="p in 11" :key="p" :value="p">第 {{ p }} 节</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">⏰ 受影响结束节次:</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+            <Clock class="w-4 h-4 text-indigo-600" /> 受影响结束节次:
+          </label>
           <select v-model="classForm.endPeriod" class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 cursor-pointer">
             <option v-for="p in 11" :key="p" :value="p">第 {{ p }} 节</option>
           </select>
@@ -164,7 +175,9 @@
       </div>
 
       <div class="mb-6">
-        <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">📝 详细说明与补救措施:</label>
+        <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+          <FileText class="w-4 h-4 text-indigo-600" /> 详细说明与补救措施:
+        </label>
         <input 
           v-model="classForm.remarks" 
           type="text" 
@@ -175,9 +188,9 @@
 
       <button 
         @click="submitClassInterruption" 
-        class="bg-slate-900 hover:bg-slate-800 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer"
+        class="bg-slate-900 hover:bg-slate-800 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer flex items-center gap-2"
       >
-        💾 提交班级干扰记录
+        <Save class="w-4 h-4" /> 提交班级干扰记录
       </button>
     </div>
 
@@ -190,7 +203,9 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">📅 干扰发生日期:</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+            <CalendarDays class="w-4 h-4 text-violet-600" /> 干扰发生日期:
+          </label>
           <input 
             type="date" 
             v-model="teacherForm.date" 
@@ -200,7 +215,9 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">👩‍🏫 选择受干扰/请假教师:</label>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+            <Users class="w-4 h-4 text-violet-600" /> 选择受干扰/请假教师:
+          </label>
           <select 
             v-model="teacherForm.teacherId" 
             @change="loadTeacherSubjects"
@@ -213,7 +230,9 @@
       </div>
 
       <div class="mb-6">
-        <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">⚠️ 干扰原因 (如离校公干/带队/会议/病假):</label>
+        <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+          <AlertTriangle class="w-4 h-4 text-amber-500" /> 干扰原因 (如离校公干/带队/会议/病假):
+        </label>
         <input 
           v-model="teacherForm.reason" 
           type="text" 
@@ -253,9 +272,9 @@
       <button 
         @click="submitTeacherInterruption" 
         :disabled="exportedSubjects.length === 0"
-        class="bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer"
+        class="bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer flex items-center gap-2"
       >
-        💾 确认并保存该教师干扰事件
+        <Save class="w-4 h-4" /> 确认并保存该教师干扰事件
       </button>
     </div>
 
@@ -265,7 +284,8 @@
       <!-- 第一行：标题与导出按钮 -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-4">
         <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-          <span>📊 MMI 干扰事件历史记录表</span>
+          <History class="w-5 h-5 text-indigo-600" />
+          <span>MMI 干扰事件历史记录表</span>
           <span class="text-xs bg-slate-100 px-2.5 py-1 rounded-full text-slate-600 font-semibold">
             共 {{ filteredLogs.length }} 条记录
           </span>
@@ -275,7 +295,7 @@
           @click="exportLogsToExcel" 
           class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 h-11 rounded-2xl text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
         >
-          <span>📥 导出 Excel</span>
+          <FileSpreadsheet class="w-4 h-4" /> 导出 Excel
         </button>
       </div>
 
@@ -405,14 +425,14 @@
                   class="text-indigo-600 hover:text-indigo-800 font-bold bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-xl transition inline-flex items-center justify-center gap-1 text-xs mx-auto cursor-pointer"
                 >
                   <span>查看详情</span> 
-                  <span>🔍</span>
+                  <Eye class="w-3.5 h-3.5" />
                 </button>
               </td>
 
               <!-- 操作: 居中 -->
               <td class="py-3.5 px-3 text-center truncate">
-                <button @click="deleteLog(log)" class="text-xs text-red-600 hover:text-red-800 font-bold px-3 py-1.5 bg-red-50 hover:bg-red-100 rounded-xl cursor-pointer transition">
-                  删除
+                <button @click="deleteLog(log)" class="text-xs text-red-600 hover:text-red-800 font-bold px-3 py-1.5 bg-red-50 hover:bg-red-100 rounded-xl cursor-pointer transition inline-flex items-center gap-1">
+                  <Trash2 class="w-3.5 h-3.5" /> 删除
                 </button>
               </td>
             </tr>
@@ -429,7 +449,7 @@
             <span>📝 干扰事件详细说明</span>
           </h3>
           <button @click="showDetailModal = false" class="text-slate-400 hover:text-slate-600 font-bold text-sm bg-slate-100 w-8 h-8 rounded-full flex items-center justify-center cursor-pointer">
-            ✕
+            <X class="w-4 h-4" />
           </button>
         </div>
 
@@ -477,6 +497,22 @@
 import { ref, computed, onMounted, onActivated } from 'vue'
 import { supabase } from '../services/supabase'
 import { useToast } from '../utils/toast'
+import { 
+  GraduationCap, 
+  School, 
+  Users, 
+  CalendarDays, 
+  Clock, 
+  Save, 
+  FileSpreadsheet, 
+  Eye, 
+  Trash2, 
+  X,
+  Target,
+  FileText,
+  History,
+  AlertTriangle
+} from 'lucide-vue-next'
 
 const toast = useToast()
 const activeTab = ref('class')

@@ -4,7 +4,8 @@
     <!-- 头部区域：统一的卡片风格、排版规范与渐变大标题 -->
     <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
       <div class="space-y-2 max-w-3xl">
-        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800 flex items-center gap-3">
+          <UsersRound class="w-8 h-8 text-indigo-700 shrink-0" />
           教师档案管理
         </h1>
         <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
@@ -12,8 +13,9 @@
         </p>
       </div>
 
-      <button @click="showModal = true" class="w-full md:w-auto bg-slate-900 hover:bg-slate-800 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-sm transition cursor-pointer shrink-0">
-        + 添加教师
+      <button @click="showModal = true" class="w-full md:w-auto bg-slate-900 hover:bg-slate-800 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-sm transition cursor-pointer shrink-0 flex items-center justify-center gap-2">
+        <Plus class="w-4 h-4" />
+        添加教师
       </button>
     </div>
     
@@ -30,7 +32,7 @@
               ? 'bg-slate-900 text-white shadow-sm' 
               : 'text-slate-500 hover:text-slate-900'"
           >
-            <span>☀️</span> 上午班
+            <Sun class="w-4 h-4 text-amber-500" /> 上午班
           </button>
           <button 
             @click="currentSession = 'afternoon'" 
@@ -39,16 +41,18 @@
               ? 'bg-slate-900 text-white shadow-sm' 
               : 'text-slate-500 hover:text-slate-900'"
           >
-            <span>🌙</span> 下午班
+            <Moon class="w-4 h-4 text-indigo-400" /> 下午班
           </button>
         </div>
 
         <!-- 批量导入与模版按钮组 -->
         <div class="flex gap-3 w-full sm:w-auto">
-          <button @click="downloadTemplate" class="bg-emerald-600 text-white px-4 h-11 rounded-2xl hover:bg-emerald-700 text-xs font-bold shadow-sm transition cursor-pointer">
+          <button @click="downloadTemplate" class="bg-emerald-600 text-white px-4 h-11 rounded-2xl hover:bg-emerald-700 text-xs font-bold shadow-sm transition cursor-pointer flex items-center gap-2">
+            <Download class="w-4 h-4" />
             下载导入模板
           </button>
-          <label class="bg-blue-600 text-white px-4 h-11 rounded-2xl hover:bg-blue-700 cursor-pointer text-xs font-bold shadow-sm transition flex items-center justify-center">
+          <label class="bg-blue-600 text-white px-4 h-11 rounded-2xl hover:bg-blue-700 cursor-pointer text-xs font-bold shadow-sm transition flex items-center justify-center gap-2">
+            <Upload class="w-4 h-4" />
             批量导入
             <input type="file" accept=".csv" @change="handleCsvUpload" class="hidden" />
           </label>
@@ -200,10 +204,10 @@
         <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100 text-center space-y-6">
           
           <!-- 顶部状态图标 -->
-          <div class="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl transition-all duration-300"
+          <div class="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center transition-all duration-300"
                :class="uploadProgress.percent === 100 ? 'bg-emerald-100 text-emerald-600' : 'bg-indigo-50 text-indigo-600 animate-bounce'">
-            <span v-if="uploadProgress.percent < 100">👩‍🏫</span>
-            <span v-else>🎉</span>
+            <GraduationCap v-if="uploadProgress.percent < 100" class="w-8 h-8" />
+            <Sparkles v-else class="w-8 h-8" />
           </div>
 
           <!-- 标题与当前状态文字 -->
@@ -245,6 +249,16 @@ import { ref, computed, onMounted } from 'vue'
 import { supabase } from '../services/supabase'
 import { parseCSV } from '../utils/importCsv'
 import { useToast } from '../utils/toast'
+import { 
+  UsersRound, 
+  Plus, 
+  Sun, 
+  Moon, 
+  Download, 
+  Upload, 
+  GraduationCap, 
+  Sparkles 
+} from 'lucide-vue-next'
 
 const toast = useToast()
 const teachers = ref([])

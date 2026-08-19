@@ -32,8 +32,8 @@
         <!-- 邮箱输入框 -->
         <div class="relative flex items-center">
           <label for="email" class="sr-only">请输入邮箱</label>
-          <span class="absolute left-4 text-cyan-600">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+          <span class="absolute left-4 text-cyan-600 flex items-center justify-center">
+            <Mail class="w-5 h-5" />
           </span>
           <input 
             id="email"
@@ -49,8 +49,8 @@
         <!-- 密码输入框 -->
         <div class="relative flex items-center">
           <label for="password" class="sr-only">请输入密码</label>
-          <span class="absolute left-4 text-cyan-600">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+          <span class="absolute left-4 text-cyan-600 flex items-center justify-center">
+            <Lock class="w-5 h-5" />
           </span>
           <input 
             id="password"
@@ -91,6 +91,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '../services/supabase'
 import { useToast } from '../utils/toast'
+import { Mail, Lock } from 'lucide-vue-next'
 
 const router = useRouter()
 const toast = useToast()

@@ -4,7 +4,8 @@
     <!-- 头部区域：统一的卡片风格、排版规范与渐变大标题 -->
     <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
       <div class="space-y-2 max-w-3xl">
-        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800 flex items-center gap-3">
+          <CalendarDays class="w-8 h-8 text-indigo-700 shrink-0" />
           教师课表调度
         </h1>
         <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
@@ -15,14 +16,14 @@
       <!-- 右侧操作区：上传下载 -->
       <div class="flex flex-wrap items-center gap-3 shrink-0">
         <!-- 下载模板按钮 -->
-        <button @click="downloadTemplate" class="inline-flex items-center justify-center px-4 h-11 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-2xl hover:bg-indigo-100 transition-all shadow-sm cursor-pointer">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+        <button @click="downloadTemplate" class="inline-flex items-center justify-center px-4 h-11 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-2xl hover:bg-indigo-100 transition-all shadow-sm cursor-pointer gap-2">
+          <Download class="w-4 h-4" />
           下载导入模板
         </button>
         
         <!-- 上传CSV按钮 -->
-        <label class="cursor-pointer inline-flex items-center justify-center px-4 h-11 text-xs font-bold text-white bg-slate-900 rounded-2xl hover:bg-slate-800 hover:shadow-md transition-all shadow-sm">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+        <label class="cursor-pointer inline-flex items-center justify-center px-4 h-11 text-xs font-bold text-white bg-slate-900 rounded-2xl hover:bg-slate-800 hover:shadow-md transition-all shadow-sm gap-2">
+          <Upload class="w-4 h-4" />
           批量导入课表
           <input type="file" accept=".csv" class="hidden" @change="handleCsvUpload" />
         </label>
@@ -36,40 +37,45 @@
         <button 
           @click="currentSession = 'morning'; selectedTeacherId = ''; currentTimetable = []" 
           :class="currentSession === 'morning' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'"
-          class="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+          class="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2"
         >
-          ☀️ 上午班
+          <Sun class="w-4 h-4 text-amber-500" /> 上午班
         </button>
         <button 
           @click="currentSession = 'afternoon'; selectedTeacherId = ''; currentTimetable = []" 
           :class="currentSession === 'afternoon' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'"
-          class="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+          class="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2"
         >
-          🌙 下午班
+          <Moon class="w-4 h-4 text-indigo-400" /> 下午班
         </button>
       </div>
 
       <!-- 教师选择器 -->
-      <div class="flex items-center gap-3 bg-slate-50 px-4 h-11 rounded-2xl border border-slate-200">
-        <div class="w-7 h-7 rounded-xl bg-white text-indigo-600 flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
-          👩‍🏫
+      <div class="relative flex items-center bg-slate-50 border border-slate-200 rounded-2xl px-4 h-11 shrink-0 w-[300px] sm:w-[320px] shadow-sm hover:border-slate-300 transition overflow-hidden">
+        <div class="w-7 h-7 rounded-xl bg-white flex items-center justify-center mr-3 shrink-0 shadow-xs text-indigo-600">
+          <GraduationCap class="w-4 h-4" />
         </div>
         <select 
           v-model="selectedTeacherId" 
           @change="fetchTeacherTimetable"
-          class="bg-transparent border-none text-slate-800 font-bold focus:ring-0 cursor-pointer pr-6 text-xs w-full sm:w-72 text-center outline-none"
+          class="w-full bg-transparent border-none text-slate-800 font-bold focus:ring-0 cursor-pointer text-xs appearance-none outline-none pr-8 truncate text-center"
         >
           <option value="" disabled>选择{{ currentSession === 'morning' ? '上午班' : '下午班' }}教师</option>
           <option v-for="teacher in filteredTeachersList" :key="teacher.id" :value="teacher.id">
             {{ teacher.name }}{{ teacher.subject ? ` (${teacher.subject})` : '' }}
           </option>
         </select>
+        <div class="absolute right-3 pointer-events-none text-slate-500 bg-slate-50 pl-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </div>
       </div>
     </div>
 
     <!-- 提示状态 -->
-    <div v-if="!selectedTeacherId" class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-16 text-center flex flex-col items-center justify-center">
-      <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-3xl mb-4 ring-1 ring-slate-100 shadow-inner">👆</div>
+    <div v-if="!selectedTeacherId" class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-16 text-center flex flex-col items-center justify-center space-y-3">
+      <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-indigo-600 mb-1 ring-1 ring-slate-100 shadow-inner">
+        <Clock3 class="w-8 h-8" />
+      </div>
       <h3 class="text-base font-bold text-slate-900">请在上方的 {{ currentSession === 'morning' ? '上午班' : '下午班' }} 列表选择一位教师</h3>
       <p class="text-slate-500 mt-1 text-xs font-medium">选定后查看、编辑该教师课表</p>
     </div>
@@ -122,8 +128,8 @@
 
               <!-- 休息时间插入行 (Rehat) -->
               <tr v-else-if="row.type === 'break'" class="bg-amber-50/75">
-                <td class="p-3 text-amber-800 font-bold border-r-2 border-slate-100 bg-amber-100/60 text-xs">
-                  ☕ 休息
+                <td class="p-3 text-amber-800 font-bold border-r-2 border-slate-100 bg-amber-100/60 text-xs flex items-center justify-center gap-1.5">
+                  <Coffee class="w-4 h-4 text-amber-700" /> 休息
                 </td>
                 <td :colspan="config.daysPerWeek" class="p-3 text-center text-amber-900 font-bold text-xs tracking-wider uppercase">
                   {{ row.title }} <span class="ml-2 font-semibold text-amber-700">({{ row.time }})</span>
@@ -184,10 +190,10 @@
         <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100 text-center space-y-6">
           
           <!-- 顶部状态图标 -->
-          <div class="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl transition-all duration-300"
+          <div class="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center transition-all duration-300"
                :class="uploadProgress.percent === 100 ? 'bg-emerald-100 text-emerald-600' : 'bg-indigo-50 text-indigo-600 animate-bounce'">
-            <span v-if="uploadProgress.percent < 100">📅</span>
-            <span v-else>🎉</span>
+            <CalendarDays v-if="uploadProgress.percent < 100" class="w-8 h-8" />
+            <Sparkles v-else class="w-8 h-8" />
           </div>
 
           <!-- 标题与当前状态文字 -->
@@ -229,6 +235,17 @@ import { ref, computed, onMounted } from 'vue'
 import { supabase } from '../services/supabase'
 import { useToast } from '../utils/toast'
 import { parseCSV } from '../utils/importCsv'
+import { 
+  CalendarDays, 
+  Download, 
+  Upload, 
+  Sun, 
+  Moon, 
+  GraduationCap, 
+  Clock3, 
+  Coffee, 
+  Sparkles 
+} from 'lucide-vue-next'
 
 const toast = useToast()
 const dayNames = ['一', '二', '三', '四', '五', '六', '日']

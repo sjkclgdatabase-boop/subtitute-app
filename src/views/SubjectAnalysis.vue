@@ -6,7 +6,8 @@
       
       <!-- 第一部分：大标题与副标题 -->
       <div class="space-y-2 max-w-4xl">
-        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800 flex items-center gap-3">
+          <GraduationCap class="w-8 h-8 text-indigo-700 shrink-0" />
           科目目标与达成率分析中心
         </h1>
         <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
@@ -24,28 +25,29 @@
             class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
             :class="activeTab === 'table' ? 'bg-slate-900 text-white shadow-md' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'"
           >
-            <span>📊 详细数据报表</span>
+            <BarChart3 class="w-4 h-4" /> 详细数据报表
           </button>
           <button 
             @click="activeTab = 'chart'" 
             class="px-5 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
             :class="activeTab === 'chart' ? 'bg-slate-900 text-white shadow-md' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'"
           >
-            <span>📈 可视化图表看板</span>
+            <PieChart class="w-4 h-4" /> 可视化图表看板
           </button>
         </div>
 
         <!-- 右侧：三个操作按钮 -->
         <div class="flex flex-wrap items-center gap-3">
           <button @click="exportPdfReport" class="no-print bg-emerald-600 hover:bg-emerald-700 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2 cursor-pointer">
-            <span>📥 打印 / 另存为 PDF 报告</span>
+            <Printer class="w-4 h-4" /> 打印 / 另存为 PDF 报告
           </button>
-          <button @click="showManageModal = true" class="no-print bg-slate-900 hover:bg-slate-800 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer">
-            ⚙️ 管理目标
+          <button @click="showManageModal = true" class="no-print bg-slate-900 hover:bg-slate-800 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer flex items-center gap-2">
+            <Settings class="w-4 h-4" /> 管理目标
           </button>
           <button @click="loadAnalyticsData" :disabled="loading" class="no-print bg-indigo-600 hover:bg-indigo-700 text-white px-5 h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer flex items-center gap-2">
             <span v-if="loading" class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-            <span>{{ loading ? '计算中...' : '🔄 刷新数据' }}</span>
+            <RotateCw v-else class="w-4 h-4" />
+            <span>{{ loading ? '计算中...' : '刷新数据' }}</span>
           </button>
         </div>
 
@@ -80,7 +82,9 @@
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-indigo-600 mb-2 uppercase tracking-wider">👨‍🏫 按任课老师筛选</label>
+        <label class="block text-xs font-bold text-indigo-600 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+          <Users class="w-4 h-4 text-indigo-600" /> 按任课老师筛选
+        </label>
         <select v-model="filterTeacher" class="w-full bg-indigo-50/50 border border-indigo-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
           <option value="all">全校所有教师</option>
           <option v-for="tch in allTeachers" :key="tch.id" :value="tch.name">{{ tch.name }}</option>
@@ -108,9 +112,12 @@
           <div class="text-xs font-bold text-emerald-600 uppercase tracking-wider">达成目标 (达标)</div>
           <div class="text-3xl font-black text-emerald-700 mt-2">{{ analysisSummary.met }}</div>
         </div>
-        <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
-          <div class="text-xs font-bold text-red-600 uppercase tracking-wider">⚠️ 未达成 (警告)</div>
-          <div class="text-3xl font-black text-red-700 mt-2">{{ analysisSummary.unmet }}</div>
+        <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+          <div>
+            <div class="text-xs font-bold text-red-600 uppercase tracking-wider">未达成 (警告)</div>
+            <div class="text-3xl font-black text-red-700 mt-2">{{ analysisSummary.unmet }}</div>
+          </div>
+          <AlertTriangle class="w-8 h-8 text-red-500/80 shrink-0" />
         </div>
       </div>
 
@@ -196,7 +203,9 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
             <div class="flex justify-between items-center">
-              <h3 class="text-sm font-bold text-slate-800">🎯 全校科目总体达标健康率</h3>
+              <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <Target class="w-4 h-4 text-indigo-600" /> 全校科目总体达标健康率
+              </h3>
               <span class="text-xs text-indigo-600 font-bold bg-indigo-50 px-2.5 py-1 rounded-lg">实时计算</span>
             </div>
             
@@ -214,7 +223,9 @@
 
           <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
             <div class="flex justify-between items-center">
-              <h3 class="text-sm font-bold text-slate-800">📊 各年级达标分布概况</h3>
+              <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <BarChart3 class="w-4 h-4 text-indigo-600" /> 各年级达标分布概况
+              </h3>
               <span class="text-xs text-slate-400 font-semibold">达标 vs 未达标</span>
             </div>
 
@@ -236,7 +247,9 @@
         <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
           <div class="flex justify-between items-center">
             <div>
-              <h3 class="text-sm font-bold text-slate-800">⚠️ MMI 干扰损失课时最多科目排行</h3>
+              <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <AlertTriangle class="w-4 h-4 text-amber-500" /> MMI 干扰损失课时最多科目排行
+              </h3>
               <p class="text-xs text-slate-400 mt-0.5 font-medium">直观展示各科目因请假、公务活动损失的教学课时</p>
             </div>
             <span class="text-xs bg-amber-50 text-amber-700 px-3 py-1 rounded-full font-bold">干扰警示</span>
@@ -269,8 +282,12 @@
     <div v-if="showManageModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
       <div class="bg-white rounded-3xl max-w-3xl w-full p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center border-b border-slate-100 pb-4">
-          <h3 class="text-base font-bold text-slate-800">⚙️ 科目目标在线维护</h3>
-          <button @click="showManageModal = false" class="text-slate-400 hover:text-slate-700 font-bold text-sm cursor-pointer">✕ 关闭</button>
+          <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+            <Settings class="w-4 h-4 text-indigo-600" /> 科目目标在线维护
+          </h3>
+          <button @click="showManageModal = false" class="text-slate-400 hover:text-slate-700 font-bold text-sm cursor-pointer flex items-center gap-1">
+            <X class="w-4 h-4" /> 关闭
+          </button>
         </div>
 
         <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
@@ -288,8 +305,8 @@
             <label class="block text-[11px] font-bold text-slate-600 mb-1">计划总节数</label>
             <input type="number" v-model.number="newTarget.planned_periods" placeholder="例: 215" class="w-full bg-white border border-slate-200 px-3 py-2 rounded-xl text-xs font-semibold" />
           </div>
-          <button @click="addTarget" class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-xl text-xs font-bold shadow-sm transition cursor-pointer">
-            ➕ 新增目标
+          <button @click="addTarget" class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-xl text-xs font-bold shadow-sm transition cursor-pointer flex items-center justify-center gap-1.5">
+            <Plus class="w-3.5 h-3.5" /> 新增目标
           </button>
         </div>
 
@@ -302,8 +319,8 @@
                 <span class="text-slate-900 font-bold">{{ t.subject_name }}</span>
                 <span class="text-slate-500">目标: <strong>{{ t.planned_periods }}</strong> 节</span>
               </div>
-              <button @click="deleteTarget(t.id)" class="text-slate-400 hover:text-red-600 text-xs font-bold px-2 py-1 transition cursor-pointer">
-                🗑️ 删除
+              <button @click="deleteTarget(t.id)" class="text-slate-400 hover:text-red-600 text-xs font-bold px-2 py-1 transition cursor-pointer flex items-center gap-1">
+                <Trash2 class="w-3.5 h-3.5" /> 删除
               </button>
             </div>
           </div>
@@ -324,6 +341,20 @@
 import { ref, computed, onMounted, onActivated } from 'vue'
 import { supabase } from '../services/supabase'
 import { useToast } from '../utils/toast'
+import { 
+  GraduationCap, 
+  BarChart3, 
+  PieChart, 
+  Printer, 
+  Settings, 
+  RotateCw, 
+  Users, 
+  AlertTriangle, 
+  Target, 
+  X, 
+  Plus, 
+  Trash2 
+} from 'lucide-vue-next'
 
 const toast = useToast()
 const loading = ref(false)
@@ -519,7 +550,7 @@ const loadAnalyticsData = async () => {
           leaveRequests.forEach(req => {
             const reqClass = cleanString(req.class_name)
             const clsName = cleanString(cls.class_name)
-            const isClassMatched = reqClass === clsName || reqClass.includes(clsName) || clsName.includes(itemClass => clsName.includes(reqClass))
+            const isClassMatched = reqClass === clsName || reqClass.includes(clsName) || clsName.includes(reqClass)
             const isSubjMatched = isSubjectMatch(req.subject, standardizedTargetSubject)
 
             const reqTeacherNameClean = cleanString(req.teacher_name)

@@ -4,7 +4,8 @@
     <!-- 头部区域：统一的卡片、排版规范与渐变标题 -->
     <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
       <div class="space-y-2 max-w-3xl">
-        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800 flex items-center gap-3">
+          <LayoutDashboard class="w-8 h-8 text-indigo-700 shrink-0" />
           代课调度中心
         </h1>
         <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
@@ -13,7 +14,7 @@
       </div>
       <router-link to="/leave-entry" class="group relative inline-flex items-center justify-center px-6 h-11 text-xs sm:text-sm font-bold text-white transition-all duration-200 bg-slate-900 rounded-2xl hover:bg-slate-800 hover:shadow-lg hover:shadow-slate-900/20 shrink-0">
         <span>新建请假</span>
-        <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        <Plus class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
       </router-link>
     </div>
 
@@ -22,7 +23,9 @@
       <div class="bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-900/5 hover:shadow-md transition-all">
         <div class="flex items-center justify-between">
           <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">待分配代课任务</p>
-          <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center ring-1 ring-amber-500/20">⏳</div>
+          <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center ring-1 ring-amber-500/20">
+            <Clock3 class="w-5 h-5" />
+          </div>
         </div>
         <p class="text-3xl font-black text-slate-900 mt-4">{{ pendingCount }}</p>
       </div>
@@ -30,7 +33,9 @@
       <div class="bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-900/5 hover:shadow-md transition-all">
         <div class="flex items-center justify-between">
           <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">已完成代课</p>
-          <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center ring-1 ring-emerald-500/20">✓</div>
+          <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center ring-1 ring-emerald-500/20">
+            <CircleCheck class="w-5 h-5" />
+          </div>
         </div>
         <p class="text-3xl font-black text-slate-900 mt-4">{{ assignedCount }}</p>
       </div>
@@ -38,7 +43,9 @@
       <div class="bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-900/5 hover:shadow-md transition-all">
         <div class="flex items-center justify-between">
           <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">历史总任务</p>
-          <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center ring-1 ring-indigo-500/20">📊</div>
+          <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center ring-1 ring-indigo-500/20">
+            <ChartColumnBig class="w-5 h-5" />
+          </div>
         </div>
         <p class="text-3xl font-black text-slate-900 mt-4">{{ leaveRequests.length }}</p>
       </div>
@@ -51,16 +58,18 @@
           <button 
             @click="viewMode = 'today'"
             :class="viewMode === 'today' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900'"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer"
+            class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
           >
-            📅 仅今日
+            <CalendarDays class="w-4 h-4" />
+            仅今日
           </button>
           <button 
             @click="viewMode = 'grouped'"
             :class="viewMode === 'grouped' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900'"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer"
+            class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
           >
-            📂 按日期分组
+            <FolderOpen class="w-4 h-4" />
+            按日期分组
           </button>
         </div>
 
@@ -139,9 +148,10 @@
                 <button 
                   v-if="req.status === 'pending'"
                   @click="openRecommendModal(req)"
-                  class="inline-flex items-center justify-center px-4 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-all cursor-pointer"
+                  class="inline-flex items-center justify-center px-4 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-all cursor-pointer gap-1.5"
                 >
-                  ✨ 智能与手动排课
+                  <Sparkles class="w-3.5 h-3.5 text-indigo-600" />
+                  智能与手动排课
                 </button>
               </td>
             </tr>
@@ -161,7 +171,10 @@
             class="w-full flex justify-between items-center px-6 py-4 bg-slate-50 hover:bg-slate-100 transition text-left cursor-pointer"
           >
             <div class="flex items-center gap-3">
-              <span class="font-bold text-slate-900 text-sm">📅 {{ date }}</span>
+              <span class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <CalendarDays class="w-4 h-4 text-slate-500" />
+                {{ date }}
+              </span>
               <span class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-bold">
                 {{ requests.length }} 节任务
               </span>
@@ -226,9 +239,10 @@
                     <button 
                       v-if="req.status === 'pending'"
                       @click="openRecommendModal(req)"
-                      class="inline-flex items-center justify-center px-4 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-all cursor-pointer"
+                      class="inline-flex items-center justify-center px-4 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-all cursor-pointer gap-1.5"
                     >
-                      ✨ 排课
+                      <Sparkles class="w-3.5 h-3.5 text-indigo-600" />
+                      排课
                     </button>
                   </td>
                 </tr>
@@ -293,7 +307,10 @@
             <hr class="border-slate-200" />
 
             <div>
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">✨ 智能推荐候选列表（Top 6）</h3>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
+                <Sparkles class="w-4 h-4 text-indigo-600" />
+                智能推荐候选列表（Top 6）
+              </h3>
               
               <div v-if="loading" class="flex flex-col items-center justify-center py-6 space-y-3">
                 <div class="w-6 h-6 border-4 border-indigo-500/30 border-t-indigo-600 rounded-full animate-spin"></div>
@@ -343,6 +360,16 @@ import { ref, computed, onMounted } from 'vue'
 import { supabase } from '../services/supabase'
 import { recommendSubstitute } from '../utils/algorithm'
 import { useToast } from '../utils/toast'
+import { 
+  LayoutDashboard, 
+  Plus, 
+  Clock3, 
+  CircleCheck, 
+  ChartColumnBig, 
+  CalendarDays, 
+  FolderOpen, 
+  Sparkles 
+} from 'lucide-vue-next'
 
 const toast = useToast()
 const leaveRequests = ref([])

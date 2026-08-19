@@ -2,7 +2,8 @@
   <div class="p-8 max-w-7xl mx-auto min-h-screen space-y-8">
     
     <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 space-y-2">
-      <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800">
+      <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800 flex items-center gap-3">
+        <Wrench class="w-8 h-8 text-indigo-700 shrink-0" />
         系统全局设置与维护
       </h1>
       <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
@@ -12,7 +13,7 @@
 
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-        <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">👤</span>
+        <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs"><UserCog class="w-4 h-4" /></span>
         管理员账号管理
       </h2>
       <p class="text-slate-500 text-xs font-medium">授权新管理员或老师账号，直接在前端开通或删除登录权限。</p>
@@ -51,7 +52,9 @@
 
         <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4 flex flex-col">
           <div class="flex items-center justify-between">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-900">📋 系统现有用户列表</h3>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+              <ClipboardList class="w-4 h-4 text-indigo-600" /> 系统现有用户列表
+            </h3>
             <button @click="fetchUsers" class="text-xs text-indigo-600 font-bold hover:underline cursor-pointer">刷新列表</button>
           </div>
 
@@ -76,7 +79,7 @@
 
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-        <span class="w-8 h-8 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center font-bold text-xs">🖼️</span>
+        <span class="w-8 h-8 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center font-bold text-xs"><Image class="w-4 h-4" /></span>
         学校 Logo 与外观设置
       </h2>
       <p class="text-slate-500 text-xs font-medium">修改学校徽标（Logo）与校名，保存后全系统顶部导航栏与登录页将实时更新。</p>
@@ -123,7 +126,7 @@
 
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-        <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">🏫</span>
+        <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs"><Clock class="w-4 h-4" /></span>
         学校作息配置
       </h2>
       
@@ -165,7 +168,7 @@
 
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
-        <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs">📅</span>
+        <span class="w-8 h-8 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs"><Calendar class="w-4 h-4" /></span>
         学年上课周历与假期配置
       </h2>
       <p class="text-slate-500 text-xs font-medium mb-6">录入全年上课周与假期周，系统自动剔除假期，精准计算科目「理论应达进度」。</p>
@@ -177,7 +180,7 @@
         </div>
         <div class="flex flex-wrap items-center gap-3">
           <button @click="downloadWeekTemplate" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2 cursor-pointer">
-            📥 下载周历模板
+            <Download class="w-4 h-4 text-indigo-600" /> 下载周历模板
           </button>
           
           <label class="relative cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2">
@@ -240,7 +243,7 @@
 
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-        <span class="w-8 h-8 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center font-bold text-xs">📚</span>
+        <span class="w-8 h-8 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center font-bold text-xs"><School class="w-4 h-4" /></span>
         学校班级基础管理
       </h2>
       <p class="text-slate-500 text-xs font-medium mb-6">维护全校标准班级，供排课、请假与 MMI 干扰记录选用。</p>
@@ -323,7 +326,7 @@
 
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-        <span class="w-8 h-8 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs">📊</span>
+        <span class="w-8 h-8 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs"><BarChart3 class="w-4 h-4" /></span>
         MMI 科目目标 (Sasaran) 批量配置
       </h2>
       <p class="text-slate-500 text-xs font-medium mb-6">下载标准模板，填写各年级各科目计划目标课时与基准底线，批量导入系统。</p>
@@ -335,7 +338,7 @@
         </div>
         <div class="flex flex-wrap items-center gap-3">
           <button @click="downloadTemplate" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2 cursor-pointer">
-            📥 下载模板
+            <Download class="w-4 h-4 text-indigo-600" /> 下载模板
           </button>
           
           <label class="relative cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2">
@@ -348,7 +351,7 @@
 
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-        <span class="w-8 h-8 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs">💾</span>
+        <span class="w-8 h-8 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs"><Database class="w-4 h-4" /></span>
         本地数据备份与恢复
       </h2>
       <p class="text-slate-500 text-xs font-medium mb-6">定期将全校的所有核心数据打包备份到本地电脑，安全无忧。</p>
@@ -359,8 +362,8 @@
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">导出全量数据备份</h3>
             <p class="text-slate-500 text-xs mt-1 font-medium">一键下载包含全校所有核心数据的 JSON 备份文件。</p>
           </div>
-          <button @click="exportFullBackup" class="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer">
-            📤 导出系统完整备份
+          <button @click="exportFullBackup" class="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer flex items-center justify-center gap-2">
+            <UploadCloud class="w-4 h-4 text-slate-300" /> 导出系统完整备份
           </button>
         </div>
 
@@ -369,8 +372,8 @@
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-950">恢复系统数据</h3>
             <p class="text-slate-500 text-xs mt-1 font-medium">通过之前备份的 JSON 文件恢复全校数据。</p>
           </div>
-          <label class="relative block w-full text-center cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center justify-center">
-            <span>📥 选择备份文件并恢复</span>
+          <label class="relative block w-full text-center cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center justify-center gap-2">
+            <DownloadCloud class="w-4 h-4 text-indigo-200" /> <span>选择备份文件并恢复</span>
             <input type="file" accept=".json" @change="importFullBackup" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
           </label>
         </div>
@@ -379,7 +382,7 @@
 
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 transition-all duration-300 hover:shadow-md space-y-6">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-        <span class="w-8 h-8 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center font-bold text-xs">🛠️</span>
+        <span class="w-8 h-8 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center font-bold text-xs"><Wrench class="w-4 h-4" /></span>
         正式上线数据清理与维护
       </h2>
       <p class="text-slate-500 text-xs font-medium mb-6">用于测试结束、正式上线前清理历史测试数据，支持一键备份。</p>
@@ -410,8 +413,8 @@
             <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-900">备份并清空 MMI 干扰历史数据</h3>
             <p class="text-slate-500 text-xs mt-1 font-medium">自动下载 JSON 备份至本地，再安全清除全部 MMI 干扰日志。</p>
           </div>
-          <button @click="backupAndClearMmi" :disabled="loading" class="w-full sm:w-80 h-11 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs rounded-2xl transition shadow-sm border border-indigo-200 disabled:opacity-50 shrink-0 cursor-pointer flex items-center justify-center">
-            📥 备份并清空 MMI 数据
+          <button @click="backupAndClearMmi" :disabled="loading" class="w-full sm:w-80 h-11 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs rounded-2xl transition shadow-sm border border-indigo-200 disabled:opacity-50 shrink-0 cursor-pointer flex items-center justify-center gap-2">
+            <UploadCloud class="w-4 h-4 text-indigo-500" /> 备份并清空 MMI 数据
           </button>
         </div>
 
@@ -478,6 +481,20 @@
 import { ref, computed, onMounted } from 'vue'
 import { supabase } from '../services/supabase'
 import { useToast } from '../utils/toast'
+import { 
+  Wrench, 
+  UserCog, 
+  Image, 
+  Clock, 
+  Calendar, 
+  School, 
+  BarChart3, 
+  Database,
+  ClipboardList,
+  Download,
+  UploadCloud,
+  DownloadCloud
+} from 'lucide-vue-next'
 
 const toast = useToast()
 const config = ref({ daysPerWeek: 5, periodsPerDay: 8 })
