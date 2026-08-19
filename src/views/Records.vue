@@ -16,7 +16,7 @@
         </p>
       </div>
 
-      <!-- Action Buttons Bar (🌟 修复：加回 flex-wrap，让按钮在空间不足时优雅换行，绝不刺破卡片) -->
+      <!-- Action Buttons Bar -->
       <div class="flex flex-wrap items-center gap-4 pt-4 border-t border-slate-100">
         
         <!-- 1. 一键智能自动排课按钮 -->
@@ -104,20 +104,26 @@
               
               <template v-if="displayTeachersList[slotIndex - 1]">
                 <tr>
+                  <!-- 🌟 收紧底线：maxChars 改为了更严苛的 10 和 9 -->
                   <td class="border border-black p-1 bg-slate-50 print:bg-white align-middle text-center" rowspan="3" style="width: 120px; max-width: 120px;">
-                    <div class="flex flex-col items-center justify-center w-full px-0.5 overflow-hidden">
-                      <span class="text-[10px] uppercase leading-tight font-bold w-full text-center whitespace-normal">
+                    <div class="flex flex-col items-center justify-center w-full px-0.5">
+                      <span class="uppercase leading-tight font-bold w-full text-center whitespace-normal"
+                            :style="getDynamicStyle(displayTeachersList[slotIndex - 1].name, 10, 10)">
                         {{ displayTeachersList[slotIndex - 1].name }}
                       </span>
-                      <span v-if="displayTeachersList[slotIndex - 1].reason" class="text-[8.5px] font-normal text-slate-500 w-full text-center tracking-tighter mt-1 uppercase whitespace-normal leading-tight">
+                      <span v-if="displayTeachersList[slotIndex - 1].reason" 
+                            class="font-normal text-slate-600 w-full text-center tracking-tighter mt-0.5 uppercase whitespace-normal leading-tight"
+                            :style="getDynamicStyle(`(${displayTeachersList[slotIndex - 1].reason})`, 8.5, 9)">
                         ({{ displayTeachersList[slotIndex - 1].reason }})
                       </span>
                     </div>
                   </td>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]" style="width: 80px;">KELAS</td>
+                  
                   <td v-for="p in currentPeriodTimes.length" :key="p" class="border border-black p-0.5 font-semibold align-middle h-8" style="max-width: 0;">
-                    <div class="w-full h-full flex items-center justify-center overflow-hidden px-0.5">
-                      <span class="block w-full text-center text-[10px] tracking-tighter leading-tight text-slate-800 whitespace-normal">
+                    <div class="w-full h-full flex items-center justify-center px-0.5">
+                      <span class="block w-full text-center tracking-tighter leading-tight text-slate-800 whitespace-normal"
+                            :style="getDynamicStyle(getTeacherPeriodData(displayTeachersList[slotIndex - 1].id, p, 'class_subject'), 10, 6)">
                         {{ getTeacherPeriodData(displayTeachersList[slotIndex - 1].id, p, 'class_subject') }}
                       </span>
                     </div>
@@ -130,8 +136,9 @@
                       :class="hasLeavePeriod(displayTeachersList[slotIndex - 1].id, p) ? 'cursor-pointer hover:bg-indigo-50 group' : ''"
                       class="print:hover:bg-transparent border border-black p-0.5 font-bold text-indigo-900 align-middle h-8 transition relative" 
                       style="max-width: 0;">
-                    <div class="w-full h-full flex items-center justify-center overflow-hidden px-0.5">
-                      <span class="block w-full text-center text-[9px] tracking-tighter leading-tight whitespace-normal">
+                    <div class="w-full h-full flex items-center justify-center px-0.5">
+                      <span class="block w-full text-center tracking-tighter leading-tight whitespace-normal"
+                            :style="getDynamicStyle(getTeacherPeriodData(displayTeachersList[slotIndex - 1].id, p, 'substitute_name'), 9, 6)">
                         {{ getTeacherPeriodData(displayTeachersList[slotIndex - 1].id, p, 'substitute_name') }}
                       </span>
                       <span v-if="hasLeavePeriod(displayTeachersList[slotIndex - 1].id, p)" class="print:hidden hidden group-hover:inline-block text-[9px] text-indigo-500 absolute right-1">✏️</span>
@@ -144,20 +151,22 @@
                 </tr>
               </template>
 
+              <!-- 手动填写格同样应用收紧的缩小底线 -->
               <template v-else>
                 <tr>
                   <td contenteditable="true" 
                       @blur="saveManualEntry(slotIndex, 'name', 0, $event)" 
                       v-text="getManualEntry(slotIndex, 'name', 0)" 
-                      class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors overflow-hidden whitespace-pre-wrap break-words leading-tight uppercase text-[10px]" 
-                      rowspan="3" style="width: 120px; max-width: 120px;"></td>
+                      class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors whitespace-pre-wrap leading-tight uppercase" 
+                      :style="[{ width: '120px', maxWidth: '120px' }, getDynamicStyle(getManualEntry(slotIndex, 'name', 0), 10, 10)]"
+                      rowspan="3"></td>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]" style="width: 80px;">KELAS</td>
                   <td v-for="p in currentPeriodTimes.length" :key="'kelas-'+p" 
                       contenteditable="true" 
                       @blur="saveManualEntry(slotIndex, 'kelas', p, $event)" 
                       v-text="getManualEntry(slotIndex, 'kelas', p)" 
-                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[11px] font-semibold overflow-hidden whitespace-pre-wrap break-words leading-tight"
-                      style="max-width: 0;"></td>
+                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-semibold whitespace-pre-wrap leading-tight text-center"
+                      :style="[{ maxWidth: '0' }, getDynamicStyle(getManualEntry(slotIndex, 'kelas', p), 10, 6)]"></td>
                 </tr>
                 <tr>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]">GURU GANTI</td>
@@ -167,7 +176,8 @@
                       <div contenteditable="true" 
                           @blur="saveManualEntry(slotIndex, 'ganti', p, $event)" 
                           v-text="getManualEntry(slotIndex, 'ganti', p)" 
-                          class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[10px] font-bold text-indigo-900 overflow-hidden whitespace-pre-wrap break-words leading-tight flex items-center justify-center"></div>
+                          class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-bold text-indigo-900 whitespace-pre-wrap leading-tight flex items-center justify-center text-center"
+                          :style="getDynamicStyle(getManualEntry(slotIndex, 'ganti', p), 9, 6)"></div>
                       <button contenteditable="false" @click.stop="openBlankModal(slotIndex, p, null)" class="print:hidden absolute right-0 top-0 hidden group-hover:flex bg-indigo-500 text-white rounded-bl px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-indigo-600 z-10 font-sans tracking-widest font-bold">指派</button>
                     </div>
                   </td>
@@ -355,15 +365,16 @@
                   <td contenteditable="true" 
                       @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0, $event)"
                       v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0)"
-                      class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors overflow-hidden whitespace-pre-wrap break-words leading-tight uppercase text-[10px]" 
-                      rowspan="3" style="width: 120px; max-width: 120px;"></td>
+                      class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors whitespace-pre-wrap leading-tight uppercase" 
+                      :style="[{ width: '120px', maxWidth: '120px' }, getDynamicStyle(getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0), 10, 10)]"
+                      rowspan="3"></td>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]" style="width: 80px;">KELAS</td>
                   <td v-for="p in currentPeriodTimes.length" :key="'kelas-'+p" 
                       contenteditable="true" 
                       @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'kelas', p, $event)"
                       v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'kelas', p)"
-                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[11px] font-semibold overflow-hidden whitespace-pre-wrap break-words leading-tight"
-                      style="max-width: 0;"></td>
+                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-semibold whitespace-pre-wrap leading-tight text-center"
+                      :style="[{ maxWidth: '0' }, getDynamicStyle(getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'kelas', p), 10, 6)]"></td>
                 </tr>
                 <tr>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]">GURU GANTI</td>
@@ -373,7 +384,8 @@
                       <div contenteditable="true" 
                           @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ganti', p, $event)"
                           v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ganti', p)"
-                          class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[10px] font-bold text-indigo-900 overflow-hidden whitespace-pre-wrap break-words leading-tight flex items-center justify-center"></div>
+                          class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-bold text-indigo-900 whitespace-pre-wrap leading-tight flex items-center justify-center text-center"
+                          :style="getDynamicStyle(getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ganti', p), 9, 6)"></div>
                       <button contenteditable="false" @click.stop="openBlankModal(slotIndex, p, sheet.id)" class="print:hidden absolute right-0 top-0 hidden group-hover:flex bg-indigo-500 text-white rounded-bl px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-indigo-600 z-10 font-sans tracking-widest font-bold">指派</button>
                     </div>
                   </td>
@@ -399,7 +411,7 @@
       </button>
     </div>
 
-    <!-- ⭐️ 新增弹窗：简易空白行代课指派 (支持虚拟负荷记录) -->
+    <!-- ⭐️ 新增弹窗：简易空白行代课指派 -->
     <transition enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100" leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
       <div v-if="showBlankModal" class="print:hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
         <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm" @click="showBlankModal = false"></div>
@@ -508,6 +520,46 @@ const blankTarget = ref({ slot: null, period: null, sheetId: null })
 const blankForm = ref({ teacherId: '', remark: '', kiraBeban: true })
 const hasExistingVirtual = ref(false)
 
+// ⭐️ 终极重写：只通过“空格”来拆解文字！
+// 这样 (MESYUARAT) 就会被判定为长达 11 个字符的单体，从而强制触发强力缩小机制！
+const getDynamicStyle = (text, baseSize, maxChars) => {
+  if (!text) return { fontSize: `${baseSize}px`, wordBreak: 'normal', overflowWrap: 'normal' }
+  
+  // 这里去掉了原本错误匹配的括号和斜杠，只使用最单纯的空白符 \s+ 拆分单词。
+  const words = String(text).split(/\s+/).filter(Boolean)
+  let maxWordLen = 0
+
+  words.forEach(w => {
+    let charCount = 0
+    for (let i = 0; i < w.length; i++) {
+      if (w.charCodeAt(i) > 255) charCount += 1.8 // 汉字稍宽
+      else charCount += 1 // 英文字母或符号
+    }
+    if (charCount > maxWordLen) maxWordLen = charCount
+  })
+
+  // 如果最长单词没有超过界限，原样输出
+  if (maxWordLen <= maxChars) {
+    return {
+      fontSize: `${baseSize}px`,
+      wordBreak: 'normal',
+      overflowWrap: 'normal'
+    }
+  }
+
+  // ⭐️ 如果超长了，按比例重手缩小！
+  // 系数 0.9 提供额外的缓冲空间，确保它哪怕缩得很小也一定要呆在框里！
+  const scaledSize = baseSize * (maxChars / maxWordLen) * 0.9
+  
+  return {
+    // 保底最低 4px，防止变成显微镜字
+    fontSize: `${Math.max(4, scaledSize).toFixed(2)}px`,
+    lineHeight: '1.1',
+    wordBreak: 'normal',      // 绝不乱砍词
+    overflowWrap: 'normal'    // 绝不乱砍词
+  }
+}
+
 const formattedDate = computed(() => {
   if (!targetDate.value) return ''
   const [y, m, d] = targetDate.value.split('-')
@@ -523,19 +575,17 @@ const formattedDayName = computed(() => {
 const displayTeachersList = computed(() => {
   const map = {}
   leaveRequests.value.forEach(req => {
-    // ⭐️ 核心过滤：彻底屏蔽我们在后台偷偷建的“虚拟请假(VIRTUAL_CLASS)”记录，不让它们显示在原本的缺席名单中
     if (req.class_name === 'VIRTUAL_CLASS') return;
 
     const teacher = teachersMap.value[req.teacher_id]
     if (teacher && (teacher.session || 'morning') === currentSession.value) {
       
-      // 🌟 核心修改点：在这里把原因里的 [个人请假] 等前缀过滤掉，只保留实际原因
       let cleanReason = (req.reason || '').replace(/\[.*?\]\s*/, '');
       
       map[req.teacher_id] = { 
         id: req.teacher_id, 
         name: teacher.name, 
-        reason: cleanReason // 这里使用清理干净的原因
+        reason: cleanReason 
       }
     }
   })
@@ -777,7 +827,6 @@ const removeAssignment = async () => {
 
 const handleAutoAssignAll = async () => {
   const pendingRequests = leaveRequests.value.filter(req => {
-    // ⭐️ 自动排课也要排除虚拟数据
     if (req.class_name === 'VIRTUAL_CLASS') return false; 
 
     const teacher = teachersMap.value[req.teacher_id]
@@ -874,7 +923,6 @@ const confirmBlankAssignment = async () => {
 
   try {
     if (blankForm.value.kiraBeban) {
-      // 1. 🌟 修复报错核心：先检查该老师在这个节次是否已经有记录了！
       const { data: existingLeave } = await supabase.from('leave_requests')
         .select('id, class_name')
         .eq('teacher_id', blankForm.value.teacherId)
@@ -888,13 +936,11 @@ const confirmBlankAssignment = async () => {
         if (existingLeave.class_name !== 'VIRTUAL_CLASS') {
           return toast.error('该老师在此时段已有真实的请假记录，无法重复指派！')
         }
-        // 如果已经有虚拟记录，就直接复用它的 ID，更新备注即可，避免触发 duplicate key 报错
         targetLeaveId = existingLeave.id
         await supabase.from('leave_requests')
           .update({ reason: blankForm.value.remark || 'TUGAS KHAS' })
           .eq('id', targetLeaveId)
       } else {
-        // 只有在没记录时，才真正执行新增 (Insert)
         const { data: newLeave, error: leaveErr } = await supabase.from('leave_requests').insert({
           teacher_id: blankForm.value.teacherId, 
           leave_date: targetDate.value,
@@ -910,7 +956,6 @@ const confirmBlankAssignment = async () => {
         targetLeaveId = newLeave.id
       }
 
-      // 2. 同步更新或新增代课表的记录
       const { data: existingSub } = await supabase.from('substitute_assignments')
         .select('id')
         .eq('leave_request_id', targetLeaveId)
@@ -929,7 +974,6 @@ const confirmBlankAssignment = async () => {
         })
       }
 
-      // 3. 🌟 智能垃圾回收：如果用户在同一个格子里换了另一位老师，必须把旧老师的虚拟负担清理掉！
       if (existingVirtualLeaveId && existingVirtualLeaveId !== targetLeaveId) {
         await supabase.from('substitute_assignments').delete().eq('leave_request_id', existingVirtualLeaveId)
         await supabase.from('leave_requests').delete().eq('id', existingVirtualLeaveId)
@@ -937,7 +981,6 @@ const confirmBlankAssignment = async () => {
 
       manualEntries.value[virtualLeaveKey] = targetLeaveId
     } else {
-      // 如果用户取消了计入负担，清空旧数据
       if (existingVirtualLeaveId) {
         await supabase.from('substitute_assignments').delete().eq('leave_request_id', existingVirtualLeaveId)
         await supabase.from('leave_requests').delete().eq('id', existingVirtualLeaveId)
@@ -993,12 +1036,10 @@ const handlePrint = () => {
   window.print()
 }
 
-// 附加表列表展示计算属性
 const extraCustomSheets = computed(() => {
   return sessionCustomSheets.value[currentSession.value] || []
 })
 
-// 添加空白表 (触发云端保存)
 const addBlankSheet = async () => {
   sessionCustomSheets.value[currentSession.value].push({
     id: Date.now(),
@@ -1008,7 +1049,6 @@ const addBlankSheet = async () => {
   await saveCustomSheetsToCloud() 
 }
 
-// 删除某张附页 (触发云端保存)
 const removeCustomSheet = async (id) => {
   const list = sessionCustomSheets.value[currentSession.value]
   const index = list.findIndex(sheet => sheet.id === id)
