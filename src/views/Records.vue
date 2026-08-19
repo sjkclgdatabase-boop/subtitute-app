@@ -69,7 +69,6 @@
     <!-- 主表：预览/打印专属区域 -->
     <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 print:shadow-none print:ring-0 print:p-0 print:rounded-none print:break-inside-avoid">
       
-      <!-- ⭐️ 缩减打印时的底部外边距 -->
       <div class="text-center mb-6 print:mb-2">
         <h2 class="text-xl font-black tracking-wider text-black font-serif">SJK (C) LADANG GRISEK</h2>
         <h3 class="text-lg font-bold tracking-widest text-black mt-1 font-serif underline">
@@ -143,14 +142,12 @@
 
               <template v-else>
                 <tr>
-                  <!-- ⭐️ 改成了 whitespace-pre-wrap 完美保留回车换行 -->
                   <td contenteditable="true" 
                       @blur="saveManualEntry(slotIndex, 'name', 0, $event)" 
                       v-text="getManualEntry(slotIndex, 'name', 0)" 
                       class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors overflow-hidden whitespace-pre-wrap break-words leading-tight uppercase text-[10px]" 
                       rowspan="3" style="width: 120px; max-width: 120px;"></td>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]" style="width: 80px;">KELAS</td>
-                  <!-- ⭐️ 改成了 whitespace-pre-wrap 完美保留回车换行 -->
                   <td v-for="p in currentPeriodTimes.length" :key="'kelas-'+p" 
                       contenteditable="true" 
                       @blur="saveManualEntry(slotIndex, 'kelas', p, $event)" 
@@ -160,13 +157,17 @@
                 </tr>
                 <tr>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]">GURU GANTI</td>
-                  <!-- ⭐️ 改成了 whitespace-pre-wrap 完美保留回车换行 -->
+                  <!-- ⭐️ 升级：兼容原手动打字与新增的悬浮指派按钮 -->
                   <td v-for="p in currentPeriodTimes.length" :key="'ganti-'+p" 
-                      contenteditable="true" 
-                      @blur="saveManualEntry(slotIndex, 'ganti', p, $event)" 
-                      v-text="getManualEntry(slotIndex, 'ganti', p)" 
-                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[10px] font-bold text-indigo-900 overflow-hidden whitespace-pre-wrap break-words leading-tight"
-                      style="max-width: 0;"></td>
+                      class="border border-black p-0.5 align-middle h-8 relative group" style="max-width: 0;">
+                    <div class="w-full h-full relative flex items-center justify-center">
+                      <div contenteditable="true" 
+                          @blur="saveManualEntry(slotIndex, 'ganti', p, $event)" 
+                          v-text="getManualEntry(slotIndex, 'ganti', p)" 
+                          class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[10px] font-bold text-indigo-900 overflow-hidden whitespace-pre-wrap break-words leading-tight flex items-center justify-center"></div>
+                      <button contenteditable="false" @click.stop="openBlankModal(slotIndex, p, null)" class="print:hidden absolute right-0 top-0 hidden group-hover:flex bg-indigo-500 text-white rounded-bl px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-indigo-600 z-10 font-sans tracking-widest font-bold">指派</button>
+                    </div>
+                  </td>
                 </tr>
                 <tr>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[8px] whitespace-nowrap">T/TANGAN</td>
@@ -182,7 +183,7 @@
       </div>
     </div>
 
-    <!-- 弹窗：代课指派中心 -->
+    <!-- 主弹窗：正式代课指派中心 -->
     <transition enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100" leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
       <div v-if="showModal" class="print:hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
         <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm" @click="showModal = false"></div>
@@ -345,14 +346,12 @@
             </thead>
             <tbody v-for="slotIndex in 5" :key="slotIndex" style="page-break-inside: avoid; break-inside: avoid;" class="print:break-inside-avoid">
                 <tr>
-                  <!-- ⭐️ 附页：改成了 whitespace-pre-wrap -->
                   <td contenteditable="true" 
                       @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0, $event)"
                       v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0)"
                       class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors overflow-hidden whitespace-pre-wrap break-words leading-tight uppercase text-[10px]" 
                       rowspan="3" style="width: 120px; max-width: 120px;"></td>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]" style="width: 80px;">KELAS</td>
-                  <!-- ⭐️ 附页：改成了 whitespace-pre-wrap -->
                   <td v-for="p in currentPeriodTimes.length" :key="'kelas-'+p" 
                       contenteditable="true" 
                       @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'kelas', p, $event)"
@@ -362,13 +361,17 @@
                 </tr>
                 <tr>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]">GURU GANTI</td>
-                  <!-- ⭐️ 附页：改成了 whitespace-pre-wrap -->
+                  <!-- ⭐️ 升级：兼容原手动打字与新增的悬浮指派按钮 (附页版本) -->
                   <td v-for="p in currentPeriodTimes.length" :key="'ganti-'+p" 
-                      contenteditable="true" 
-                      @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ganti', p, $event)"
-                      v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ganti', p)"
-                      class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[10px] font-bold text-indigo-900 overflow-hidden whitespace-pre-wrap break-words leading-tight"
-                      style="max-width: 0;"></td>
+                      class="border border-black p-0.5 align-middle h-8 relative group" style="max-width: 0;">
+                    <div class="w-full h-full relative flex items-center justify-center">
+                      <div contenteditable="true" 
+                          @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ganti', p, $event)"
+                          v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ganti', p)"
+                          class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors text-[10px] font-bold text-indigo-900 overflow-hidden whitespace-pre-wrap break-words leading-tight flex items-center justify-center"></div>
+                      <button contenteditable="false" @click.stop="openBlankModal(slotIndex, p, sheet.id)" class="print:hidden absolute right-0 top-0 hidden group-hover:flex bg-indigo-500 text-white rounded-bl px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-indigo-600 z-10 font-sans tracking-widest font-bold">指派</button>
+                    </div>
+                  </td>
                 </tr>
                 <tr>
                   <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[8px] whitespace-nowrap">T/TANGAN</td>
@@ -390,6 +393,61 @@
         <span class="text-base font-extrabold">+</span> 增加一张官方版空白代课备用表
       </button>
     </div>
+
+    <!-- ⭐️ 新增弹窗：简易空白行代课指派 (支持虚拟负荷记录) -->
+    <transition enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100" leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
+      <div v-if="showBlankModal" class="print:hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+        <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm" @click="showBlankModal = false"></div>
+        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden ring-1 ring-slate-900/10">
+          
+          <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+            <div>
+              <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2"><span>📝 简易安排</span><span class="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">特殊/临时任务</span></h2>
+            </div>
+            <button @click="showBlankModal = false" class="text-slate-400 hover:text-slate-600 bg-white hover:bg-slate-200 rounded-full w-8 h-8 flex items-center justify-center transition cursor-pointer font-bold">✕</button>
+          </div>
+          
+          <div class="p-6 space-y-5">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-2">🧑‍🏫 选择指派教师 (同班次):</label>
+              <select v-model="blankForm.teacherId" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                <option value="">-- 不选择 (仅留空或仅打字) --</option>
+                <option v-for="t in allSameSessionTeachers" :key="t.id" :value="t.id">
+                  {{ t.name }} <span v-if="t.subject">({{ t.subject }})</span>
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-2">📍 备注 (地点/特殊任务如: 看管比赛):</label>
+              <input v-model="blankForm.remark" type="text" placeholder="例如: Perpustakaan / Latihan Sukan" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50" />
+            </div>
+
+            <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 flex items-start gap-3">
+              <input type="checkbox" v-model="blankForm.kiraBeban" id="kiraBebanCb" class="mt-0.5 w-4 h-4 text-indigo-600 rounded cursor-pointer" />
+              <div class="flex-1">
+                <label for="kiraBebanCb" class="text-sm font-bold text-slate-800 cursor-pointer block mb-1">计入该教师代课负荷 (Kira Beban)</label>
+                <p class="text-[10px] text-slate-500 font-medium leading-relaxed">勾选后，系统会在后台建立一条虚拟代课记录（不影响科目损失报表），但会让该老师当天的代课节数 +1。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
+            <button v-if="hasExistingVirtual" @click="removeBlankAssignment" class="text-xs text-red-600 hover:text-red-800 font-bold px-4 py-2 bg-red-50 hover:bg-red-100 rounded-xl cursor-pointer transition">
+              清空该格指派
+            </button>
+            <div v-else></div>
+            <div class="flex gap-3">
+              <button @click="showBlankModal = false" class="text-slate-500 hover:text-slate-700 px-4 py-2 text-xs font-bold transition cursor-pointer">取消</button>
+              <button @click="confirmBlankAssignment" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer">
+                确定保存
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </transition>
 
   </div>
 </template>
@@ -421,7 +479,7 @@ const substituteAssignmentsMap = ref({})
 const teachersMap = ref({})
 const allSameSessionTeachers = ref([])
 
-// 弹窗状态
+// 主弹窗状态
 const showModal = ref(false)
 const loadingRecs = ref(false)
 const recommendations = ref([])
@@ -430,6 +488,12 @@ const assignmentRemark = ref('')
 const assignmentType = ref('substitute')
 const manualSelectedTeacherId = ref('')
 const isAutoAssigning = ref(false)
+
+// ⭐️ 新增：简易空白行弹窗状态
+const showBlankModal = ref(false)
+const blankTarget = ref({ slot: null, period: null, sheetId: null })
+const blankForm = ref({ teacherId: '', remark: '', kiraBeban: true })
+const hasExistingVirtual = ref(false)
 
 const formattedDate = computed(() => {
   if (!targetDate.value) return ''
@@ -446,6 +510,9 @@ const formattedDayName = computed(() => {
 const displayTeachersList = computed(() => {
   const map = {}
   leaveRequests.value.forEach(req => {
+    // ⭐️ 核心过滤：彻底屏蔽我们在后台偷偷建的“虚拟请假(VIRTUAL_CLASS)”记录，不让它们显示在原本的缺席名单中
+    if (req.class_name === 'VIRTUAL_CLASS') return;
+
     const teacher = teachersMap.value[req.teacher_id]
     if (teacher && (teacher.session || 'morning') === currentSession.value) {
       map[req.teacher_id] = { id: req.teacher_id, name: teacher.name, reason: req.reason }
@@ -475,7 +542,6 @@ const fetchManualDrafts = async () => {
     
     if (data && data.draft_data) {
       manualEntries.value = data.draft_data
-      // 🚀 从云端拉取附加表
       if (data.draft_data.__custom_sheets__) {
         sessionCustomSheets.value[currentSession.value] = data.draft_data.__custom_sheets__
       }
@@ -501,7 +567,6 @@ const saveCustomSheetsToCloud = async () => {
 }
 
 const saveManualEntry = async (slotIndex, type, period, event) => {
-  // ⭐️ 核心修复：.replace(/\n+/g, '\n') 会把所有连续的空行压缩成一个紧凑的换行！
   const text = event.target.innerText.trim().replace(/\n+/g, '\n')
   const key = `${slotIndex}-${type}-${period}`
   
@@ -563,11 +628,11 @@ const fetchData = async () => {
 }
 
 const hasLeavePeriod = (teacherId, periodNum) => {
-  return leaveRequests.value.some(r => r.teacher_id === teacherId && Number(r.period) === Number(periodNum))
+  return leaveRequests.value.some(r => r.teacher_id === teacherId && Number(r.period) === Number(periodNum) && r.class_name !== 'VIRTUAL_CLASS')
 }
 
 const getTeacherPeriodData = (teacherId, periodNum, type) => {
-  const leaveItem = leaveRequests.value.find(r => r.teacher_id === teacherId && Number(r.period) === Number(periodNum))
+  const leaveItem = leaveRequests.value.find(r => r.teacher_id === teacherId && Number(r.period) === Number(periodNum) && r.class_name !== 'VIRTUAL_CLASS')
   if (!leaveItem) return ''
 
   if (type === 'class_subject') {
@@ -590,8 +655,19 @@ const getTeacherPeriodData = (teacherId, periodNum, type) => {
   return ''
 }
 
+const loadSameSessionTeachers = async () => {
+  if (allSameSessionTeachers.value.length === 0) {
+    const { data } = await supabase
+      .from('teachers')
+      .select('*')
+      .eq('is_active', true)
+      .eq('session', currentSession.value)
+    allSameSessionTeachers.value = data || []
+  }
+}
+
 const handleCellClick = async (teacherId, periodNum) => {
-  const leaveItem = leaveRequests.value.find(r => r.teacher_id === teacherId && Number(r.period) === Number(periodNum))
+  const leaveItem = leaveRequests.value.find(r => r.teacher_id === teacherId && Number(r.period) === Number(periodNum) && r.class_name !== 'VIRTUAL_CLASS')
   if (!leaveItem) {
     toast.error("该节课该老师没有请假记录！")
     return
@@ -614,19 +690,7 @@ const handleCellClick = async (teacherId, periodNum) => {
 
   try {
     recommendations.value = await recommendSubstitute(leaveItem)
-
-    const absentTeacher = teachersMap.value[leaveItem.teacher_id]
-    const session = absentTeacher?.session || currentSession.value
-
-    const { data: teachersData } = await supabase
-      .from('teachers')
-      .select('*')
-      .eq('is_active', true)
-      .eq('session', session)
-      .neq('id', leaveItem.teacher_id)
-
-    allSameSessionTeachers.value = teachersData || []
-
+    await loadSameSessionTeachers()
   } catch (err) {
     toast.error("加载排课数据失败: " + err.message)
     recommendations.value = []
@@ -692,6 +756,9 @@ const removeAssignment = async () => {
 
 const handleAutoAssignAll = async () => {
   const pendingRequests = leaveRequests.value.filter(req => {
+    // ⭐️ 自动排课也要排除虚拟数据
+    if (req.class_name === 'VIRTUAL_CLASS') return false; 
+
     const teacher = teachersMap.value[req.teacher_id]
     const inCurrentSession = teacher && (teacher.session || 'morning') === currentSession.value
     const notAssigned = !substituteAssignmentsMap.value[req.id] || !substituteAssignmentsMap.value[req.id].sub_teacher_id
@@ -733,6 +800,165 @@ const handleAutoAssignAll = async () => {
     isAutoAssigning.value = false
   }
 }
+
+// ================= ⭐️ 新增：空白行与虚拟负荷指派逻辑 =================
+const openBlankModal = async (slot, period, sheetId) => {
+  blankTarget.value = { slot, period, sheetId }
+  blankForm.value = { teacherId: '', remark: '', kiraBeban: true }
+  
+  const prefix = sheetId ? `sheet_${sheetId}_${slot}` : slot
+  const virtualLeaveId = manualEntries.value[`${prefix}_virtual_leave_${period}`]
+  
+  hasExistingVirtual.value = !!virtualLeaveId
+
+  if (virtualLeaveId) {
+    const existingSub = substituteAssignmentsMap.value[virtualLeaveId]
+    if (existingSub) {
+      blankForm.value.teacherId = existingSub.sub_teacher_id || ''
+      blankForm.value.remark = existingSub.remark || ''
+      blankForm.value.kiraBeban = true
+    }
+  }
+
+  await loadSameSessionTeachers()
+  showBlankModal.value = true
+}
+
+const confirmBlankAssignment = async () => {
+  const { slot, period, sheetId } = blankTarget.value
+  const prefix = sheetId ? `sheet_${sheetId}_${slot}` : slot
+  const textKey = `${prefix}-ganti-${period}`
+  const virtualLeaveKey = `${prefix}_virtual_leave_${period}`
+
+  if (!blankForm.value.teacherId && blankForm.value.kiraBeban) {
+    return toast.error('如需计入负荷，请先选择指派教师！')
+  }
+
+  let teacherName = ''
+  if (blankForm.value.teacherId) {
+    const t = allSameSessionTeachers.value.find(x => x.id === blankForm.value.teacherId) || teachersMap.value[blankForm.value.teacherId]
+    teacherName = t ? t.name : ''
+  }
+  
+  let displayText = teacherName
+  if (blankForm.value.remark) {
+    displayText = teacherName ? `${teacherName} (${blankForm.value.remark})` : blankForm.value.remark
+  }
+  
+  const existingVirtualLeaveId = manualEntries.value[virtualLeaveKey]
+
+  const dateObj = new Date(targetDate.value)
+  const dayNum = dateObj.getDay()
+  const weekdayCalc = dayNum === 0 ? 7 : dayNum
+
+  try {
+    if (blankForm.value.kiraBeban) {
+      // 1. 🌟 修复报错核心：先检查该老师在这个节次是否已经有记录了！
+      const { data: existingLeave } = await supabase.from('leave_requests')
+        .select('id, class_name')
+        .eq('teacher_id', blankForm.value.teacherId)
+        .eq('leave_date', targetDate.value)
+        .eq('period', period)
+        .maybeSingle()
+
+      let targetLeaveId = null
+
+      if (existingLeave) {
+        if (existingLeave.class_name !== 'VIRTUAL_CLASS') {
+          return toast.error('该老师在此时段已有真实的请假记录，无法重复指派！')
+        }
+        // 如果已经有虚拟记录，就直接复用它的 ID，更新备注即可，避免触发 duplicate key 报错
+        targetLeaveId = existingLeave.id
+        await supabase.from('leave_requests')
+          .update({ reason: blankForm.value.remark || 'TUGAS KHAS' })
+          .eq('id', targetLeaveId)
+      } else {
+        // 只有在没记录时，才真正执行新增 (Insert)
+        const { data: newLeave, error: leaveErr } = await supabase.from('leave_requests').insert({
+          teacher_id: blankForm.value.teacherId, 
+          leave_date: targetDate.value,
+          weekday: weekdayCalc,
+          period: period,
+          reason: blankForm.value.remark || 'TUGAS KHAS',
+          class_name: 'VIRTUAL_CLASS',
+          subject: 'VIRTUAL_SUB',
+          status: 'assigned'
+        }).select().single()
+        
+        if (leaveErr) throw leaveErr
+        targetLeaveId = newLeave.id
+      }
+
+      // 2. 同步更新或新增代课表的记录
+      const { data: existingSub } = await supabase.from('substitute_assignments')
+        .select('id')
+        .eq('leave_request_id', targetLeaveId)
+        .maybeSingle()
+
+      if (existingSub) {
+        await supabase.from('substitute_assignments')
+          .update({ sub_teacher_id: blankForm.value.teacherId, remark: blankForm.value.remark })
+          .eq('id', existingSub.id)
+      } else {
+        await supabase.from('substitute_assignments').insert({
+          leave_request_id: targetLeaveId,
+          sub_teacher_id: blankForm.value.teacherId,
+          assignment_type: 'substitute',
+          remark: blankForm.value.remark
+        })
+      }
+
+      // 3. 🌟 智能垃圾回收：如果用户在同一个格子里换了另一位老师，必须把旧老师的虚拟负担清理掉！
+      if (existingVirtualLeaveId && existingVirtualLeaveId !== targetLeaveId) {
+        await supabase.from('substitute_assignments').delete().eq('leave_request_id', existingVirtualLeaveId)
+        await supabase.from('leave_requests').delete().eq('id', existingVirtualLeaveId)
+      }
+
+      manualEntries.value[virtualLeaveKey] = targetLeaveId
+    } else {
+      // 如果用户取消了计入负担，清空旧数据
+      if (existingVirtualLeaveId) {
+        await supabase.from('substitute_assignments').delete().eq('leave_request_id', existingVirtualLeaveId)
+        await supabase.from('leave_requests').delete().eq('id', existingVirtualLeaveId)
+        delete manualEntries.value[virtualLeaveKey]
+      }
+    }
+
+    manualEntries.value[textKey] = displayText
+    await saveCustomSheetsToCloud() 
+    
+    toast.success(blankForm.value.kiraBeban ? '指派成功！已计入后台负荷统计。' : '仅文字记录保存成功！不计入负荷。')
+    showBlankModal.value = false
+    fetchData() 
+  } catch (err) {
+    toast.error('保存失败: ' + err.message)
+  }
+}
+
+const removeBlankAssignment = async () => {
+  const { slot, period, sheetId } = blankTarget.value
+  const prefix = sheetId ? `sheet_${sheetId}_${slot}` : slot
+  const virtualLeaveKey = `${prefix}_virtual_leave_${period}`
+  const textKey = `${prefix}-ganti-${period}`
+  const existingVirtualLeaveId = manualEntries.value[virtualLeaveKey]
+
+  try {
+    if (existingVirtualLeaveId) {
+        await supabase.from('substitute_assignments').delete().eq('leave_request_id', existingVirtualLeaveId)
+        await supabase.from('leave_requests').delete().eq('id', existingVirtualLeaveId)
+        delete manualEntries.value[virtualLeaveKey]
+    }
+    manualEntries.value[textKey] = ''
+    await saveCustomSheetsToCloud()
+    
+    toast.success('已清空指派并撤销负荷计算！')
+    showBlankModal.value = false
+    fetchData()
+  } catch(err) {
+    toast.error('清除失败: ' + err.message)
+  }
+}
+// =================================================================
 
 watch([targetDate, currentSession], () => {
   fetchData()
@@ -788,7 +1014,6 @@ const removeCustomSheet = async (id) => {
     -webkit-print-color-adjust: exact;
   }
 
-  /* ⭐️ 核心防断行补丁：彻底禁止在表格和行中间切断 */
   table, tbody, tr, td {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
