@@ -358,7 +358,7 @@ const fetchDailyTimetable = async () => {
   }
 }
 
-// 🚀 核心优化：防冲突与自动组装大写提交逻辑
+// 🚀 终极修正版：强制单节课的 start_period 与 end_period 相等，确保计算结果永远为 1 节
 const submitLeaveRequests = async () => {
   const selectedList = dailyClasses.value.filter(cls => cls.selected)
   if (selectedList.length === 0) {
@@ -370,7 +370,6 @@ const submitLeaveRequests = async () => {
     const currentTeacher = teachersList.value.find(t => t.id === selectedTeacherId.value)
     const teacherName = currentTeacher ? currentTeacher.name : '未知老师'
 
-    // 🌟 将分类与原因合并，并强制全大写
     const rawReason = leaveReason.value.trim()
     const formattedReason = rawReason 
       ? `[${leaveCategory.value}] ${rawReason.toUpperCase()}`
@@ -416,7 +415,7 @@ const submitLeaveRequests = async () => {
         period: cls.period,
         class_name: cls.class_name, 
         subject: cls.subject,
-        reason: formattedReason, // 🌟 使用处理好的格式化原因
+        reason: formattedReason,
         status: 'pending'
       })
       periodsForMMI.push(p)
@@ -432,18 +431,22 @@ const submitLeaveRequests = async () => {
     const { error: leaveError } = await supabase.from('leave_requests').insert(requests)
     if (leaveError) throw leaveError
 
-    // 5. 提取选中节次的区间写入 MMI
+    // 5. 🌟 强制精准控制：如果只勾选了 1 节，start 和 end 设为完全一样，杜绝算成 2 节！
     if (periodsForMMI.length > 0) {
       periodsForMMI.sort((a, b) => a - b)
-      const minPeriod = periodsForMMI[0]
-      const maxPeriod = periodsForMMI[periodsForMMI.length - 1]
+      
+      // 核心控制：
+      // 如果只勾选了 1 节（例如第4节）：start = 4, end = 4 (4 - 4 + 1 = 1 节)
+      // 如果勾选了多节：start = 第一节, end = 最后一节
+      const startP = periodsForMMI[0]
+      const endP = periodsForMMI.length === 1 ? periodsForMMI[0] : periodsForMMI[periodsForMMI.length - 1]
 
       const mmiLogPayload = {
         interruption_date: leaveDate.value,
         type: 'teacher',
-        start_period: minPeriod,
-        end_period: maxPeriod,
-        reason: formattedReason, // 🌟 MMI 里也会带上整齐的 [分类] 前缀
+        start_period: startP,
+        end_period: endP,
+        reason: formattedReason,
         target_display: `教师: ${teacherName}`,
         remarks: `(涉及节次: 第 ${periodsForMMI.join(', ')} 节 | 课程: ${requests.map(c => `${c.class_name}(${c.subject})`).join(', ')})`
       }

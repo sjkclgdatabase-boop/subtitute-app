@@ -8,7 +8,7 @@
         教务数据分析与 MMI 报表中心
       </h1>
       <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
-        多维度监控教学干扰、科目影响及教师代课负荷。
+        多维度监控教学干扰、科目影响及教师代课负荷（已完美统合请假勾选节次与全校/跨班级活动干扰损失）。
       </p>
     </div>
 
@@ -313,7 +313,7 @@
             <BookOpen class="w-5 h-5 text-indigo-600" />
             科目与班级细化干扰分析
           </h2>
-          <p class="text-xs text-slate-500 mt-1 font-medium">按年级、班级多维度筛选科目受干扰详情。</p>
+          <p class="text-xs text-slate-500 mt-1 font-medium">按年级、班级多维度筛选科目受干扰详情（已完美整合请假勾选节次及全校/跨班级活动冲击）。</p>
         </div>
         <button @click="exportSinglePdf" class="no-print px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0">
           <Printer class="w-4 h-4" />
@@ -578,7 +578,7 @@ const filteredSubjectStats = computed(() => {
   return [...list].sort((a, b) => smartSort(a[subjectSortKey.value], b[subjectSortKey.value], subjectSortAsc.value))
 })
 
-// 🌟 四大分类卡片引擎与防超长保护（已配置 CalendarCheck, BriefcaseBusiness, Building2, FolderOpen 图标组件）
+// 🌟 四大分类卡片引擎与防超长保护
 const groupedReasonStats = computed(() => {
   if (!reasonStats.value.length) return [];
 
@@ -678,7 +678,16 @@ const resetDateFilter = () => {
   loadAllData()
 }
 
-// 🔄 数据加载函数
+// 辅助清理字符串
+const cleanClassName = (rawStr) => {
+  if (!rawStr) return '';
+  let cleaned = rawStr.replace(/^(班级|班級|KELAS|CLASS)\s*[:：]\s*/i, '').trim();
+  cleaned = cleaned.replace(/^(班级|班級|KELAS|CLASS)\s*[:：]\s*/i, '').trim();
+  if (!cleaned || /VIRTUAL_CLASS/i.test(cleaned)) return '';
+  return cleaned.toUpperCase();
+};
+
+// 🔄 数据加载函数（严格依赖 leave_requests 勾选节次，并完整恢复总课表匹配全校活动逻辑）
 const loadAllData = async () => {
   const { data: teachers } = await supabase.from('teachers').select('*')
   
@@ -705,10 +714,14 @@ const loadAllData = async () => {
 
   if (mmiData) interruptionLogs.value = mmiData
 
+  // 1. 拉取请假/代课需求表（此表只包含教务在登记时明确勾选并提交的特定节次）
   let leaveQuery = supabase.from('leave_requests').select('*')
   if (startDate.value) leaveQuery = leaveQuery.gte('leave_date', startDate.value)
   if (endDate.value) leaveQuery = leaveQuery.lte('leave_date', endDate.value)
   const { data: leaveData } = await leaveQuery
+
+  // 2. 加载总课表用于匹配全校活动冲击
+  const { data: timetables } = await supabase.from('timetable').select('*')
 
   const teacherMap = {}
   const teacherNameSet = new Set()
@@ -766,14 +779,6 @@ const loadAllData = async () => {
   const subjectDetailMap = {} 
   let totalClassPeriods = 0
 
-  const cleanClassName = (rawStr) => {
-    if (!rawStr) return '';
-    let cleaned = rawStr.replace(/^(班级|班級|KELAS|CLASS)\s*[:：]\s*/i, '').trim();
-    cleaned = cleaned.replace(/^(班级|班級|KELAS|CLASS)\s*[:：]\s*/i, '').trim();
-    if (!cleaned || /VIRTUAL_CLASS/i.test(cleaned)) return '';
-    return cleaned.toUpperCase();
-  };
-
   const processClassNames = (rawStr, pCount) => {
     if (!rawStr) return;
     let cleaned = rawStr.replace(/^(班级|班級|KELAS|CLASS)\s*[:：]\s*/i, '').trim();
@@ -805,6 +810,7 @@ const loadAllData = async () => {
     processClassNames(rawTarget, pCount);
   })
 
+  // A. 处理教师请假勾选节次带来的科目受干扰损失
   leaveData?.forEach(req => {
     if (swapLeaveIds.has(req.id)) return;
 
@@ -831,6 +837,63 @@ const loadAllData = async () => {
       });
     }
   })
+
+  // B. 完整恢复：处理全校性/跨班级活动 (mmi_interruptions 中 type === 'class') 对总课表中科目的精准冲击损失匹配
+  mmiData?.forEach(int => {
+    if (int.type === 'class' && timetables && timetables.length > 0) {
+      const startP = Number(int.start_period) || 1;
+      const endP = Number(int.end_period) || 1;
+      const targetDisp = (int.target_display || '').trim();
+
+      const intDate = new Date(int.interruption_date);
+      const wd = intDate.getDay();
+      const weekdayNum = wd === 0 ? 7 : wd;
+
+      timetables.forEach(t => {
+        if (Number(t.weekday) !== weekdayNum) return;
+        const p = Number(t.period);
+        if (p < startP || p > endP) return;
+
+        const cName = cleanClassName(t.class_name);
+        if (!cName || cName === 'VIRTUAL_CLASS') return;
+
+        let isAffected = false;
+        if (targetDisp.includes('全校')) {
+          isAffected = true;
+        } else if (targetDisp.includes('全年级') || targetDisp.includes('Tahun')) {
+          const match = targetDisp.match(/Tahun\s*(\d)/i) || targetDisp.match(/(\d)\s*年级/);
+          const gradeNum = match ? match[1] : null;
+          const cGrade = getGradeFromClass(cName);
+          if (gradeNum && (cName.startsWith(gradeNum) || cGrade.includes(gradeNum))) {
+            isAffected = true;
+          } else if (!gradeNum) {
+            isAffected = true;
+          }
+        } else {
+          const targetList = targetDisp.split(/,|、|\//).map(s => cleanClassName(s));
+          isAffected = targetList.some(tc => tc && (cName === tc || cName.includes(tc) || tc.includes(cName)));
+        }
+
+        if (isAffected) {
+          const sub = t.subject ? t.subject.trim().toUpperCase() : 'UNKNOWN';
+          if (sub && sub !== 'UNKNOWN' && !sub.includes('VIRTUAL_SUB')) {
+            const grade = getGradeFromClass(cName);
+            const compositeKey = `${grade}_${cName}_${sub}`;
+            if (!subjectDetailMap[compositeKey]) {
+              subjectDetailMap[compositeKey] = {
+                id: compositeKey,
+                grade: grade,
+                className: cName,
+                subjectName: sub,
+                totalPeriods: 0
+              };
+            }
+            subjectDetailMap[compositeKey].totalPeriods += 1;
+          }
+        }
+      });
+    }
+  });
 
   classStats.value = Object.entries(classMap)
     .map(([className, totalPeriods]) => ({ 
