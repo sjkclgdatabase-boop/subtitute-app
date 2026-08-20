@@ -11,7 +11,7 @@
           科目目标与达成率分析中心
         </h1>
         <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
-          多维度追踪教学目标、MMI 教学干扰与达成情况，支持数据报表、可视化看板及 PDF 报告导出。
+          多维度追踪教学目标、MMI 教学干扰与达成情况，支持数据报表、可视化看板及高品质 PDF 报告导出。
         </p>
       </div>
 
@@ -38,14 +38,14 @@
 
         <!-- 右侧：三个操作按钮 -->
         <div class="flex flex-wrap items-center gap-3">
-          <button @click="exportPdfReport" class="no-print bg-emerald-600 hover:bg-emerald-700 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2 cursor-pointer">
-            <Printer class="w-4 h-4" /> 打印 / 另存为 PDF 报告
+          <button @click="exportPdfReport" class="no-print bg-indigo-600 hover:bg-indigo-700 text-white px-5 h-11 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2 cursor-pointer">
+            <Download class="w-4 h-4" /> 下载 PDF 报告
           </button>
           <button @click="showManageModal = true" class="no-print bg-slate-900 hover:bg-slate-800 text-white px-4 h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer flex items-center gap-2">
             <Settings class="w-4 h-4" /> 管理目标
           </button>
-          <button @click="loadAnalyticsData" :disabled="loading" class="no-print bg-indigo-600 hover:bg-indigo-700 text-white px-5 h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer flex items-center gap-2">
-            <span v-if="loading" class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          <button @click="loadAnalyticsData" :disabled="loading" class="no-print bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 h-11 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer flex items-center gap-2">
+            <span v-if="loading" class="w-3.5 h-3.5 border-2 border-slate-400/30 border-t-slate-700 rounded-full animate-spin"></span>
             <RotateCw v-else class="w-4 h-4" />
             <span>{{ loading ? '计算中...' : '刷新数据' }}</span>
           </button>
@@ -128,7 +128,7 @@
           <span class="text-[11px] text-slate-500 font-bold">有效上课周历比例: {{ (progressRatio * 100).toFixed(1) }}%</span>
         </div>
 
-        <div>
+        <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse print-table">
             <thead>
               <tr class="bg-slate-50 text-[11px] font-bold text-slate-700 uppercase tracking-wider border-b border-slate-200">
@@ -138,17 +138,18 @@
                 <th @click="toggleSort('subject_name')" class="py-3 px-4 cursor-pointer hover:bg-slate-100 transition select-none">
                   科目名称 <span class="text-indigo-600">{{ getSortIcon('subject_name') }}</span>
                 </th>
-                <th @click="toggleSort('teacher_name')" class="py-3 px-4 cursor-pointer hover:bg-slate-100 transition select-none">
+                <!-- 🌟 教师列：限制最大宽度并允许自动换行 -->
+                <th @click="toggleSort('teacher_name')" class="py-3 px-4 cursor-pointer hover:bg-slate-100 transition select-none max-w-[280px]">
                   任课老师 <span class="text-indigo-600">{{ getSortIcon('teacher_name') }}</span>
                 </th>
                 <th @click="toggleSort('target')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
-                  学年计划目标 <span class="text-indigo-600">{{ getSortIcon('target') }}</span>
+                  计划目标 <span class="text-indigo-600">{{ getSortIcon('target') }}</span>
                 </th>
                 <th @click="toggleSort('expected')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
-                  理论应到进度 <span class="text-indigo-600">{{ getSortIcon('expected') }}</span>
+                  应到进度 <span class="text-indigo-600">{{ getSortIcon('expected') }}</span>
                 </th>
                 <th @click="toggleSort('lostCount')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
-                  受干扰损失 <span class="text-indigo-600">{{ getSortIcon('lostCount') }}</span>
+                  干扰损失 <span class="text-indigo-600">{{ getSortIcon('lostCount') }}</span>
                 </th>
                 <th @click="toggleSort('actual')" class="py-3 px-4 text-center cursor-pointer hover:bg-slate-100 transition select-none">
                   实际执行 <span class="text-indigo-600">{{ getSortIcon('actual') }}</span>
@@ -168,11 +169,14 @@
                 </td>
               </tr>
               <tr v-for="(item, idx) in filteredAnalysisList" :key="idx" class="hover:bg-slate-50/50 transition">
-                <td class="py-3 px-4 font-bold text-slate-900">
+                <td class="py-3 px-4 font-bold text-slate-900 whitespace-nowrap">
                   Tahun {{ item.grade }} - {{ item.class_name }}
                 </td>
                 <td class="py-3 px-4 font-bold text-slate-900">{{ item.subject_name }}</td>
-                <td class="py-3 px-4 font-bold text-indigo-900">{{ item.teacher_name || '未指派' }}</td>
+                <!-- 🌟 网页端名字栏防溢出：设置 max-w-[280px] 与 break-words -->
+                <td class="py-3 px-4 font-bold text-indigo-900 max-w-[280px] break-words">
+                  {{ item.teacher_name || '未指派' }}
+                </td>
                 <td class="py-3 px-4 text-center font-bold">{{ item.target }} 节</td>
                 <td class="py-3 px-4 text-center font-bold text-indigo-700">{{ item.expected }} 节</td>
                 <td class="py-3 px-4 text-center text-amber-700 font-bold">-{{ item.lostCount }} 节</td>
@@ -182,7 +186,7 @@
                 </td>
                 <td class="py-3 px-4 text-center font-bold">
                   <span 
-                    class="px-2.5 py-1 rounded-lg text-xs"
+                    class="px-2.5 py-1 rounded-lg text-xs inline-block"
                     :class="{
                       'bg-red-50 text-red-700': item.status === '未达目标',
                       'bg-emerald-50 text-emerald-700': item.status === '超过目标',
@@ -340,12 +344,13 @@
 <script setup>
 import { ref, computed, onMounted, onActivated } from 'vue'
 import { supabase } from '../services/supabase'
+import jsPDF from 'jspdf'
 import { useToast } from '../utils/toast'
 import { 
   GraduationCap, 
   BarChart3, 
   PieChart, 
-  Printer, 
+  Download, 
   Settings, 
   RotateCw, 
   Users, 
@@ -359,6 +364,9 @@ import {
 const toast = useToast()
 const loading = ref(false)
 const activeTab = ref('table')
+
+const schoolName = ref('SJK (C) LADANG GRISEK')
+const schoolLogoUrl = ref('/logo.png')
 
 const filterGrade = ref('all')
 const filterClass = ref('all')
@@ -479,6 +487,22 @@ const fetchAllRows = async (tableName) => {
 const loadAnalyticsData = async () => {
   loading.value = true
   try {
+    try {
+      const { data: schoolData } = await supabase.from('school_settings').select('*').limit(1).single()
+      if (schoolData) {
+        if (schoolData.school_name) schoolName.value = schoolData.school_name
+        if (schoolData.logo_url) schoolLogoUrl.value = schoolData.logo_url
+      }
+    } catch (e) {
+      try {
+        const { data: settingsData } = await supabase.from('settings').select('*')
+        settingsData?.forEach(s => {
+          if (s.key === 'school_name' && s.value) schoolName.value = s.value
+          if (s.key === 'school_logo' && s.value) schoolLogoUrl.value = s.value
+        })
+      } catch (err) {}
+    }
+
     const { data: targets } = await supabase.from('subject_targets').select('*').order('grade', { ascending: true })
     allTargets.value = targets || []
 
@@ -546,7 +570,6 @@ const loadAnalyticsData = async () => {
 
         const lostSlotSet = new Set()
 
-        // 🌟 已修复：限制请假的匹配逻辑必须精准核对节次！
         if (leaveRequests && leaveRequests.length > 0) {
           leaveRequests.forEach(req => {
             const reqClass = cleanString(req.class_name)
@@ -572,7 +595,6 @@ const loadAnalyticsData = async () => {
                   const matchCls = itemClass === clsName || itemClass.includes(clsName) || clsName.includes(itemClass)
                   const matchSubj = isSubjectMatch(itemSubj, standardizedTargetSubject)
                   const matchWd = itemWeekday === leaveWeekday || itemWeekday === (leaveWeekday === 0 ? 7 : leaveWeekday)
-                  // 🌟 漏洞修复核心：强制比对课表节次与您实际勾选的节次，杜绝牵连！
                   const matchPeriod = Number(item.period) === Number(req.period) 
                   
                   if (matchCls && matchSubj && matchWd && matchPeriod) {
@@ -735,8 +757,326 @@ const maxSubjectLoss = computed(() => {
   return Math.max(...subjectLossRanking.value.map(i => i.lost), 1)
 })
 
-const exportPdfReport = () => {
-  window.print()
+// 📄 原生 Canvas 高品质彩色 PDF 报告下载引擎
+const exportPdfReport = async () => {
+  const title = 'LAPORAN ANALISIS SASARAN & PENCAPAIAN SUBJEK'
+  const safeFileName = 'Laporan_Analisis_Sasaran_Subjek'
+
+  const PAGE_W = 1240
+  const PAGE_H = 1754
+  const MARGIN = 50       
+  const CONTENT_W = PAGE_W - MARGIN * 2  
+  const HEADER_H = 340    
+  const FOOTER_H = 58
+  const ROW_H = 56        
+
+  const canvas = document.createElement('canvas')
+  canvas.width = PAGE_W
+  canvas.height = PAGE_H
+  const ctx = canvas.getContext('2d')
+  if (!ctx) throw new Error('Canvas 2D context is unavailable.')
+
+  const loadLogo = async () => {
+    if (!schoolLogoUrl.value) return null
+    try {
+      const response = await fetch(schoolLogoUrl.value, { mode: 'cors' })
+      if (!response.ok) return null
+      const blob = await response.blob()
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result)
+        reader.onerror = reject
+        reader.readAsDataURL(blob)
+      })
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+      img.src = dataUrl
+      await new Promise((resolve, reject) => {
+        img.onload = resolve
+        img.onerror = reject
+      })
+      return img
+    } catch (e) {
+      console.warn('PDF Logo 无法载入，将继续生成报告。', e)
+      return null
+    }
+  }
+
+  const logo = await loadLogo()
+  const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true })
+  let pageNumber = 1
+
+  const clearPage = () => {
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(0, 0, PAGE_W, PAGE_H)
+    ctx.textBaseline = 'top'
+  }
+
+  const setFont = (size, weight = 400) => {
+    ctx.font = `${weight} ${size}px Arial, "Noto Sans", "Noto Sans CJK SC", sans-serif`
+  }
+
+  const wrapText = (text, maxWidth, fontSize = 20, weight = 400) => {
+    const value = String(text ?? '')
+    setFont(fontSize, weight)
+    const lines = []
+    let line = ''
+    for (const char of value) {
+      const test = line + char
+      if (ctx.measureText(test).width > maxWidth && line) {
+        lines.push(line)
+        line = char
+      } else {
+        line = test
+      }
+    }
+    if (line) lines.push(line)
+    return lines.length ? lines : ['']
+  }
+
+  const drawHeader = () => {
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(0, 0, PAGE_W, HEADER_H + MARGIN)
+
+    let currentY = MARGIN + 10
+
+    if (logo) {
+      const size = 110  
+      const x = (PAGE_W - size) / 2
+      ctx.drawImage(logo, x, currentY, size, size)
+      currentY += size + 18 
+    }
+
+    setFont(23, 800)
+    ctx.fillStyle = '#1e1b4b'
+    ctx.textAlign = 'center'
+    const titleLines = wrapText(title, CONTENT_W - 40, 23, 800)
+    
+    titleLines.forEach((line, index) => {
+      ctx.fillText(line, PAGE_W / 2, currentY + index * 30)
+    })
+
+    currentY += titleLines.length * 30 + 10
+
+    setFont(20, 700)
+    ctx.fillStyle = '#334155'
+    ctx.fillText(schoolName.value || 'SJK (C) LADANG GRISEK', PAGE_W / 2, currentY)
+
+    currentY += 31
+
+    setFont(14, 600)
+    ctx.fillStyle = '#64748b'
+    const filterText = `Gred: [${filterGrade.value === 'all' ? 'Semua' : filterGrade.value}] | Kelas: [${filterClass.value === 'all' ? 'Semua' : filterClass.value}] | Subjek: [${filterSubject.value === 'all' ? 'Semua' : filterSubject.value}] | Guru: [${filterTeacher.value === 'all' ? 'Semua' : filterTeacher.value}]`
+    ctx.fillText(filterText, PAGE_W / 2, currentY)
+
+    currentY += 25
+    ctx.strokeStyle = '#c7d2fe'
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.moveTo(MARGIN, currentY)
+    ctx.lineTo(PAGE_W - MARGIN, currentY)
+    ctx.stroke()
+    ctx.textAlign = 'left'
+  }
+
+  const drawFooter = () => {
+    ctx.strokeStyle = '#e2e8f0'
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.moveTo(MARGIN, PAGE_H - 48)
+    ctx.lineTo(PAGE_W - MARGIN, PAGE_H - 48)
+    ctx.stroke()
+    setFont(11, 500)
+    ctx.fillStyle = '#94a3b8'
+    ctx.fillText(`LAPORAN RASMI DIJANA SECARA SISTEM • ${schoolName.value || ''}`, MARGIN, PAGE_H - 34)
+    ctx.textAlign = 'right'
+    ctx.fillText(`HALAMAN ${pageNumber}`, PAGE_W - MARGIN, PAGE_H - 34)
+    ctx.textAlign = 'left'
+  }
+
+  let y = MARGIN + HEADER_H + 10
+
+  const commitCurrentPage = () => {
+    drawFooter()
+    const image = canvas.toDataURL('image/jpeg', 0.94)
+    if (pageNumber === 1) {
+      pdf.addImage(image, 'JPEG', 0, 0, 210, 297, undefined, 'FAST')
+    } else {
+      pdf.addPage()
+      pdf.addImage(image, 'JPEG', 0, 0, 210, 297, undefined, 'FAST')
+    }
+  }
+
+  const startNewPage = () => {
+    commitCurrentPage()
+    pageNumber++
+    clearPage()
+    if (pageNumber === 1) {
+      drawHeader()
+      y = MARGIN + HEADER_H + 10
+    } else {
+      y = MARGIN + 20 
+    }
+  }
+
+  const ensureSpace = (height) => {
+    if (y + height > PAGE_H - FOOTER_H) startNewPage()
+  }
+
+  const drawSectionTitle = (text) => {
+    ensureSpace(54)
+    setFont(20, 800)
+    ctx.fillStyle = '#1e1b4b'
+    ctx.fillText(text, MARGIN, y)
+    y += 34
+    ctx.strokeStyle = '#c7d2fe'
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.moveTo(MARGIN, y)
+    ctx.lineTo(PAGE_W - MARGIN, y)
+    ctx.stroke()
+    y += 16
+  }
+
+  const drawColorfulKpiCard = (x, width, label, value, borderColor, textColor) => {
+    ctx.fillStyle = '#f8fafc'
+    ctx.strokeStyle = borderColor
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.roundRect(x, y, width, 112, 16)
+    ctx.fill()
+    ctx.stroke()
+    
+    setFont(12, 700)
+    ctx.fillStyle = '#64748b'
+    ctx.fillText(label, x + 18, y + 18)
+    
+    setFont(31, 800)
+    ctx.fillStyle = textColor
+    ctx.fillText(String(value), x + 18, y + 51)
+  }
+
+  const drawColorfulTable = (headers, rows, widths) => {
+    const tableW = CONTENT_W
+    const normalized = widths || headers.map(() => tableW / headers.length)
+    ensureSpace(ROW_H * 2)
+
+    const drawRow = (cells, header = false, statusVal = '') => {
+      let x = MARGIN
+      const rowLines = cells.map((cell, i) => wrapText(cell, normalized[i] - 24, header ? 13 : 12, header ? 700 : 500))
+      const maxLines = Math.max(...rowLines.map(a => a.length), 1)
+      const height = Math.max(ROW_H, maxLines * 22 + 20)
+      ensureSpace(height + 4)
+
+      if (header) {
+        ctx.fillStyle = '#e0e7ff' 
+        ctx.strokeStyle = '#c7d2fe'
+      } else {
+        ctx.fillStyle = '#ffffff'
+        ctx.strokeStyle = '#e2e8f0'
+      }
+
+      ctx.lineWidth = 1
+      ctx.fillRect(MARGIN, y, tableW, height)
+      ctx.strokeRect(MARGIN, y, tableW, height)
+
+      rowLines.forEach((linesForCell, i) => {
+        if (!header && i === cells.length - 1) {
+          const badgeW = normalized[i] - 16
+          const badgeH = height - 12
+          const badgeX = x + (normalized[i] - badgeW) / 2 
+          const badgeY = y + 6
+
+          ctx.fillStyle = statusVal === '未达目标' ? '#fee2e2' : '#d1fae5' 
+          ctx.beginPath()
+          ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 10)
+          ctx.fill()
+
+          setFont(12, 700)
+          ctx.fillStyle = statusVal === '未达目标' ? '#991b1b' : '#065f46' 
+          ctx.textAlign = 'center'
+          const totalTextH = linesForCell.length * 16
+          const startY = badgeY + (badgeH - totalTextH) / 2
+          linesForCell.forEach((line, li) => {
+            ctx.fillText(line, badgeX + badgeW / 2, startY + li * 16)
+          })
+          ctx.textAlign = 'left'
+        } else {
+          setFont(header ? 13 : 12, header ? 700 : 500)
+          ctx.fillStyle = header ? '#312e81' : '#0f172a'
+          
+          const totalTextH = linesForCell.length * 20
+          const startY = y + (height - totalTextH) / 2
+
+          linesForCell.forEach((line, li) => {
+            if (i >= 3 && i <= 8) {
+              ctx.textAlign = 'center'
+              ctx.fillText(line, x + normalized[i] / 2, startY + li * 20)
+              ctx.textAlign = 'left'
+            } else {
+              ctx.fillText(line, x + 12, startY + li * 20) 
+            }
+          })
+        }
+
+        x += normalized[i]
+        if (i < cells.length - 1) {
+          ctx.strokeStyle = '#cbd5e1'
+          ctx.beginPath()
+          ctx.moveTo(x, y)
+          ctx.lineTo(x, y + height)
+          ctx.stroke()
+        }
+      })
+      y += height
+    }
+
+    drawRow(headers, true)
+    rows.forEach(row => {
+      const statusValue = row[row.length - 1] 
+      drawRow(row.map(v => String(v ?? '-')), false, statusValue)
+    })
+    y += 14
+  }
+
+  try {
+    clearPage()
+    drawHeader()
+    y = MARGIN + HEADER_H + 10
+
+    drawSectionTitle('RINGKASAN ANALISIS PENCAPAIAN')
+    const gap = 18
+    const cardW = (CONTENT_W - gap * 2) / 3
+    drawColorfulKpiCard(MARGIN, cardW, 'JUMLAH KEPUTUSAN', `${analysisSummary.value.total}`, '#cbd5e1', '#0f172a')
+    drawColorfulKpiCard(MARGIN + cardW + gap, cardW, 'SASARAN DICAPAI', `${analysisSummary.value.met}`, '#34d399', '#059669')
+    drawColorfulKpiCard(MARGIN + (cardW + gap) * 2, cardW, 'BELUM DICAPAI', `${analysisSummary.value.unmet}`, '#f87171', '#dc2626')
+    y += 138
+
+    drawSectionTitle('SENARAI TERPERINCI PRESTASI SUBJEK')
+    const rows = filteredAnalysisList.value.map(item => [
+      `Tahun ${item.grade} - ${item.class_name}`,
+      item.subject_name,
+      item.teacher_name || '未指派',
+      `${item.target}`,
+      `${item.expected}`,
+      `-${item.lostCount}`,
+      `${item.actual}`,
+      `${item.gap >= 0 ? '+' + item.gap : item.gap}`,
+      item.status
+    ])
+    
+    drawColorfulTable(
+      ['KELAS', 'SUBJEK', 'GURU', 'SASARAN', 'JANGKAAN', 'HILANG', 'SEBENAR', 'BEZA', 'STATUS'], 
+      rows, 
+      [95, 200, 310, 85, 95, 75, 90, 70, 120] 
+    )
+
+    commitCurrentPage()
+    pdf.save(`${safeFileName}.pdf`)
+  } catch (error) {
+    console.error('PDF Generation Failed:', error)
+    alert('PDF Generation Failed, please check console.')
+  }
 }
 
 const addTarget = async () => {
