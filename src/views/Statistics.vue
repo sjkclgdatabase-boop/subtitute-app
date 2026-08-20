@@ -8,7 +8,7 @@
         教务数据分析与 MMI 报表中心
       </h1>
       <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
-        多维度监控教学干扰、科目影响及教师代课负荷（已完美统合请假勾选节次与全校/跨班级活动干扰损失）。
+        多维度监控教学干扰、科目影响及教师代课负荷。
       </p>
     </div>
 
