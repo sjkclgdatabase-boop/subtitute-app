@@ -2020,83 +2020,46 @@ const handleExportPdf = async () => {
 
       if (!text) return
 
-      // Keep the symbols supported by the embedded Georgia font.
-      // Only replace the bullet when it is used as a separator.
-      text = text.replace(
-        /•/g,
-        '-'
-      )
+      text = text.replace(/•/g, '-')
 
-      const innerWidth =
-        Math.max(
-          width - 1.6,
-          1
-        )
+      // 【优化 1】：智能换行。如果手动输入的文本包含 " ("，自动把它变成换行，统一排版风格
+      text = text.replace(/ \(/g, '\n(')
 
-      const innerHeight =
-        Math.max(
-          height - 0.8,
-          1
-        )
+      const innerWidth = Math.max(width - 1.6, 1)
+      const innerHeight = Math.max(height - 0.8, 1)
 
-      doc.setFont(
-        'Georgia',
-        bold
-          ? 'bold'
-          : 'normal'
-      )
-
-      doc.setTextColor(
-        ...color
-      )
-
-      /*
-       * Fit BOTH width and height.
-       * This is especially important for Georgia because its metrics
-       * must be measured after the real Georgia font is registered.
-       */
+      doc.setFont('Georgia', bold ? 'bold' : 'normal')
+      doc.setTextColor(...color)
 
       let size = fontSize
       let lines = []
 
-      for (
-        let attempt = 0;
-        attempt < 20;
-        attempt++
-      ) {
+      // 提取所有独立的单词，用于后面检测宽度
+      const words = text.split(/[\s\n]+/)
+
+      for (let attempt = 0; attempt < 20; attempt++) {
         doc.setFontSize(size)
+        
+        // 【优化 2】：检测单行最长单词宽度。如果有任何一个单词比格子还宽，就标记为过宽。
+        let isWordTooWide = false
+        for (const word of words) {
+          if (doc.getTextWidth(word) > innerWidth) {
+            isWordTooWide = true
+            break
+          }
+        }
 
-        lines =
-          doc.splitTextToSize(
-            text,
-            innerWidth
-          )
+        lines = doc.splitTextToSize(text, innerWidth)
+        const lineHeight = Math.max(size * 0.38, 1.8)
+        const totalHeight = lines.length * lineHeight
 
-        // Compact line spacing so 3–4 line names can remain inside
-        // the relatively short timetable cells.
-        const lineHeight =
-          Math.max(
-            size * 0.38,
-            1.8
-          )
-
-        const totalHeight =
-          lines.length *
-          lineHeight
-
-        if (
-          totalHeight <=
-            innerHeight &&
-          size <= fontSize
-        ) {
+        // 只有当总高度放得下，且【没有任何单个单词被暴力裁切】时，才停止缩小！
+        if (totalHeight <= innerHeight && !isWordTooWide && size <= fontSize) {
           break
         }
 
-        // If the text is too tall, reduce font size.
-        if (
-          totalHeight >
-          innerHeight
-        ) {
+        // 如果高度超了，或者单词太宽，继续缩小字体
+        if (totalHeight > innerHeight || isWordTooWide) {
           size -= 0.25
 
           if (size <= 3.2) {
@@ -2109,59 +2072,23 @@ const handleExportPdf = async () => {
       }
 
       doc.setFontSize(size)
+      lines = doc.splitTextToSize(text, innerWidth)
 
-      lines =
-        doc.splitTextToSize(
-          text,
-          innerWidth
-        )
+      let lineHeight = Math.max(size * 0.40, 2.0)
 
-      // Final safety pass: calculate a line height that can NEVER
-      // exceed the actual cell height.
-      let lineHeight =
-        Math.max(
-          size * 0.40,
-          2.0
-        )
-
-      // 如果文字超过单元格高度，只在真的放不下时才压缩
-      if (
-        lines.length > 1 &&
-        lines.length *
-          lineHeight >
-          innerHeight
-      ) {
-        lineHeight =
-          innerHeight /
-          lines.length
+      if (lines.length > 1 && lines.length * lineHeight > innerHeight) {
+        lineHeight = innerHeight / lines.length
       }
 
-      const totalHeight =
-        lines.length *
-        lineHeight
+      const totalHeight = lines.length * lineHeight
 
-      let startY =
-        y +
-        Math.max(
-          (height -
-            totalHeight) /
-            2 +
-            lineHeight *
-              0.55,
-          lineHeight
-        )
+      let startY = y + Math.max((height - totalHeight) / 2 + lineHeight * 0.55, lineHeight)
 
       lines.forEach(line => {
-        doc.text(
-          line,
-          x + width / 2,
-          startY,
-          {
-            align: 'center',
-            baseline: 'middle'
-          }
-        )
-
+        doc.text(line, x + width / 2, startY, {
+          align: 'center',
+          baseline: 'middle'
+        })
         startY += lineHeight
       })
     }
