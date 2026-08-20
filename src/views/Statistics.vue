@@ -313,7 +313,7 @@
             <BookOpen class="w-5 h-5 text-indigo-600" />
             科目与班级细化干扰分析
           </h2>
-          <p class="text-xs text-slate-500 mt-1 font-medium">按年级、班级多维度筛选科目受干扰详情（已完美整合请假勾选节次及全校/跨班级活动冲击，合班记录已自动独立拆分）。</p>
+          <p class="text-xs text-slate-500 mt-1 font-medium">按年级、班级多维度筛选科目受干扰详情。</p>
         </div>
         <button @click="exportSinglePdf" class="no-print px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0 shadow-sm">
           <Printer class="w-4 h-4" />
@@ -699,229 +699,322 @@ const expandClassNames = (rawStr) => {
   }
 };
 
-const loadAllData = async () => {
-  try {
-    const { data: schoolData } = await supabase
-      .from('school_settings')
-      .select('*')
-      .limit(1)
-      .single()
-
-    if (schoolData) {
-      if (schoolData.school_name) schoolName.value = schoolData.school_name
-      if (schoolData.logo_url) schoolLogoUrl.value = schoolData.logo_url
+// --- 💡 1. 引入 1000条以上数据无限翻页读取函数 ---
+  const fetchAllRows = async (tableName, queryBuilder = null) => {
+    let allData = []
+    let from = 0
+    const limit = 1000 
+    
+    while (true) {
+      let query = supabase.from(tableName).select('*').range(from, from + limit - 1)
+      if (queryBuilder) query = queryBuilder(query) 
+      
+      const { data, error } = await query
+      if (error) throw error
+      if (data) allData.push(...data)
+      if (!data || data.length < limit) break
+      from += limit
     }
-  } catch (e) {
+    return allData
+  }
+
+  // --- 💡 2. 引入科目智能清洗与标准化函数 ---
+  const cleanString = (str) => {
+    if (!str) return ''
+    return String(str).trim().toUpperCase().replace(/[^A-Z0-9\u4e00-\u9fa5]/g, '')
+  }
+
+  const standardizeSubjectName = (name) => {
+    const clean = cleanString(name)
+    if (!clean) return ''
+    if (['BI', 'ENGLISH', 'BAHASAINGGERIS', 'ENG', '英文'].includes(clean)) return 'BAHASA INGGERIS'
+    if (['BM', 'MELAYU', 'BAHASAMELAYU', 'MALAY', '国文', '马来文'].includes(clean)) return 'BAHASA MELAYU'
+    if (['BC', 'CINA', 'BAHASACINA', 'CHINESE', '华文', '华语'].includes(clean)) return 'BAHASA CINA'
+    if (['MATEMATIK', 'MATH', 'MT', 'MM', '数学'].includes(clean)) return 'MATEMATIK'
+    if (['SN', 'SAINS', 'SCIENCE', 'SC', '科学'].includes(clean)) return 'SAINS'
+    if (['PJ', 'PENDIDIKANJASMANI', 'JASMANI', 'PE', '体育'].includes(clean)) return 'PENDIDIKAN JASMANI'
+    if (['PM', 'PENDIDIKANMORAL', 'MORAL', '道德'].includes(clean)) return 'PENDIDIKAN MORAL'
+    if (['PI', 'PENDIDIKANISLAM', 'ISLAM', '宗教'].includes(clean)) return 'PENDIDIKAN ISLAM'
+    if (['PSV', 'PENDIDIKANSENIVISUAL', 'SENI', 'VISUAL', 'ART', '美术'].includes(clean)) return 'PENDIDIKAN SENI VISUAL'
+    if (['MZ', 'PMUZIK', 'PENDIDIKANMUZIK', 'MUZIK', 'MUSIC', '音乐'].includes(clean)) return 'PENDIDIKAN MUZIK'
+    if (['PK', 'PENDIDIKANKESIHATAN', 'KESIHATAN', 'HEALTH', '健教', '健康教育'].includes(clean)) return 'PENDIDIKAN KESIHATAN'
+    if (['SEJARAH', 'SEJ', 'HIST', '历史'].includes(clean)) return 'SEJARAH'
+    if (['RBT', 'REKABENTUKDANTEKNOLOGI', 'REKABENTUK', '设计与工艺'].includes(clean)) return 'REKA BENTUK DAN TEKNOLOGI'
+    return clean
+  }
+
+  const isSubjectMatch = (subjA, subjB) => {
+    if (!subjA || !subjB) return false
+    const stdA = standardizeSubjectName(subjA)
+    const stdB = standardizeSubjectName(subjB)
+    if (stdA && stdB && stdA === stdB) return true
+    const cA = cleanString(subjA)
+    const cB = cleanString(subjB)
+    return cA === cB || cA.includes(cB) || cB.includes(cA)
+  }
+
+  // --- 💡 3. 重写 loadAllData 核心函数 ---
+  const loadAllData = async () => {
     try {
-      const { data: settingsData } = await supabase.from('settings').select('*')
-      settingsData?.forEach(setting => {
-        if (setting.key === 'school_name' && setting.value) schoolName.value = setting.value
-        if (setting.key === 'school_logo' && setting.value) schoolLogoUrl.value = setting.value
+      // 3.1 获取学校基础信息
+      try {
+        const { data: schoolData } = await supabase.from('school_settings').select('*').limit(1).single()
+        if (schoolData) {
+          if (schoolData.school_name) schoolName.value = schoolData.school_name
+          if (schoolData.logo_url) schoolLogoUrl.value = schoolData.logo_url
+        }
+      } catch (e) {
+        try {
+          const { data: settingsData } = await supabase.from('settings').select('*')
+          settingsData?.forEach(setting => {
+            if (setting.key === 'school_name' && setting.value) schoolName.value = setting.value
+            if (setting.key === 'school_logo' && setting.value) schoolLogoUrl.value = setting.value
+          })
+        } catch (err) {
+          console.warn('学校品牌资料读取失败', err)
+        }
+      }
+
+      // 3.2 获取基础数据 (突破 1000 条限制)
+      const { data: dbClasses } = await supabase.from('classes').select('*')
+      const { data: dbTargets } = await supabase.from('subject_targets').select('*')
+      const { data: teachers } = await supabase.from('teachers').select('*')
+      
+      const timetables = await fetchAllRows('timetable')
+      
+      const mmiData = await fetchAllRows('mmi_interruptions', (query) => {
+        if (startDate.value) query = query.gte('interruption_date', startDate.value)
+        if (endDate.value) query = query.lte('interruption_date', endDate.value)
+        return query
       })
-    } catch (err) {
-      console.warn('学校品牌资料读取失败，PDF 将使用默认学校资料。', err)
-    }
-  }
+      
+      const leaveData = await fetchAllRows('leave_requests', (query) => {
+        if (startDate.value) query = query.gte('leave_date', startDate.value)
+        if (endDate.value) query = query.lte('leave_date', endDate.value)
+        return query
+      })
 
-  const { data: teachers } = await supabase.from('teachers').select('*')
-  
-  let assignQuery = supabase
-    .from('substitute_assignments')
-    .select('sub_teacher_id, assignment_type, leave_request_id, leave_requests!inner(leave_date)')
+      let assignQuery = supabase.from('substitute_assignments').select('sub_teacher_id, assignment_type, leave_request_id, leave_requests!inner(leave_date)')
+      if (startDate.value) assignQuery = assignQuery.gte('leave_requests.leave_date', startDate.value)
+      if (endDate.value) assignQuery = assignQuery.lte('leave_requests.leave_date', endDate.value)
+      const { data: assignments } = await assignQuery
 
-  if (startDate.value) assignQuery = assignQuery.gte('leave_requests.leave_date', startDate.value)
-  if (endDate.value) assignQuery = assignQuery.lte('leave_requests.leave_date', endDate.value)
+      // 赋值给模板使用的全局变量
+      interruptionLogs.value = mmiData || []
 
-  const { data: assignments } = await assignQuery
+      // 3.3 计算旧版 Tab 数据 (综合概览、原因、趋势、教师表)
+      const teacherMap = {}
+      const teacherNameSet = new Set()
+      teachers?.forEach(t => {
+        teacherMap[t.id] = { name: t.name, subject: t.subject, count: 0, interruptedCount: 0 }
+        teacherNameSet.add(t.name.trim().toUpperCase())
+      })
 
-  const swapLeaveIds = new Set()
-  assignments?.forEach(a => {
-    if (a.assignment_type === 'swap' && a.leave_request_id) {
-      swapLeaveIds.add(a.leave_request_id)
-    }
-  })
-
-  let mmiQuery = supabase.from('mmi_interruptions').select('*')
-  if (startDate.value) mmiQuery = mmiQuery.gte('interruption_date', startDate.value)
-  if (endDate.value) mmiQuery = mmiQuery.lte('interruption_date', endDate.value)
-  const { data: mmiData } = await mmiQuery
-
-  if (mmiData) interruptionLogs.value = mmiData
-
-  let leaveQuery = supabase.from('leave_requests').select('*')
-  if (startDate.value) leaveQuery = leaveQuery.gte('leave_date', startDate.value)
-  if (endDate.value) leaveQuery = leaveQuery.lte('leave_date', endDate.value)
-  const { data: leaveData } = await leaveQuery
-
-  const { data: timetables } = await supabase.from('timetable').select('*')
-
-  const teacherMap = {}
-  const teacherNameSet = new Set()
-  
-  teachers?.forEach(t => {
-    teacherMap[t.id] = { name: t.name, subject: t.subject, count: 0, interruptedCount: 0 }
-    teacherNameSet.add(t.name.trim().toUpperCase())
-  })
-
-  assignments?.forEach(a => {
-    if (a.assignment_type !== 'swap' && a.sub_teacher_id && teacherMap[a.sub_teacher_id]) {
-      teacherMap[a.sub_teacher_id].count++
-    }
-  })
-
-  const teacherInterruptionMap = {}
-  mmiData?.forEach(l => {
-    let rawTarget = (l.target_display || '').trim()
-    let tName = ''
-    if (rawTarget.includes('教师:')) tName = rawTarget.replace('教师:', '').trim()
-    else if (teacherNameSet.has(rawTarget.toUpperCase())) tName = rawTarget
-
-    if (tName) {
-      const pCount = (l.end_period || 0) - (l.start_period || 0) + 1
-      teacherInterruptionMap[tName.toUpperCase()] = (teacherInterruptionMap[tName.toUpperCase()] || 0) + pCount
-    }
-  })
-
-  stats.value = Object.values(teacherMap).map(t => ({
-    ...t,
-    interruptedCount: teacherInterruptionMap[t.name.trim().toUpperCase()] || 0
-  }))
-
-  if (mmiData) {
-    const totalPAll = mmiData.reduce((acc, cur) => acc + ((cur.end_period || 0) - (cur.start_period || 0) + 1), 0)
-    const reasons = {}
-    mmiData.forEach(l => { 
-      const pCount = (l.end_period || 0) - (l.start_period || 0) + 1; 
-      let rawReason = (l.reason || '未填写').trim().toUpperCase();
-      rawReason = rawReason.replace(/^(教师请假:\s*|CUTI GURU:\s*)/i, ''); 
-      reasons[rawReason] = (reasons[rawReason] || 0) + pCount;
-    })
-    
-    reasonStats.value = Object.entries(reasons)
-      .map(([reason, count]) => ({ reason, count, percentage: totalPAll > 0 ? ((count / totalPAll) * 100).toFixed(1) : 0 }))
-      .sort((a, b) => b.count - a.count)
-
-    const dayNames = { 1: '星期一', 2: '星期二', 3: '星期三', 4: '星期四', 5: '星期五', 6: '星期六', 7: '星期日' }
-    const daysCount = {}
-    mmiData.forEach(l => { const dIndex = new Date(l.interruption_date).getDay() || 7; const dName = dayNames[dIndex] || '其他'; const pCount = (l.end_period || 0) - (l.start_period || 0) + 1; daysCount[dName] = (daysCount[dName] || 0) + pCount })
-    dayOfWeekStats.value = ['星期一', '星期二', '星期三', '星期四', '星期五'].map(day => ({ day, count: daysCount[day] || 0, percentage: totalPAll > 0 ? (((daysCount[day] || 0) / totalPAll) * 100).toFixed(1) : 0 }))
-  }
-
-  const classMap = {}
-  const subjectDetailMap = {} 
-  let totalClassPeriods = 0
-
-  mmiData?.forEach(l => { 
-    let rawTarget = (l.target_display || '').trim(); 
-    if (/^GURU:/i.test(rawTarget) || rawTarget.includes('教师') || teacherNameSet.has(rawTarget.toUpperCase()) || /VIRTUAL_CLASS/i.test(rawTarget)) return; 
-    const pCount = (l.end_period || 0) - (l.start_period || 0) + 1; 
-    
-    // 🌟 运用 expandClassNames 将合班拆解
-    const splitClasses = expandClassNames(rawTarget);
-    splitClasses.forEach(cName => {
-      classMap[cName] = (classMap[cName] || 0) + pCount;
-      totalClassPeriods += pCount;
-    });
-  })
-
-  leaveData?.forEach(req => {
-    if (swapLeaveIds.has(req.id)) return;
-
-    // 🌟 运用 expandClassNames 将合班拆解
-    const splitClasses = expandClassNames(req.class_name);
-    splitClasses.forEach(cName => {
-      classMap[cName] = (classMap[cName] || 0) + 1;
-      totalClassPeriods += 1;
-    });
-
-    const sub = req.subject ? req.subject.trim().toUpperCase() : 'UNKNOWN';
-    if (sub && sub !== 'UNKNOWN' && !sub.includes('VIRTUAL_SUB')) {
-      splitClasses.forEach(cleanC => {
-        const grade = getGradeFromClass(cleanC);
-        const compositeKey = `${grade}_${cleanC}_${sub}`;
-        if (!subjectDetailMap[compositeKey]) {
-          subjectDetailMap[compositeKey] = {
-            id: compositeKey,
-            grade: grade,
-            className: cleanC,
-            subjectName: sub,
-            totalPeriods: 0
-          };
+      assignments?.forEach(a => {
+        if (a.assignment_type !== 'swap' && a.sub_teacher_id && teacherMap[a.sub_teacher_id]) {
+          teacherMap[a.sub_teacher_id].count++
         }
-        subjectDetailMap[compositeKey].totalPeriods += 1;
-      });
-    }
-  })
+      })
 
-  mmiData?.forEach(int => {
-    if (int.type === 'class' && timetables && timetables.length > 0) {
-      const startP = Number(int.start_period) || 1;
-      const endP = Number(int.end_period) || 1;
-      const targetDisp = (int.target_display || '').trim();
+      const teacherInterruptionMap = {}
+      mmiData?.forEach(l => {
+        let rawTarget = (l.target_display || '').trim()
+        let tName = ''
+        if (rawTarget.includes('教师:')) tName = rawTarget.replace('教师:', '').trim()
+        else if (teacherNameSet.has(rawTarget.toUpperCase())) tName = rawTarget
 
-      const intDate = new Date(int.interruption_date);
-      const wd = intDate.getDay();
-      const weekdayNum = wd === 0 ? 7 : wd;
-
-      timetables.forEach(t => {
-        if (Number(t.weekday) !== weekdayNum) return;
-        const p = Number(t.period);
-        if (p < startP || p > endP) return;
-
-        // 🌟 运用 expandClassNames 将课表中的合班拆解
-        const splitClasses = expandClassNames(t.class_name);
-        if (splitClasses.length === 0) return;
-
-        let isAffected = false;
-        if (targetDisp.includes('全校')) {
-          isAffected = true;
-        } else if (targetDisp.includes('全年级') || targetDisp.includes('Tahun')) {
-          const match = targetDisp.match(/Tahun\s*(\d)/i) || targetDisp.match(/(\d)\s*年级/);
-          const gradeNum = match ? match[1] : null;
-          if (gradeNum) {
-            isAffected = splitClasses.some(cName => cName.startsWith(gradeNum) || getGradeFromClass(cName).includes(gradeNum));
-          } else {
-            isAffected = true;
-          }
-        } else {
-          const targetList = targetDisp.split(/,|、|\//).map(s => cleanClassName(s));
-          isAffected = targetList.some(tc => tc && splitClasses.some(cName => cName === tc || cName.includes(tc) || tc.includes(cName)));
+        if (tName) {
+          const pCount = (l.end_period || 0) - (l.start_period || 0) + 1
+          teacherInterruptionMap[tName.toUpperCase()] = (teacherInterruptionMap[tName.toUpperCase()] || 0) + pCount
         }
+      })
 
-        if (isAffected) {
-          const sub = t.subject ? t.subject.trim().toUpperCase() : 'UNKNOWN';
-          if (sub && sub !== 'UNKNOWN' && !sub.includes('VIRTUAL_SUB')) {
-            splitClasses.forEach(cName => {
-              const grade = getGradeFromClass(cName);
-              const compositeKey = `${grade}_${cName}_${sub}`;
-              if (!subjectDetailMap[compositeKey]) {
-                subjectDetailMap[compositeKey] = {
-                  id: compositeKey,
-                  grade: grade,
-                  className: cName,
-                  subjectName: sub,
-                  totalPeriods: 0
-                };
+      stats.value = Object.values(teacherMap).map(t => ({
+        ...t,
+        interruptedCount: teacherInterruptionMap[t.name.trim().toUpperCase()] || 0
+      }))
+
+      if (mmiData) {
+        const totalPAll = mmiData.reduce((acc, cur) => acc + ((cur.end_period || 0) - (cur.start_period || 0) + 1), 0)
+        const reasons = {}
+        mmiData.forEach(l => { 
+          const pCount = (l.end_period || 0) - (l.start_period || 0) + 1; 
+          let rawReason = (l.reason || '未填写').trim().toUpperCase();
+          rawReason = rawReason.replace(/^(教师请假:\s*|CUTI GURU:\s*)/i, ''); 
+          reasons[rawReason] = (reasons[rawReason] || 0) + pCount;
+        })
+        
+        reasonStats.value = Object.entries(reasons)
+          .map(([reason, count]) => ({ reason, count, percentage: totalPAll > 0 ? ((count / totalPAll) * 100).toFixed(1) : 0 }))
+          .sort((a, b) => b.count - a.count)
+
+        const dayNames = { 1: '星期一', 2: '星期二', 3: '星期三', 4: '星期四', 5: '星期五', 6: '星期六', 7: '星期日' }
+        const daysCount = {}
+        mmiData.forEach(l => { const dIndex = new Date(l.interruption_date).getDay() || 7; const dName = dayNames[dIndex] || '其他'; const pCount = (l.end_period || 0) - (l.start_period || 0) + 1; daysCount[dName] = (daysCount[dName] || 0) + pCount })
+        dayOfWeekStats.value = ['星期一', '星期二', '星期三', '星期四', '星期五'].map(day => ({ day, count: daysCount[day] || 0, percentage: totalPAll > 0 ? (((daysCount[day] || 0) / totalPAll) * 100).toFixed(1) : 0 }))
+      }
+
+      // 3.4 核心对齐计算：完全基于目标与班级遍历 (彻底移除了调课过滤)
+      const teacherMapForMatch = {}
+      teachers?.forEach(tch => {
+        if (tch.id) teacherMapForMatch[String(tch.id)] = tch
+        if (tch.name) teacherMapForMatch[cleanString(tch.name)] = tch
+      })
+
+      const enrichedTimetables = (timetables || []).map(item => {
+        const tIdKey = item.teacher_id ? String(item.teacher_id) : ''
+        const tNameKey = item.teacher_name ? cleanString(item.teacher_name) : ''
+        const teacherObj = teacherMapForMatch[tIdKey] || teacherMapForMatch[tNameKey] || {}
+        return {
+          ...item,
+          teacher_info: teacherObj,
+          resolved_teacher_name: teacherObj.name || item.teacher_name || item.teacher || ''
+        }
+      })
+
+      const classLostSets = {}
+      const tempSubjectStats = []
+
+      for (const cls of (dbClasses || [])) {
+        const clsName = cleanString(cls.class_name)
+        if (!classLostSets[cls.class_name]) classLostSets[cls.class_name] = new Set()
+        
+        const gradeTargets = (dbTargets || []).filter(t => Number(t.grade) === Number(cls.grade))
+
+        for (const t of gradeTargets) {
+          const standardizedTargetSubject = standardizeSubjectName(t.subject_name)
+          const lostSlotSet = new Set()
+
+          // 锁定该科目的专属老师
+          const matchedEntries = enrichedTimetables.filter(item => {
+            const itemClass = cleanString(item.class_name)
+            const isClassMatched = itemClass === clsName || itemClass.includes(clsName) || clsName.includes(itemClass)
+            if (!isClassMatched) return false
+            const rawSubj = item.subject || item.subject_name || item.teacher_info?.subject_name || ''
+            return isSubjectMatch(rawSubj, standardizedTargetSubject)
+          })
+
+          const assignedTeacherNames = [...new Set(matchedEntries.map(e => e.resolved_teacher_name).filter(Boolean))]
+          const assignedTeacherIds = [...new Set(matchedEntries.map(e => e.teacher_id || e.teacher_info?.id).filter(Boolean))]
+
+          // 处理请假 (移除了调课过滤，严格校验节次)
+          leaveData?.forEach(req => {
+            const reqClass = cleanString(req.class_name)
+            const isClassMatched = reqClass === clsName || reqClass.includes(clsName) || clsName.includes(reqClass)
+            const isSubjMatched = isSubjectMatch(req.subject, standardizedTargetSubject)
+            
+            const reqTeacherNameClean = cleanString(req.teacher_name)
+            const isTeacherMatched = 
+              assignedTeacherIds.some(id => req.teacher_id && String(req.teacher_id) === String(id)) ||
+              assignedTeacherNames.some(name => reqTeacherNameClean && cleanString(name) === reqTeacherNameClean)
+
+            if (isTeacherMatched && isClassMatched && isSubjMatched) {
+              if (req.leave_date) {
+                const leaveDateObj = new Date(req.leave_date)
+                const leaveWeekday = leaveDateObj.getDay()
+                
+                enrichedTimetables.forEach(item => {
+                  const itemClass = cleanString(item.class_name)
+                  const itemSubj = item.subject || item.subject_name || item.teacher_info?.subject_name || ''
+                  const itemWeekday = Number(item.weekday)
+                  
+                  const matchCls = itemClass === clsName || itemClass.includes(clsName) || clsName.includes(itemClass)
+                  const matchSubj = isSubjectMatch(itemSubj, standardizedTargetSubject)
+                  const matchWd = itemWeekday === leaveWeekday || itemWeekday === (leaveWeekday === 0 ? 7 : leaveWeekday)
+                  const matchPeriod = Number(item.period) === Number(req.period)
+                  
+                  if (matchCls && matchSubj && matchWd && matchPeriod) {
+                    const slotKey = `${req.leave_date}-P${item.period}`
+                    lostSlotSet.add(slotKey)
+                    classLostSets[cls.class_name].add(slotKey)
+                  }
+                })
+              } else {
+                // 处理未填写日期的特殊数据
+                const randomSlot = `NODATE-${Math.random()}`
+                lostSlotSet.add(randomSlot)
+                classLostSets[cls.class_name].add(randomSlot)
               }
-              subjectDetailMap[compositeKey].totalPeriods += 1;
-            });
+            }
+          })
+
+          // 处理 MMI 干扰活动
+          mmiData?.forEach(int => {
+            if (int.type === 'class') {
+              const startP = Number(int.start_period) || 1
+              const endP = Number(int.end_period) || 1
+              const intScope = int.scope ? int.scope.trim() : ''
+              const targetDisp = int.target_display ? int.target_display.trim() : ''
+              const intGrade = Number(int.grade)
+              const intClass = cleanString(int.class_name)
+
+              const intDate = new Date(int.interruption_date)
+              const intWeekday = intDate.getDay()
+
+              const isClassAffected = 
+                intScope === 'all' || 
+                targetDisp.includes('全校') ||
+                (intScope === 'grade' && intGrade === Number(cls.grade)) ||
+                targetDisp.includes(`Tahun ${cls.grade}`) || targetDisp.includes(`TAHUN ${cls.grade}`) ||
+                (intScope === 'class' && (intClass.includes(clsName) || clsName.includes(intClass || ''))) ||
+                targetDisp.includes(clsName)
+
+              if (isClassAffected) {
+                enrichedTimetables.forEach(item => {
+                  const itemClass = cleanString(item.class_name)
+                  const itemPeriod = Number(item.period)
+                  const rawSubj = item.subject || item.subject_name || item.teacher_info?.subject_name || ''
+                  const itemWeekday = Number(item.weekday)
+
+                  const matchClass = itemClass === clsName || itemClass.includes(clsName) || clsName.includes(itemClass)
+                  const matchPeriod = itemPeriod >= startP && itemPeriod <= endP
+                  const matchSubject = isSubjectMatch(rawSubj, standardizedTargetSubject)
+                  const matchWeekday = itemWeekday === intWeekday || itemWeekday === (intWeekday === 0 ? 7 : intWeekday)
+
+                  if (matchClass && matchPeriod && matchSubject && matchWeekday) {
+                    const slotKey = `${int.interruption_date}-P${item.period}`
+                    lostSlotSet.add(slotKey)
+                    classLostSets[cls.class_name].add(slotKey)
+                  }
+                })
+              }
+            }
+          })
+
+          if (lostSlotSet.size > 0) {
+            tempSubjectStats.push({
+              id: `${cls.grade}_${cls.class_name}_${t.subject_name}`,
+              grade: String(cls.grade),
+              className: cls.class_name,
+              subjectName: t.subject_name,
+              totalPeriods: lostSlotSet.size
+            })
           }
         }
-      });
+      }
+
+      // 3.5 输出最终结果供图表使用
+      let totalClassPeriods = Object.values(classLostSets).reduce((sum, set) => sum + set.size, 0)
+      
+      classStats.value = Object.keys(classLostSets)
+        .map(cName => {
+          const count = classLostSets[cName].size
+          return {
+            className: cName,
+            totalPeriods: count,
+            percentage: totalClassPeriods > 0 ? ((count / totalClassPeriods) * 100).toFixed(1) : 0
+          }
+        })
+        .filter(c => c.totalPeriods > 0)
+        .sort((a, b) => b.totalPeriods - a.totalPeriods)
+
+      subjectStats.value = tempSubjectStats.sort((a, b) => b.totalPeriods - a.totalPeriods)
+
+    } catch (err) {
+      console.error('加载分析数据异常:', err)
+    } finally {
     }
-  });
-
-  classStats.value = Object.entries(classMap)
-    .map(([className, totalPeriods]) => ({ 
-      className, 
-      totalPeriods, 
-      percentage: totalClassPeriods > 0 ? ((totalPeriods / totalClassPeriods) * 100).toFixed(1) : 0 
-    }))
-    .sort((a, b) => b.totalPeriods - a.totalPeriods)
-
-  subjectStats.value = Object.values(subjectDetailMap)
-    .sort((a, b) => b.totalPeriods - a.totalPeriods)
-}
+  }
 
 onMounted(loadAllData)
 
