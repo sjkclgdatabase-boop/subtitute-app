@@ -609,7 +609,15 @@ const openDetailModal = async (log) => {
   if (log.type === 'class') {
     loadingDetail.value = true
     try {
-      const { data: timetables, error } = await supabase.from('timetable').select('*')
+      const logDate = new Date(log.interruption_date)
+      const weekdayNum = logDate.getDay() 
+      const queryWeekday = weekdayNum === 0 ? 7 : weekdayNum
+
+      const { data: timetables, error } = await supabase
+        .from('timetable')
+        .select('*')
+        .eq('weekday', queryWeekday)
+
       if (error) throw error
 
       if (timetables && timetables.length > 0) {
@@ -627,19 +635,28 @@ const openDetailModal = async (log) => {
           const p = Number(t.period)
           if (p < startP || p > endP) return false
 
-          if (targetDisp.includes('全校')) return true
-          
-          if (targetDisp.includes('全年级')) {
-            const match = targetDisp.match(/Tahun (\d)/)
+          // 1. 如果影响范围是全校
+          if (targetDisp.includes('SEMUA') || targetDisp.includes('全校')) return true
+
+          // 2. 如果影响范围是整个年级
+          if (targetDisp.includes('TAHUN') || targetDisp.includes('全年级') || targetDisp.includes('Tahun')) {
+            const match = targetDisp.match(/(?:TAHUN|Tahun)\s*(\d)/)
             const grade = match ? match[1] : null
             return grade && String(t.class_name).startsWith(grade)
           }
+
+          // 3. 针对个别班级：无论是带 "KELAS: / 班级:" 前缀，还是直接写班级名称（如 "6B, 6C" 或 "4D"）都能完美匹配
+          const cleanTarget = targetDisp.replace(/^(?:KELAS|班级)[:：]\s*/i, '').trim()
+          const classList = cleanTarget.split(',').map(c => c.trim())
           
-          if (targetDisp.includes('班级:')) {
-            const classesStr = targetDisp.replace('班级:', '').trim()
-            const classList = classesStr.split(',').map(c => c.trim())
-            return classList.some(c => t.class_name === c || t.class_name.includes(c) || c.includes(t.class_name))
-          }
+          // 只要排课的班级名在列表中，或者包含在其中，就判定为匹配成功
+          return classList.some(c => 
+            t.class_name === c || 
+            t.class_name.toLowerCase() === c.toLowerCase() || 
+            t.class_name.includes(c) || 
+            c.includes(t.class_name)
+          )
+          
           return false
         })
 
