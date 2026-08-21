@@ -72,9 +72,18 @@
       </div>
     </div>
 
-    <!-- Main Table: Preview / Print Dedicated Area -->
-    <div class="print-main-sheet bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 print:shadow-none print:ring-0 print:p-0 print:rounded-none">
-      
+    <!-- Main Tables: 超过 5 人时自动按每页 5 人分页渲染 -->
+    <div 
+      v-for="(pageTeachers, pageIndex) in paginatedTeacherPages" 
+      :key="pageIndex"
+      :class="[
+        'print-main-sheet bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 print:shadow-none print:ring-0 print:p-0 print:rounded-none',
+        pageIndex > 0 ? 'mt-12 print:mt-0' : ''
+      ]"
+    >
+      <!-- 如果不是第一页，在打印时自动换页 -->
+      <div v-if="pageIndex > 0" class="print-page-break" aria-hidden="true"></div>
+
       <div class="text-center mb-6 print:mb-2">
         <h2 class="text-xl font-black tracking-wider text-black font-serif">
           {{ schoolName || 'SJK (C) LADANG GRISEK' }}
@@ -118,7 +127,7 @@
             class="print:break-inside-avoid"
           >
               
-            <template v-if="displayTeachersList[slotIndex - 1]">
+            <template v-if="pageTeachers[slotIndex - 1]">
               <tr>
                 <td
                   class="border border-black p-1 bg-slate-50 print:bg-white align-middle text-center"
@@ -128,17 +137,17 @@
                   <div class="flex flex-col items-center justify-center w-full px-0.5">
                     <span
                       class="uppercase font-bold w-full text-center whitespace-normal"
-                      :style="getDynamicStyle(displayTeachersList[slotIndex - 1].name, 10)"
+                      :style="getDynamicStyle(pageTeachers[slotIndex - 1].name, 10)"
                     >
-                      {{ displayTeachersList[slotIndex - 1].name }}
+                      {{ pageTeachers[slotIndex - 1].name }}
                     </span>
 
                     <span
-                      v-if="displayTeachersList[slotIndex - 1].reason"
+                      v-if="pageTeachers[slotIndex - 1].reason"
                       class="font-normal text-slate-600 w-full text-center tracking-tighter mt-0.5 uppercase whitespace-normal"
-                      :style="getDynamicStyle(`(${displayTeachersList[slotIndex - 1].reason})`, 8.5)"
+                      :style="getDynamicStyle(`(${pageTeachers[slotIndex - 1].reason})`, 8.5)"
                     >
-                      ({{ displayTeachersList[slotIndex - 1].reason }})
+                      ({{ pageTeachers[slotIndex - 1].reason }})
                     </span>
                   </div>
                 </td>
@@ -158,7 +167,7 @@
                 >
                   <div class="w-full h-full flex items-center justify-center px-0.5 overflow-hidden">
                     <span class="block w-full text-center text-[10px] tracking-tighter leading-tight text-slate-800 whitespace-normal">
-                      {{ getTeacherPeriodData(displayTeachersList[slotIndex - 1].id, p, 'class_subject') }}
+                      {{ getTeacherPeriodData(pageTeachers[slotIndex - 1].id, p, 'class_subject') }}
                     </span>
                   </div>
                 </td>
@@ -172,18 +181,18 @@
                 <td
                   v-for="p in currentPeriodTimes.length"
                   :key="p"
-                  @click="hasLeavePeriod(displayTeachersList[slotIndex - 1].id, p) ? handleCellClick(displayTeachersList[slotIndex - 1].id, p) : null"
-                  :class="hasLeavePeriod(displayTeachersList[slotIndex - 1].id, p) ? 'cursor-pointer hover:bg-indigo-50 group' : ''"
+                  @click="hasLeavePeriod(pageTeachers[slotIndex - 1].id, p) ? handleCellClick(pageTeachers[slotIndex - 1].id, p) : null"
+                  :class="hasLeavePeriod(pageTeachers[slotIndex - 1].id, p) ? 'cursor-pointer hover:bg-indigo-50 group' : ''"
                   class="print:hover:bg-transparent border border-black p-0.5 font-bold text-indigo-900 align-middle h-8 transition relative"
                   style="max-width: 0;"
                 >
                   <div class="w-full h-full flex items-center justify-center px-0.5 overflow-hidden">
                     <span class="block w-full text-center text-[9px] tracking-tighter leading-tight whitespace-normal">
-                      {{ getTeacherPeriodData(displayTeachersList[slotIndex - 1].id, p, 'substitute_name') }}
+                      {{ getTeacherPeriodData(pageTeachers[slotIndex - 1].id, p, 'substitute_name') }}
                     </span>
 
                     <span
-                      v-if="hasLeavePeriod(displayTeachersList[slotIndex - 1].id, p)"
+                      v-if="hasLeavePeriod(pageTeachers[slotIndex - 1].id, p)"
                       class="print:hidden hidden group-hover:inline-block text-[9px] text-indigo-500 absolute right-1"
                     >
                       ✏️
@@ -205,15 +214,15 @@
               </tr>
             </template>
 
-            <!-- 手动填写格 -->
+            <!-- 手动填写格 (当该页老师不足 5 人时显示) -->
             <template v-else>
               <tr>
                 <td
                   contenteditable="true"
-                  @blur="saveManualEntry(slotIndex, 'name', 0, $event)"
-                  v-text="getManualEntry(slotIndex, 'name', 0)"
+                  @blur="saveManualEntry(`page_${pageIndex}_${slotIndex}`, 'name', 0, $event)"
+                  v-text="getManualEntry(`page_${pageIndex}_${slotIndex}`, 'name', 0)"
                   class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors whitespace-pre-wrap leading-tight uppercase"
-                  :style="[{ width: '85px', maxWidth: '85px' }, getDynamicStyle(getManualEntry(slotIndex, 'name', 0), 10)]"
+                  :style="[{ width: '85px', maxWidth: '85px' }, getDynamicStyle(getManualEntry(`page_${pageIndex}_${slotIndex}`, 'name', 0), 10)]"
                   rowspan="3"
                 ></td>
 
@@ -228,8 +237,8 @@
                   v-for="p in currentPeriodTimes.length"
                   :key="'kelas-'+p"
                   contenteditable="true"
-                  @blur="saveManualEntry(slotIndex, 'kelas', p, $event)"
-                  v-text="getManualEntry(slotIndex, 'kelas', p)"
+                  @blur="saveManualEntry(`page_${pageIndex}_${slotIndex}`, 'kelas', p, $event)"
+                  v-text="getManualEntry(`page_${pageIndex}_${slotIndex}`, 'kelas', p)"
                   class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-semibold text-[11px] whitespace-pre-wrap leading-tight text-center"
                   style="max-width: 0;"
                 ></td>
@@ -249,14 +258,14 @@
                   <div class="w-full h-full relative flex items-center justify-center">
                     <div
                       contenteditable="true"
-                      @blur="saveManualEntry(slotIndex, 'ganti', p, $event)"
-                      v-text="getManualEntry(slotIndex, 'ganti', p)"
+                      @blur="saveManualEntry(`page_${pageIndex}_${slotIndex}`, 'ganti', p, $event)"
+                      v-text="getManualEntry(`page_${pageIndex}_${slotIndex}`, 'ganti', p)"
                       class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-bold text-indigo-900 text-[10px] whitespace-pre-wrap leading-tight flex items-center justify-center text-center"
                     ></div>
 
                     <button
                       contenteditable="false"
-                      @click.stop="openBlankModal(slotIndex, p, null)"
+                      @click.stop="openBlankModal(`page_${pageIndex}_${slotIndex}`, p, null)"
                       class="print:hidden absolute right-0 top-0 hidden group-hover:flex bg-indigo-500 text-white rounded-bl px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-indigo-600 z-10 font-sans tracking-widest font-bold"
                     >
                       指派
@@ -274,8 +283,8 @@
                   v-for="p in currentPeriodTimes.length"
                   :key="'ttangan-'+p"
                   contenteditable="true"
-                  @blur="saveManualEntry(slotIndex, 'ttangan', p, $event)"
-                  v-text="getManualEntry(slotIndex, 'ttangan', p)"
+                  @blur="saveManualEntry(`page_${pageIndex}_${slotIndex}`, 'ttangan', p, $event)"
+                  v-text="getManualEntry(`page_${pageIndex}_${slotIndex}`, 'ttangan', p)"
                   class="border border-black p-1 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors"
                 ></td>
               </tr>
@@ -1049,6 +1058,17 @@ const displayTeachersList = computed(() => {
   })
 
   return Object.values(map)
+})
+
+// ⭐️ 新增：将请假老师按每 5 人一组进行自动切片分页（确保不满 5 人时也有至少一页，且每页固定 5 行）
+const paginatedTeacherPages = computed(() => {
+  const list = displayTeachersList.value
+  const pages = []
+  const pageCount = Math.max(1, Math.ceil(list.length / 5))
+  for (let i = 0; i < pageCount; i++) {
+    pages.push(list.slice(i * 5, (i + 1) * 5))
+  }
+  return pages
 })
 
 // ================= 草稿本与附加表【云端同步】逻辑 =================
@@ -2290,11 +2310,12 @@ const handleExportPdf = async () => {
       slotIndex,
       type,
       period,
-      sheetId = null
+      sheetId = null,
+      pageIndex = null
     ) => {
-      const prefix = sheetId
+      let prefix = sheetId
         ? `sheet_${sheetId}_${slotIndex}`
-        : slotIndex
+        : (pageIndex !== null ? `page_${pageIndex}_${slotIndex}` : slotIndex)
 
       return getManualEntry(
         prefix,
@@ -2308,7 +2329,8 @@ const handleExportPdf = async () => {
       dayText,
       sessionText,
       sheetId = null,
-      isMain = false
+      pageIndex = null,
+      pageTeachers = []
     }) => {
       const tableTop =
         drawPageHeader(
@@ -2426,13 +2448,7 @@ const handleExportPdf = async () => {
         slot <= 5;
         slot++
       ) {
-        const teacher =
-          isMain
-            ? displayTeachersList
-                .value[
-                slot - 1
-              ]
-            : null
+        const teacher = pageTeachers[slot - 1] || null
 
         const teacherName =
           teacher
@@ -2441,7 +2457,8 @@ const handleExportPdf = async () => {
                 slot,
                 'name',
                 0,
-                sheetId
+                sheetId,
+                pageIndex
               )
 
         const teacherReason =
@@ -2502,7 +2519,8 @@ const handleExportPdf = async () => {
                     slot,
                     'kelas',
                     period,
-                    sheetId
+                    sheetId,
+                    pageIndex
                   )
 
             drawCell(
@@ -2552,7 +2570,8 @@ const handleExportPdf = async () => {
                     slot,
                     'ganti',
                     period,
-                    sheetId
+                    sheetId,
+                    pageIndex
                   )
 
             drawCell(
@@ -2599,7 +2618,8 @@ const handleExportPdf = async () => {
                     slot,
                     'ttangan',
                     period,
-                    sheetId
+                    sheetId,
+                    pageIndex
                   )
 
             drawCell(
@@ -2635,12 +2655,19 @@ const handleExportPdf = async () => {
         ? 'SESI PAGI'
         : 'SESI PETANG'
 
-    // Page 1: the current official timetable.
-    drawTimetable({
-      dateText,
-      dayText,
-      sessionText,
-      isMain: true
+    // ⭐️ 循环导出所有自动分页的主表页面
+    const pages = paginatedTeacherPages.value
+    pages.forEach((pageTeachers, pIndex) => {
+      if (pIndex > 0) {
+        doc.addPage()
+      }
+      drawTimetable({
+        dateText,
+        dayText,
+        sessionText,
+        pageIndex: pIndex,
+        pageTeachers
+      })
     })
 
     // Every additional timetable becomes a real PDF page.
@@ -2660,7 +2687,8 @@ const handleExportPdf = async () => {
         sessionText,
         sheetId:
           sheet.id,
-        isMain: false
+        pageIndex: null,
+        pageTeachers: []
       })
     }
 
@@ -2682,7 +2710,7 @@ const handleExportPdf = async () => {
 
     toast.success(
       `PDF 已生成，共 ${
-        1 +
+        pages.length +
         extraCustomSheets.value.length
       } 页。`
     )
