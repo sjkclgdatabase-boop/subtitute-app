@@ -352,7 +352,7 @@
           </span>
           <select 
             v-model="selectedClassGradeFilter" 
-            class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none cursor-pointer"
+            class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none cursor-pointer uppercase"
           >
             <option value="">全部年级</option>
             <option v-for="g in availableClassGrades" :key="g" :value="g">{{ g }}</option>
@@ -385,7 +385,7 @@
           </thead>
           <tbody class="divide-y divide-slate-100 font-medium text-slate-800">
             <tr v-if="filteredClassStats.length === 0">
-              <td colspan="3" class="p-8 text-center text-slate-400 font-medium">当前筛选条件下没有找到符合的班级干扰记录</td>
+              <td colspan="3" class="p-8 text-center text-slate-400 font-medium uppercase">当前筛选条件下没有找到符合的班级干扰记录</td>
             </tr>
             <tr v-for="c in filteredClassStats" :key="c.className" class="hover:bg-slate-50/60">
               <td class="p-4 font-bold text-slate-900">{{ c.className }}</td>
@@ -422,7 +422,7 @@
           <select 
             v-model="selectedGradeFilter" 
             @change="selectedClassFilter = ''"
-            class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none cursor-pointer"
+            class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none cursor-pointer uppercase"
           >
             <option value="">全部年级</option>
             <option v-for="g in availableGrades" :key="g" :value="g">{{ g }}</option>
@@ -436,7 +436,7 @@
           </span>
           <select 
             v-model="selectedClassFilter" 
-            class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none cursor-pointer"
+            class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none cursor-pointer uppercase"
           >
             <option value="">全部班级</option>
             <option v-for="cls in availableClassesForFilter" :key="cls" :value="cls">{{ cls }}</option>
@@ -472,10 +472,10 @@
           </thead>
           <tbody class="divide-y divide-slate-100 font-medium text-slate-800">
             <tr v-if="filteredSubjectStats.length === 0">
-              <td colspan="4" class="p-8 text-center text-slate-400 font-medium">当前筛选条件下没有找到符合的科目受干扰记录</td>
+              <td colspan="4" class="p-8 text-center text-slate-400 font-medium uppercase">当前筛选条件下没有找到符合的科目受干扰记录</td>
             </tr>
             <tr v-for="s in filteredSubjectStats" :key="s.id" class="hover:bg-slate-50/60">
-              <td class="p-4 font-bold text-slate-600">{{ s.grade }}</td>
+              <td class="p-4 font-bold text-slate-600 uppercase">{{ s.grade }}</td>
               <td class="p-4 font-bold text-slate-900">{{ s.className }}</td>
               <td class="p-4 font-bold text-indigo-600">{{ s.subjectName }}</td>
               <td class="p-4 font-bold text-amber-600">{{ s.totalPeriods }} 节</td>
@@ -522,7 +522,7 @@
           <tbody class="divide-y divide-slate-100 font-medium text-slate-800">
             <tr v-for="stat in sortedTeacherStats" :key="stat.name" class="hover:bg-slate-50/60">
               <td class="p-4 font-bold text-slate-900">{{ stat.name }}</td>
-              <td class="p-4 text-slate-600">{{ stat.subject || '-' }}</td>
+              <td class="p-4 text-slate-600 uppercase">{{ stat.subject || '-' }}</td>
               <td class="p-4 font-bold text-indigo-600">{{ stat.count }} 节</td>
               <td class="p-4 font-bold text-amber-600">{{ stat.interruptedCount }} 节</td>
             </tr>
@@ -646,8 +646,8 @@ const categorizedReasons = computed(() => {
     const intScope = log.scope ? log.scope.trim() : ''
     const targetDisp = log.target_display ? log.target_display.trim() : ''
     
-    const isSchoolLevel = intScope === 'all' || targetDisp.includes('全校') || targetDisp.includes('SEMUA') || targetDisp.includes('WHOLE SCHOOL')
-    const isGradeLevel = intScope === 'grade' || /TAHUN/i.test(targetDisp) || /YEAR/i.test(targetDisp)
+    const isSchoolLevel = intScope === 'all' || targetDisp.includes('SEMUA') || targetDisp.includes('全校') || targetDisp.includes('WHOLE SCHOOL') || targetDisp.includes('ALL CLASSES')
+    const isGradeLevel = intScope === 'grade' || /(?:TAHUN|YEAR|GRADE)/i.test(targetDisp) || /年级/.test(targetDisp)
     const hasEventTag = rawReason.includes('[学术]') || rawReason.includes('[AKADEMIK]') || rawReason.includes('[ACADEMIC]') ||
                         rawReason.includes('[节庆]') || rawReason.includes('[ACARA]') || rawReason.includes('[EVENT]') ||
                         rawReason.includes('[讲座]') || rawReason.includes('[CERAMAH]') || rawReason.includes('[SEMINAR]') ||
@@ -724,8 +724,8 @@ const largeScaleStats = computed(() => {
     const targetDisp = log.target_display ? log.target_display.trim() : ''
     const rawReason = (log.reason || '未填写名称').toUpperCase()
 
-    const isSchoolLevel = intScope === 'all' || targetDisp.includes('全校') || targetDisp.includes('SEMUA') || targetDisp.includes('WHOLE SCHOOL')
-    const isGradeLevel = intScope === 'grade' || /TAHUN/i.test(targetDisp) || /YEAR/i.test(targetDisp)
+    const isSchoolLevel = intScope === 'all' || targetDisp.includes('SEMUA') || targetDisp.includes('全校') || targetDisp.includes('WHOLE SCHOOL') || targetDisp.includes('ALL CLASSES')
+    const isGradeLevel = intScope === 'grade' || /(?:TAHUN|YEAR|GRADE)/i.test(targetDisp) || /年级/.test(targetDisp)
     const hasEventTag = rawReason.includes('[学术]') || rawReason.includes('[AKADEMIK]') || rawReason.includes('[ACADEMIC]') ||
                         rawReason.includes('[节庆]') || rawReason.includes('[ACARA]') || rawReason.includes('[EVENT]') ||
                         rawReason.includes('[讲座]') || rawReason.includes('[CERAMAH]') || rawReason.includes('[SEMINAR]') ||
@@ -785,15 +785,15 @@ const resetDateFilter = () => {
 
 const cleanClassName = (rawStr) => {
   if (!rawStr) return '';
-  let cleaned = rawStr.replace(/^(班级|班級|KELAS|CLASS)\s*[:：]\s*/i, '').trim();
-  cleaned = cleaned.replace(/^(班级|班級|KELAS|CLASS)\s*[:：]\s*/i, '').trim();
+  let cleaned = rawStr.replace(/^(KELAS|CLASS|班级|班級)\s*[:：]\s*/i, '').trim();
+  cleaned = cleaned.replace(/^(KELAS|CLASS|班级|班級)\s*[:：]\s*/i, '').trim();
   if (!cleaned || /VIRTUAL_CLASS/i.test(cleaned)) return '';
   return cleaned.toUpperCase();
 };
 
 const expandClassNames = (rawStr) => {
   if (!rawStr) return [];
-  let cleaned = rawStr.replace(/^(班级|班級|KELAS|CLASS)\s*[:：]\s*/i, '').trim();
+  let cleaned = rawStr.replace(/^(KELAS|CLASS|班级|班級)\s*[:：]\s*/i, '').trim();
   if (!cleaned || /VIRTUAL_CLASS/i.test(cleaned)) return [];
   const separators = /,|、|\//;
   if (separators.test(cleaned)) {
@@ -905,11 +905,13 @@ const loadAllData = async () => {
 
     const teacherInterruptionMap = {}
     mmiData?.forEach(l => {
-      let rawTarget = (l.target_display || '').trim(); let tName = ''
-      if (rawTarget.includes('教师:')) tName = rawTarget.replace('教师:', '').trim()
-      else if (rawTarget.includes('GURU:')) tName = rawTarget.replace('GURU:', '').trim()
-      else if (rawTarget.includes('TEACHER:')) tName = rawTarget.replace('TEACHER:', '').trim()
-      else if (teacherNameSet.has(rawTarget.toUpperCase())) tName = rawTarget
+      let rawTarget = (l.target_display || '').trim()
+      let tName = ''
+      if (/(?:GURU|TEACHER|教师)[:：]?\s*/i.test(rawTarget)) {
+        tName = rawTarget.replace(/(?:GURU|TEACHER|教师)[:：]?\s*/i, '').trim()
+      } else if (teacherNameSet.has(rawTarget.toUpperCase())) {
+        tName = rawTarget
+      }
       if (tName) {
         const pCount = (l.end_period || 0) - (l.start_period || 0) + 1
         teacherInterruptionMap[tName.toUpperCase()] = (teacherInterruptionMap[tName.toUpperCase()] || 0) + pCount
@@ -988,7 +990,25 @@ const loadAllData = async () => {
             const intScope = int.scope ? int.scope.trim() : ''; const targetDisp = int.target_display ? int.target_display.trim() : ''
             const intGrade = Number(int.grade); const intClass = cleanString(int.class_name)
             const intWeekday = new Date(int.interruption_date).getDay()
-            const isClassAffected = intScope === 'all' || targetDisp.includes('全校') || targetDisp.includes('SEMUA') || targetDisp.includes('WHOLE SCHOOL') || (intScope === 'grade' && intGrade === Number(cls.grade)) || targetDisp.includes(`Tahun ${cls.grade}`) || targetDisp.includes(`TAHUN ${cls.grade}`) || targetDisp.includes(`${cls.grade} 年级`) || targetDisp.includes(`YEAR ${cls.grade}`) || targetDisp.includes(`Year ${cls.grade}`) || (intScope === 'class' && (intClass.includes(clsName) || clsName.includes(intClass || ''))) || targetDisp.includes(clsName)
+            
+            let isClassAffected = false;
+            if (intScope === 'all' || targetDisp.includes('全校') || targetDisp.includes('SEMUA') || targetDisp.includes('WHOLE SCHOOL') || targetDisp.includes('ALL CLASSES')) {
+              isClassAffected = true;
+            } else if (intScope === 'grade' && intGrade === Number(cls.grade)) {
+              isClassAffected = true;
+            } else if (/(?:TAHUN|YEAR|GRADE)/i.test(targetDisp) || /年级/.test(targetDisp) || targetDisp.includes('全年级')) {
+              const match = targetDisp.match(/(?:TAHUN|YEAR|GRADE)\s*(\d)/i) || targetDisp.match(/(\d)\s*年级/);
+              const gradeNum = match ? match[1] : null;
+              if (gradeNum) {
+                isClassAffected = clsName.startsWith(gradeNum);
+              } else {
+                isClassAffected = true;
+              }
+            } else {
+              const targetList = targetDisp.split(/,|、|\//).map(s => cleanClassName(s));
+              isClassAffected = targetList.some(tc => tc && (clsName === tc || clsName.includes(tc) || tc.includes(clsName)));
+            }
+
             if (isClassAffected) {
               enrichedTimetables.forEach(item => {
                 const itemClass = cleanString(item.class_name)
@@ -1236,4 +1256,4 @@ const exportSinglePdf = async () => {
   .print-table th, .print-table td { border: 1px solid #cbd5e1 !important; padding: 8px 10px !important; }
   .print-table th { background-color: #f1f5f9 !important; color: #0f172a !important; }
 }
-</style>
+</style>git acp "兼容三语"
