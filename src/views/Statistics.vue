@@ -1256,4 +1256,4 @@ const exportSinglePdf = async () => {
   .print-table th, .print-table td { border: 1px solid #cbd5e1 !important; padding: 8px 10px !important; }
   .print-table th { background-color: #f1f5f9 !important; color: #0f172a !important; }
 }
-</style>git acp "兼容三语"
+</style>
