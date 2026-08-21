@@ -51,29 +51,28 @@
           />
         </div>
 
+        <!-- 🌟 全新的班级快捷分类与输入 -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider flex items-center gap-1.5">
-            <AlertTriangle class="w-4 h-4 text-amber-500" /> 干扰类型 / 原因:
+            <AlertTriangle class="w-4 h-4 text-amber-500" /> 干扰类型 (系统将自动打上标签):
           </label>
-          <select 
-            v-model="classForm.reason" 
-            class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-3 cursor-pointer"
-          >
-            <option value="Perhimpunan / 集会">特别集会</option>
-            <option value="Program Sekolah / 学校活动">全校活动</option>
-            <option value="Ceramah / 讲座">讲座/宣导会</option>
-            <option value="Latihan Sukan / 运动会练习">运动会/表演练习</option>
-            <option value="Pertandingan / 比赛">校内外比赛</option>
-            <option value="Urusan Rasmi / 官方临时事务">官方临时事务</option>
-            <option value="Lain-lain / 其他干扰">其他干扰 (请自行填写)</option>
-          </select>
+          
+          <!-- 分类点选区 -->
+          <div class="flex flex-wrap gap-2 mb-3">
+            <label v-for="cat in ['[学术]', '[节庆]', '[讲座]', '[假期]', '[未分类]']" :key="cat" class="cursor-pointer">
+              <input type="radio" v-model="classForm.category" :value="cat" class="hidden" />
+              <span :class="classForm.category === cat ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all inline-block">
+                {{ cat }}
+              </span>
+            </label>
+          </div>
 
+          <!-- 具体名称输入区 (加入 uppercase) -->
           <input 
-            v-if="classForm.reason === 'Lain-lain / 其他干扰'"
             type="text" 
-            v-model="classForm.customReason" 
-            placeholder="请在此处自行填写具体的干扰原因..." 
-            class="w-full bg-white border border-indigo-300 px-4 h-11 rounded-2xl text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
+            v-model="classForm.eventName" 
+            placeholder="请填写具体活动名称 (例如：反毒运动、年终考试)..." 
+            class="w-full bg-white border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-900 uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
           />
         </div>
       </div>
@@ -182,7 +181,7 @@
           v-model="classForm.remarks" 
           type="text" 
           placeholder="示例：大礼堂举办防登革热讲座。" 
-          class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-semibold text-slate-800 uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
       </div>
 
@@ -229,15 +228,26 @@
         </div>
       </div>
 
+      <!-- 🌟 全新的教师快捷分类与输入 -->
       <div class="mb-6">
         <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider flex items-center gap-1.5">
-          <AlertTriangle class="w-4 h-4 text-amber-500" /> 干扰原因 (如离校公干/带队/会议/病假):
+          <AlertTriangle class="w-4 h-4 text-amber-500" /> 缺课原因分类 (系统将自动打上标签):
         </label>
+        
+        <div class="flex flex-wrap gap-2 mb-3">
+          <label v-for="cat in ['[个人请假]', '[离校公干]', '[校内任务]', '[未分类]']" :key="cat" class="cursor-pointer">
+            <input type="radio" v-model="teacherForm.category" :value="cat" class="hidden" />
+            <span :class="teacherForm.category === cat ? 'bg-violet-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all inline-block">
+              {{ cat }}
+            </span>
+          </label>
+        </div>
+
         <input 
-          v-model="teacherForm.reason" 
+          v-model="teacherForm.eventName" 
           type="text" 
-          placeholder="例如: 带队参加比赛、出席会议、出席工作坊、病假等" 
-          class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-semibold text-slate-800"
+          placeholder="请填写具体说明 (例如：带队参加篮球赛、出席会议、病假等)..." 
+          class="w-full bg-white border border-slate-200 px-4 h-11 rounded-2xl text-xs font-semibold text-slate-800 uppercase shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
         />
       </div>
 
@@ -527,8 +537,8 @@ const getLocalToday = () => {
 
 const classForm = ref({
   date: getLocalToday(),
-  reason: 'Perhimpunan / 集会',
-  customReason: '',
+  category: '[讲座]', // 默认选中项
+  eventName: '',      // 用户填写的具体名称
   scopeType: 'specific',
   selectedClasses: [],
   selectedGrade: 1,
@@ -570,7 +580,8 @@ const fetchClasses = async () => {
 const teacherForm = ref({
   date: getLocalToday(),
   teacherId: '',
-  reason: ''
+  category: '[离校公干]', // 默认选中项
+  eventName: ''         // 用户填写的具体说明
 })
 
 const teachersList = ref([])
@@ -621,8 +632,6 @@ const openDetailModal = async (log) => {
       if (error) throw error
 
       if (timetables && timetables.length > 0) {
-        const logDate = new Date(log.interruption_date)
-        const weekdayNum = logDate.getDay() 
         const startP = Number(log.start_period)
         const endP = Number(log.end_period)
         const targetDisp = log.target_display || ''
@@ -635,29 +644,26 @@ const openDetailModal = async (log) => {
           const p = Number(t.period)
           if (p < startP || p > endP) return false
 
-          // 1. 如果影响范围是全校
-          if (targetDisp.includes('SEMUA') || targetDisp.includes('全校')) return true
+          // 1. 全校影响 (三语兼容)
+          if (targetDisp.includes('SEMUA') || targetDisp.includes('ALL') || targetDisp.includes('全校') || targetDisp.includes('WHOLE SCHOOL')) return true
 
-          // 2. 如果影响范围是整个年级
-          if (targetDisp.includes('TAHUN') || targetDisp.includes('全年级') || targetDisp.includes('Tahun')) {
-            const match = targetDisp.match(/(?:TAHUN|Tahun)\s*(\d)/)
+          // 2. 年级影响 (三语兼容)
+          if (targetDisp.includes('TAHUN') || targetDisp.includes('GRADE') || targetDisp.includes('全年级') || targetDisp.includes('Tahun') || targetDisp.includes('YEAR') || targetDisp.includes('年级')) {
+            const match = targetDisp.match(/(?:TAHUN|Grade|Tahun|YEAR|Year)\s*(\d)/i) || targetDisp.match(/(\d)\s*年级/)
             const grade = match ? match[1] : null
             return grade && String(t.class_name).startsWith(grade)
           }
 
-          // 3. 针对个别班级：无论是带 "KELAS: / 班级:" 前缀，还是直接写班级名称（如 "6B, 6C" 或 "4D"）都能完美匹配
-          const cleanTarget = targetDisp.replace(/^(?:KELAS|班级)[:：]\s*/i, '').trim()
+          // 3. 班级影响 (三语兼容)
+          const cleanTarget = targetDisp.replace(/^(?:KELAS|CLASS|班级)[:：]\s*/i, '').trim()
           const classList = cleanTarget.split(',').map(c => c.trim())
           
-          // 只要排课的班级名在列表中，或者包含在其中，就判定为匹配成功
           return classList.some(c => 
             t.class_name === c || 
             t.class_name.toLowerCase() === c.toLowerCase() || 
             t.class_name.includes(c) || 
             c.includes(t.class_name)
           )
-          
-          return false
         })
 
         if (matched.length > 0) {
@@ -774,6 +780,11 @@ const loadTeacherSubjects = async () => {
 }
 
 const submitClassInterruption = async () => {
+  // 校验事件名称是否为空
+  if (!classForm.value.eventName.trim()) {
+    return toast.error("请填写具体的活动名称！")
+  }
+
   let targetDisplay = ''
   if (classForm.value.scopeType === 'specific') {
     if (classForm.value.selectedClasses.length === 0) return toast.error("请至少选择一个班级！")
@@ -784,13 +795,11 @@ const submitClassInterruption = async () => {
     targetDisplay = '全校所有班级'
   }
 
-  const finalReason = classForm.value.reason === 'Lain-lain / 其他干扰' 
-    ? (classForm.value.customReason ? classForm.value.customReason.trim() : '其他干扰')
-    : classForm.value.reason
-
-  if (classForm.value.reason === 'Lain-lain / 其他干扰' && !classForm.value.customReason) {
-    return toast.error("请自行填写具体的干扰原因！")
-  }
+  // 核心逻辑：自动拼接标签和活动名称 [标签] 活动名称，并强制大写
+  let finalCategory = classForm.value.category
+  if (finalCategory === '[未分类]') finalCategory = '' 
+  
+  const finalReason = `${finalCategory} ${classForm.value.eventName.trim()}`.trim().toUpperCase()
 
   try {
     const { error } = await supabase.from('mmi_interruptions').insert({
@@ -800,14 +809,14 @@ const submitClassInterruption = async () => {
       start_period: classForm.value.startPeriod,
       end_period: classForm.value.endPeriod,
       reason: finalReason,
-      remarks: classForm.value.remarks
+      remarks: classForm.value.remarks ? classForm.value.remarks.toUpperCase() : ''
     })
 
     if (error) throw error
 
     toast.success("班级干扰事件记录成功！")
     fetchLogs()
-    classForm.value.customReason = ''
+    classForm.value.eventName = ''
   } catch (err) {
     toast.error("保存失败: " + err.message)
   }
@@ -816,12 +825,23 @@ const submitClassInterruption = async () => {
 const submitTeacherInterruption = async () => {
   if (exportedSubjects.value.length === 0) return
 
+  // 校验缺课说明是否为空
+  if (!teacherForm.value.eventName.trim()) {
+    return toast.error("请填写具体的缺课说明！")
+  }
+
   const teacher = teachersList.value.find(t => t.id === teacherForm.value.teacherId)
   const periods = exportedSubjects.value.map(s => Number(s.period)).sort((a,b) => a-b)
   const startP = periods[0] || 1
   const endP = periods[periods.length - 1] || 1
 
   const subjectSummary = exportedSubjects.value.map(s => `${s.class_name}(${s.subject})`).join(', ')
+
+  // 核心逻辑：自动拼接标签和原因 [标签] 缺课说明，并强制大写
+  let finalCategory = teacherForm.value.category
+  if (finalCategory === '[未分类]') finalCategory = ''
+  
+  const finalReason = `${finalCategory} ${teacherForm.value.eventName.trim()}`.trim().toUpperCase()
 
   try {
     const { error } = await supabase.from('mmi_interruptions').insert({
@@ -830,7 +850,7 @@ const submitTeacherInterruption = async () => {
       target_display: `教师: ${teacher?.name || ''}`,
       start_period: startP,
       end_period: endP,
-      reason: teacherForm.value.reason || '教师离校/受干扰',
+      reason: finalReason,
       remarks: `(涉及节次: 第 ${periods.join(', ')} 节 | 课程: ${subjectSummary})`
     })
 
@@ -838,6 +858,7 @@ const submitTeacherInterruption = async () => {
 
     toast.success("教师干扰事件统一记录成功！")
     fetchLogs()
+    teacherForm.value.eventName = ''
   } catch (err) {
     toast.error("保存失败: " + err.message)
   }
@@ -882,9 +903,10 @@ const exportLogsToExcel = () => {
   toast.success("导出报表成功！")
 }
 
+// 🌟 三语兼容的表格格式化
 const formatTargetDisplay = (text) => {
   if (!text) return ''
-  return text.replace(/^(KELAS|班级)[:：]\s*/i, '').trim()
+  return text.replace(/^(KELAS|CLASS|班级)[:：]\s*/i, '').trim()
 }
 
 const deleteLog = async (log) => {
@@ -898,10 +920,11 @@ const deleteLog = async (log) => {
 
     if (mmiErr) throw mmiErr
 
-    if (log.type === 'teacher' || (log.target_display && (log.target_display.includes('教师:') || log.target_display.includes('教师：') || log.target_display.includes('教师')))) {
+    // 🌟 三语兼容的教师判断
+    if (log.type === 'teacher' || (log.target_display && (log.target_display.includes('教师') || log.target_display.includes('GURU') || log.target_display.includes('TEACHER')))) {
       let teacherName = ''
       if (log.target_display) {
-        teacherName = log.target_display.replace(/教师[:：]?\s*/, '').trim()
+        teacherName = log.target_display.replace(/(?:教师|GURU|TEACHER)[:：]?\s*/i, '').trim()
       }
 
       if (teacherName) {
