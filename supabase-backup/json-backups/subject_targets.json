@@ -1,0 +1,578 @@
+[
+  {
+    "id": "121fee3b-fc70-4345-b26b-23b305bd1ff8",
+    "grade": 3,
+    "subject_name": "BAHASA INGGERIS",
+    "kpm_min_hours": 160,
+    "planned_periods": 215,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "03201d9a-b394-42a2-942e-92f20bcf7264",
+    "grade": 1,
+    "subject_name": "BAHASA CINA",
+    "kpm_min_hours": 384,
+    "planned_periods": 473,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "028fbd34-8e86-45fc-a19e-3ea06aa957bb",
+    "grade": 2,
+    "subject_name": "BAHASA CINA",
+    "kpm_min_hours": 384,
+    "planned_periods": 473,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "5e02fcc8-6c71-4693-9b37-15150214e21a",
+    "grade": 3,
+    "subject_name": "BAHASA CINA",
+    "kpm_min_hours": 384,
+    "planned_periods": 516,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "1e00571d-8393-4cef-baae-aa67cda4993a",
+    "grade": 1,
+    "subject_name": "BAHASA INGGERIS",
+    "kpm_min_hours": 160,
+    "planned_periods": 215,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "f037a5a6-ee52-41c0-b6b6-90b66f885821",
+    "grade": 2,
+    "subject_name": "BAHASA INGGERIS",
+    "kpm_min_hours": 160,
+    "planned_periods": 215,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "96a75cff-0613-44cd-bf68-807e30cefd56",
+    "grade": 4,
+    "subject_name": "BAHASA INGGERIS",
+    "kpm_min_hours": 192,
+    "planned_periods": 258,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "19b191e4-4e60-4973-8c5d-7027fcbeb480",
+    "grade": 5,
+    "subject_name": "BAHASA INGGERIS",
+    "kpm_min_hours": 192,
+    "planned_periods": 258,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "bb59537a-9311-4593-8ce6-42e27cb4b821",
+    "grade": 6,
+    "subject_name": "BAHASA INGGERIS",
+    "kpm_min_hours": 192,
+    "planned_periods": 258,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "25431ad3-0f1b-41f2-bf82-c5f2bd6e7aa5",
+    "grade": 1,
+    "subject_name": "BAHASA MELAYU",
+    "kpm_min_hours": 320,
+    "planned_periods": 387,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "01945de0-f4d6-493d-a668-88b0c4397d29",
+    "grade": 2,
+    "subject_name": "BAHASA MELAYU",
+    "kpm_min_hours": 320,
+    "planned_periods": 387,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "1d8a6816-e6ac-4bc2-a9ed-ca7a0ba174d3",
+    "grade": 3,
+    "subject_name": "BAHASA MELAYU",
+    "kpm_min_hours": 320,
+    "planned_periods": 430,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "8db5050b-e250-4665-b902-dbbd0660b4ed",
+    "grade": 4,
+    "subject_name": "BAHASA MELAYU",
+    "kpm_min_hours": 256,
+    "planned_periods": 301,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "0eb9309e-1f23-49e3-a3e2-0cf64f18d34d",
+    "grade": 5,
+    "subject_name": "BAHASA MELAYU",
+    "kpm_min_hours": 256,
+    "planned_periods": 301,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "c7111d65-53fd-411a-9151-9477478244e4",
+    "grade": 6,
+    "subject_name": "BAHASA MELAYU",
+    "kpm_min_hours": 256,
+    "planned_periods": 301,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "33298e66-85fb-4def-8d98-9544da8f8310",
+    "grade": 1,
+    "subject_name": "MATEMATIK",
+    "kpm_min_hours": 192,
+    "planned_periods": 258,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "a69e3716-782a-46a1-a956-d22b6923a620",
+    "grade": 2,
+    "subject_name": "MATEMATIK",
+    "kpm_min_hours": 192,
+    "planned_periods": 258,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "f5a91648-a973-4b5f-8536-9744dbced754",
+    "grade": 3,
+    "subject_name": "MATEMATIK",
+    "kpm_min_hours": 192,
+    "planned_periods": 258,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "c6ce54fb-1c5d-4739-8979-6168258791f2",
+    "grade": 4,
+    "subject_name": "MATEMATIK",
+    "kpm_min_hours": 192,
+    "planned_periods": 258,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "aadee05f-9eef-4a31-9f51-86cc94cfe53d",
+    "grade": 5,
+    "subject_name": "MATEMATIK",
+    "kpm_min_hours": 192,
+    "planned_periods": 258,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "092aa9c3-c3cf-4fdd-bfe8-2dff1c19d3a7",
+    "grade": 6,
+    "subject_name": "MATEMATIK",
+    "kpm_min_hours": 192,
+    "planned_periods": 258,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "b80e0d91-6c63-4cc5-944d-7cd29c7eb948",
+    "grade": 1,
+    "subject_name": "PENDIDIKAN ISLAM",
+    "kpm_min_hours": 128,
+    "planned_periods": 172,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "ddd26afc-6898-4620-ba82-9a3a437bcca9",
+    "grade": 2,
+    "subject_name": "PENDIDIKAN ISLAM",
+    "kpm_min_hours": 128,
+    "planned_periods": 172,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "726e55fd-9b29-479d-8fb8-657eb3a902e9",
+    "grade": 3,
+    "subject_name": "PENDIDIKAN ISLAM",
+    "kpm_min_hours": 128,
+    "planned_periods": 172,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "19e2aca3-2f3b-45fa-b6d0-fdc6056007c0",
+    "grade": 4,
+    "subject_name": "PENDIDIKAN ISLAM",
+    "kpm_min_hours": 160,
+    "planned_periods": 215,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "b9e1d2f4-1fbc-424d-b6db-612710886d67",
+    "grade": 5,
+    "subject_name": "PENDIDIKAN ISLAM",
+    "kpm_min_hours": 160,
+    "planned_periods": 215,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "5c1b2828-e0cb-48ef-9229-e7f12a2646f5",
+    "grade": 6,
+    "subject_name": "PENDIDIKAN ISLAM",
+    "kpm_min_hours": 160,
+    "planned_periods": 215,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "b4b4545e-e884-4e6c-82d6-f3bb47d93935",
+    "grade": 1,
+    "subject_name": "PENDIDIKAN JASMANI",
+    "kpm_min_hours": 64,
+    "planned_periods": 86,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "69b29249-6b63-41ca-8278-a3145b378a1d",
+    "grade": 2,
+    "subject_name": "PENDIDIKAN JASMANI",
+    "kpm_min_hours": 64,
+    "planned_periods": 86,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "21534ee5-78fd-4b3f-89b9-62f802e1b5a5",
+    "grade": 3,
+    "subject_name": "PENDIDIKAN JASMANI",
+    "kpm_min_hours": 64,
+    "planned_periods": 86,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "1822b158-3503-4a23-9c36-ac1136930278",
+    "grade": 4,
+    "subject_name": "PENDIDIKAN JASMANI",
+    "kpm_min_hours": 64,
+    "planned_periods": 86,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "67a9b463-bd03-4af5-b035-8e9627bcf351",
+    "grade": 5,
+    "subject_name": "PENDIDIKAN JASMANI",
+    "kpm_min_hours": 64,
+    "planned_periods": 86,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "3d39c838-0a2a-41d6-839b-739ee855ad0c",
+    "grade": 6,
+    "subject_name": "PENDIDIKAN JASMANI",
+    "kpm_min_hours": 64,
+    "planned_periods": 86,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "95abae1b-0cce-4d41-ade1-a083fa4ec063",
+    "grade": 1,
+    "subject_name": "PENDIDIKAN KESIHATAN",
+    "kpm_min_hours": 32,
+    "planned_periods": 43,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "01a6c428-0211-4402-baa2-c31ab0a96d4f",
+    "grade": 2,
+    "subject_name": "PENDIDIKAN KESIHATAN",
+    "kpm_min_hours": 32,
+    "planned_periods": 43,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "21c9b83b-5854-420d-94d4-a4adf2c5611a",
+    "grade": 3,
+    "subject_name": "PENDIDIKAN KESIHATAN",
+    "kpm_min_hours": 32,
+    "planned_periods": 43,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "03353805-b06e-4e22-bb72-9fd87136cf71",
+    "grade": 4,
+    "subject_name": "PENDIDIKAN KESIHATAN",
+    "kpm_min_hours": 32,
+    "planned_periods": 43,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "87fc276e-cf3b-45f2-9077-d0245294d53c",
+    "grade": 5,
+    "subject_name": "PENDIDIKAN KESIHATAN",
+    "kpm_min_hours": 32,
+    "planned_periods": 43,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "4ae2aad8-3139-4c4b-9631-55d77228f957",
+    "grade": 6,
+    "subject_name": "PENDIDIKAN KESIHATAN",
+    "kpm_min_hours": 32,
+    "planned_periods": 43,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "ee54cd4e-c6cc-4c45-9a35-ea7d58a87117",
+    "grade": 1,
+    "subject_name": "PENDIDIKAN MORAL",
+    "kpm_min_hours": 128,
+    "planned_periods": 172,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "3658d2af-8cd9-4727-a58d-5187c9959b2b",
+    "grade": 2,
+    "subject_name": "PENDIDIKAN MORAL",
+    "kpm_min_hours": 128,
+    "planned_periods": 172,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "599d410f-f435-440c-990e-f6c9784dcec8",
+    "grade": 3,
+    "subject_name": "PENDIDIKAN MORAL",
+    "kpm_min_hours": 128,
+    "planned_periods": 172,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "4b95edeb-d4f5-4d61-8de0-923b6bd3a846",
+    "grade": 4,
+    "subject_name": "PENDIDIKAN MORAL",
+    "kpm_min_hours": 160,
+    "planned_periods": 215,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "1c2ebd37-baca-46e9-9fc4-bcca4e25d7b6",
+    "grade": 5,
+    "subject_name": "PENDIDIKAN MORAL",
+    "kpm_min_hours": 160,
+    "planned_periods": 215,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "ae74f4a1-e5da-46ff-b1ee-2ba6b81c0b91",
+    "grade": 6,
+    "subject_name": "PENDIDIKAN MORAL",
+    "kpm_min_hours": 160,
+    "planned_periods": 215,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "50c55b4d-4039-4a2f-8765-09b677875926",
+    "grade": 1,
+    "subject_name": "PENDIDIKAN MUZIK",
+    "kpm_min_hours": 32,
+    "planned_periods": 43,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "50783eff-178c-42cc-af0e-3798f5de16e4",
+    "grade": 2,
+    "subject_name": "PENDIDIKAN MUZIK",
+    "kpm_min_hours": 32,
+    "planned_periods": 43,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "fc52fb5a-e22a-4478-808c-68beff0e6f7c",
+    "grade": 3,
+    "subject_name": "PENDIDIKAN MUZIK",
+    "kpm_min_hours": 32,
+    "planned_periods": 43,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "217385ef-b9d9-4be7-9aaa-416d3fbc1703",
+    "grade": 4,
+    "subject_name": "PENDIDIKAN MUZIK",
+    "kpm_min_hours": 32,
+    "planned_periods": 43,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "c2cfb573-b6cd-427f-b233-23ccaf2c5d26",
+    "grade": 5,
+    "subject_name": "PENDIDIKAN MUZIK",
+    "kpm_min_hours": 32,
+    "planned_periods": 43,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "996c66de-e9ef-46da-8b8b-6284830ef635",
+    "grade": 6,
+    "subject_name": "PENDIDIKAN MUZIK",
+    "kpm_min_hours": 32,
+    "planned_periods": 43,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "05f68cfb-7882-4d9f-b760-0d2df6bad0cd",
+    "grade": 1,
+    "subject_name": "PENDIDIKAN SENI VISUAL",
+    "kpm_min_hours": 64,
+    "planned_periods": 86,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "758f88f4-3160-424c-a7f5-9b0c264e14ed",
+    "grade": 2,
+    "subject_name": "PENDIDIKAN SENI VISUAL",
+    "kpm_min_hours": 64,
+    "planned_periods": 86,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "4b5cf90a-79c9-464f-855a-2c91f800efdc",
+    "grade": 3,
+    "subject_name": "PENDIDIKAN SENI VISUAL",
+    "kpm_min_hours": 64,
+    "planned_periods": 86,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "560b12e3-2279-4d4b-bfe6-5596fab18b89",
+    "grade": 4,
+    "subject_name": "PENDIDIKAN SENI VISUAL",
+    "kpm_min_hours": 64,
+    "planned_periods": 86,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "b7659d9d-6bf6-46a0-9a95-9849deafb91d",
+    "grade": 5,
+    "subject_name": "PENDIDIKAN SENI VISUAL",
+    "kpm_min_hours": 64,
+    "planned_periods": 86,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "6d2ed0e6-c7a3-4f1f-a93c-a3a897054279",
+    "grade": 6,
+    "subject_name": "PENDIDIKAN SENI VISUAL",
+    "kpm_min_hours": 64,
+    "planned_periods": 86,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "1f2117b0-d178-44a9-abff-da4c759e2599",
+    "grade": 4,
+    "subject_name": "REKA BENTUK DAN TEKNOLOGI",
+    "kpm_min_hours": 64,
+    "planned_periods": 86,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "f30b6471-0ab6-44cc-a593-1cbc22ea395d",
+    "grade": 5,
+    "subject_name": "REKA BENTUK DAN TEKNOLOGI",
+    "kpm_min_hours": 64,
+    "planned_periods": 86,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "40978fa6-8fe7-47fa-9491-58ef3146383f",
+    "grade": 6,
+    "subject_name": "REKA BENTUK DAN TEKNOLOGI",
+    "kpm_min_hours": 64,
+    "planned_periods": 86,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "f4829359-380a-4075-a8d8-c70bfb99adc6",
+    "grade": 1,
+    "subject_name": "SAINS",
+    "kpm_min_hours": 96,
+    "planned_periods": 129,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "03962d6d-1b8b-4ee5-8eb5-fa6a6a82fabf",
+    "grade": 2,
+    "subject_name": "SAINS",
+    "kpm_min_hours": 96,
+    "planned_periods": 129,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "89c4d556-10bc-4c90-ab74-859bbea8a583",
+    "grade": 3,
+    "subject_name": "SAINS",
+    "kpm_min_hours": 96,
+    "planned_periods": 172,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "151ecda6-4cbc-429c-8dc8-cf25cd8291db",
+    "grade": 4,
+    "subject_name": "SAINS",
+    "kpm_min_hours": 128,
+    "planned_periods": 172,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "8993d0e0-b4a7-476e-9faa-7373af2caee0",
+    "grade": 5,
+    "subject_name": "SAINS",
+    "kpm_min_hours": 128,
+    "planned_periods": 172,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "df34545c-df79-4e48-b533-9a7bef511361",
+    "grade": 6,
+    "subject_name": "SAINS",
+    "kpm_min_hours": 128,
+    "planned_periods": 172,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "02e62e45-6524-48fd-b8da-9712874e4af9",
+    "grade": 4,
+    "subject_name": "SEJARAH",
+    "kpm_min_hours": 64,
+    "planned_periods": 86,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "cc96b420-427f-4e8f-9936-4aa65c4805e5",
+    "grade": 5,
+    "subject_name": "SEJARAH",
+    "kpm_min_hours": 64,
+    "planned_periods": 86,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "7489427e-31d7-4150-bb9e-f3b4b6080f4c",
+    "grade": 6,
+    "subject_name": "SEJARAH",
+    "kpm_min_hours": 64,
+    "planned_periods": 86,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "86c550cf-a683-4433-a440-3e8e1a9986f5",
+    "grade": 4,
+    "subject_name": "BAHASA CINA",
+    "kpm_min_hours": 320,
+    "planned_periods": 387,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "025bc898-9156-47f1-9e9f-6f02a02f3932",
+    "grade": 5,
+    "subject_name": "BAHASA CINA",
+    "kpm_min_hours": 320,
+    "planned_periods": 387,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  },
+  {
+    "id": "bcf3ab27-d2cf-4b9a-bb5c-5d1a67ae8d5e",
+    "grade": 6,
+    "subject_name": "BAHASA CINA",
+    "kpm_min_hours": 320,
+    "planned_periods": 387,
+    "created_at": "2026-08-07T11:56:01.287602+00:00"
+  }
+]

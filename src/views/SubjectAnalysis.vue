@@ -1068,7 +1068,7 @@ const exportPdfReport = async () => {
     drawColorfulTable(
       ['KELAS', 'SUBJEK', 'GURU', 'SASARAN', 'JANGKAAN', 'HILANG', 'SEBENAR', 'BEZA', 'STATUS'], 
       rows, 
-      [95, 200, 310, 85, 95, 75, 90, 70, 120] 
+      [95, 200, 310, 90, 100, 75, 90, 60, 120] 
     )
 
     commitCurrentPage()

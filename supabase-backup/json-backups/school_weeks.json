@@ -1,0 +1,346 @@
+[
+  {
+    "id": "246ec0ea-b39f-40d5-96d0-a848a99cf372",
+    "week_number": 1,
+    "start_date": "2026-01-12",
+    "end_date": "2026-01-16",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "60fe8127-58d8-4bf8-ad64-52f51db7bc37",
+    "week_number": 2,
+    "start_date": "2026-01-19",
+    "end_date": "2026-01-23",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "08afe02d-4892-457c-92a1-4c6f79447f7c",
+    "week_number": 3,
+    "start_date": "2026-01-26",
+    "end_date": "2026-01-30",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "8a0ec649-41bf-42f1-8ee0-45e634998b55",
+    "week_number": 4,
+    "start_date": "2026-02-02",
+    "end_date": "2026-02-06",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "d48c645b-d205-4dd2-b642-1c42c201914a",
+    "week_number": 5,
+    "start_date": "2026-02-09",
+    "end_date": "2026-02-13",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "ddf39ea9-3d79-4cfb-865f-b31461227044",
+    "week_number": 6,
+    "start_date": "2026-02-16",
+    "end_date": "2026-02-20",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "29f40fcd-f97a-49ec-9723-a836b739ee7c",
+    "week_number": 7,
+    "start_date": "2026-02-23",
+    "end_date": "2026-02-27",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "d62d64b0-ffb3-430f-8756-d566467b2c0c",
+    "week_number": 8,
+    "start_date": "2026-03-02",
+    "end_date": "2026-03-06",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "c6b117d8-eb0e-4061-ba87-5b4d2a95a084",
+    "week_number": 9,
+    "start_date": "2026-03-09",
+    "end_date": "2026-03-13",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "a7995f63-02cc-4d7d-9376-84b284d53a42",
+    "week_number": 10,
+    "start_date": "2026-03-16",
+    "end_date": "2026-03-20",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "045329e4-37a0-49d8-b7cc-02bb8a8c953e",
+    "week_number": 11,
+    "start_date": "2026-03-30",
+    "end_date": "2026-04-03",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "75707a2b-3dd8-4b9b-8934-a5e8e0926e0e",
+    "week_number": 12,
+    "start_date": "2026-04-06",
+    "end_date": "2026-04-10",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "76cc78ff-f419-4919-afc0-db5222e5cecd",
+    "week_number": 13,
+    "start_date": "2026-04-13",
+    "end_date": "2026-04-17",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "e80aa7d8-c8f1-48eb-864b-cdf80bb5d3af",
+    "week_number": 14,
+    "start_date": "2026-04-20",
+    "end_date": "2026-04-24",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "f08f1758-e49f-410b-8fce-b7489539538b",
+    "week_number": 15,
+    "start_date": "2026-04-27",
+    "end_date": "2026-05-01",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "ee7d625c-ec10-45f2-8c49-c3bdbca88900",
+    "week_number": 16,
+    "start_date": "2026-05-04",
+    "end_date": "2026-05-08",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "a71f28bc-7ea1-41ff-8c0d-800545b8a1c3",
+    "week_number": 17,
+    "start_date": "2026-05-11",
+    "end_date": "2026-05-15",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "7adf7ff8-7361-417f-9799-fdf1acb024c0",
+    "week_number": 18,
+    "start_date": "2026-05-18",
+    "end_date": "2026-05-22",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "bc8209f8-f3da-4397-8687-4cb10f4d7a2f",
+    "week_number": 19,
+    "start_date": "2026-06-08",
+    "end_date": "2026-06-12",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "337fcd84-40df-4101-a073-ebf50f5e28f0",
+    "week_number": 20,
+    "start_date": "2026-06-15",
+    "end_date": "2026-06-19",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "71159001-5210-46e3-9217-ca9efa04cf84",
+    "week_number": 21,
+    "start_date": "2026-06-22",
+    "end_date": "2026-06-26",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "84063e32-e66e-4de5-ae1b-05ec66306ae9",
+    "week_number": 22,
+    "start_date": "2026-06-29",
+    "end_date": "2026-07-03",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "de19e507-e130-4879-ba6c-fbd6d8a486f8",
+    "week_number": 23,
+    "start_date": "2026-07-06",
+    "end_date": "2026-07-10",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "7183ca1b-89ba-4b14-be77-67b54ef6c684",
+    "week_number": 24,
+    "start_date": "2026-07-13",
+    "end_date": "2026-07-17",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "0d15174f-5f3e-4d61-87ed-4a158ba4caf9",
+    "week_number": 25,
+    "start_date": "2026-07-20",
+    "end_date": "2026-07-24",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "150ab9d7-94a1-4159-9ce2-ec57b0c6e207",
+    "week_number": 26,
+    "start_date": "2026-07-27",
+    "end_date": "2026-07-31",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "d7103040-7f88-406f-ace9-55eee8aa57f3",
+    "week_number": 27,
+    "start_date": "2026-08-03",
+    "end_date": "2026-08-07",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "9bfbc557-9889-4da6-875f-d4021fee5ed4",
+    "week_number": 28,
+    "start_date": "2026-08-10",
+    "end_date": "2026-08-14",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "db831777-5a31-4ea4-9790-1659c3a0789a",
+    "week_number": 29,
+    "start_date": "2026-08-17",
+    "end_date": "2026-08-21",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "ea02ec94-0cc8-45e8-93be-4e5e9484b796",
+    "week_number": 30,
+    "start_date": "2026-08-24",
+    "end_date": "2026-08-28",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "0e3005e9-5329-4081-98e8-c6ebf8b8ef7c",
+    "week_number": 31,
+    "start_date": "2026-09-07",
+    "end_date": "2026-09-11",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "5403f88e-ae92-4e70-a2a0-50d571a2d0d7",
+    "week_number": 32,
+    "start_date": "2026-09-14",
+    "end_date": "2026-09-18",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "e62d23b0-63ca-4a60-872b-b895f5330187",
+    "week_number": 33,
+    "start_date": "2026-09-21",
+    "end_date": "2026-09-25",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "fb8258c2-c757-4a68-a224-e9339c4cbc1a",
+    "week_number": 34,
+    "start_date": "2026-09-28",
+    "end_date": "2026-10-02",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "c351d97b-99dc-47ad-9dce-4d7b5be3910d",
+    "week_number": 35,
+    "start_date": "2026-10-05",
+    "end_date": "2026-10-09",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "c3e60dd1-fa3e-4469-a765-18e89e380fa2",
+    "week_number": 36,
+    "start_date": "2026-10-12",
+    "end_date": "2026-10-16",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "ca17c4ac-4edf-4504-8ad2-10e8e5d12784",
+    "week_number": 37,
+    "start_date": "2026-10-19",
+    "end_date": "2026-10-23",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "6f314197-1793-43c0-876f-9e6b52d9abc0",
+    "week_number": 38,
+    "start_date": "2026-10-26",
+    "end_date": "2026-10-30",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "58a8487e-db4f-4032-b053-773ce4b015e9",
+    "week_number": 39,
+    "start_date": "2026-11-02",
+    "end_date": "2026-11-06",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "25d0b1f6-3814-47ff-a60d-51aab36994a8",
+    "week_number": 40,
+    "start_date": "2026-11-09",
+    "end_date": "2026-11-13",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "44d3d65f-fa03-4f44-9f86-3dce343f9960",
+    "week_number": 41,
+    "start_date": "2026-11-16",
+    "end_date": "2026-11-20",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "c2bafc00-521b-4911-a150-7715c7ef5671",
+    "week_number": 42,
+    "start_date": "2026-11-23",
+    "end_date": "2026-11-27",
+    "is_school_week": true,
+    "term_name": null
+  },
+  {
+    "id": "4b21e257-0f4c-4520-af57-8e58c5d1ec36",
+    "week_number": 43,
+    "start_date": "2026-11-30",
+    "end_date": "2026-12-04",
+    "is_school_week": true,
+    "term_name": null
+  }
+]
