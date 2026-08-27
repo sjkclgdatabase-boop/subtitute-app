@@ -1,7 +1,7 @@
 <template>
   <div class="p-8 max-w-7xl mx-auto min-h-screen space-y-8">
     
-    <!-- 头部区域：统一的卡片风格、排版规范与渐变大标题 -->
+    <!-- 头部区域 -->
     <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
       <div class="space-y-2 max-w-3xl">
         <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-800 to-violet-800 flex items-center gap-3">
@@ -9,31 +9,13 @@
           MMI 教学干扰事件记录中心
         </h1>
         <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
-          Melindungi Masa Instruksional · 按班级、教师记录教学干扰事件，保障教学时间。
+          Melindungi Masa Instruksional · 记录教学干扰事件，保障教学时间。
         </p>
-      </div>
-
-      <!-- 模式切换标签 -->
-      <div class="flex bg-slate-100 p-1.5 rounded-2xl shadow-inner shrink-0">
-        <button 
-          @click="activeTab = 'class'" 
-          :class="activeTab === 'class' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'"
-          class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
-        >
-          <School class="w-4 h-4" /> 按班级记录 
-        </button>
-        <button 
-          @click="activeTab = 'teacher'" 
-          :class="activeTab === 'teacher' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'"
-          class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
-        >
-          <Users class="w-4 h-4" /> 按教师记录
-        </button>
       </div>
     </div>
 
-    <!-- 维度一：依据班级记录干扰 -->
-    <div v-if="activeTab === 'class'" class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 mb-8">
+    <!-- 维度：依据班级记录干扰 -->
+    <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 mb-8">
       <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
         <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
         班级干扰事件录入
@@ -51,13 +33,11 @@
           />
         </div>
 
-        <!-- 🌟 全新的班级快捷分类与输入 -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider flex items-center gap-1.5">
             <AlertTriangle class="w-4 h-4 text-amber-500" /> 干扰类型 (系统将自动打上标签):
           </label>
           
-          <!-- 分类点选区 -->
           <div class="flex flex-wrap gap-2 mb-3">
             <label v-for="cat in ['[学术]', '[节庆]', '[讲座]', '[假期]', '[未分类]']" :key="cat" class="cursor-pointer">
               <input type="radio" v-model="classForm.category" :value="cat" class="hidden" />
@@ -67,7 +47,6 @@
             </label>
           </div>
 
-          <!-- 具体名称输入区 (加入 uppercase) -->
           <input 
             type="text" 
             v-model="classForm.eventName" 
@@ -97,9 +76,7 @@
           </label>
         </div>
 
-        <!-- 规整对齐的班级网格卡片流 + 全选/清空按钮 -->
         <div v-if="classForm.scopeType === 'specific'" class="space-y-3 pt-2">
-          <!-- 顶部快捷操作栏 -->
           <div class="flex justify-between items-center pb-2 border-b border-slate-200/80 text-xs">
             <span class="font-bold text-slate-500">请勾选受影响的班级：</span>
             <div class="space-x-3">
@@ -113,7 +90,6 @@
             </div>
           </div>
 
-          <!-- 各年级规整行 -->
           <div v-for="(classes, grade) in groupedClasses" :key="grade" class="flex flex-col sm:flex-row sm:items-center gap-3 bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-xs">
             <div class="w-28 shrink-0 flex items-center justify-between sm:justify-start gap-2">
               <span class="text-xs font-black text-slate-700 uppercase tracking-wider">Tahun {{ grade }}</span>
@@ -193,105 +169,9 @@
       </button>
     </div>
 
-    <!-- 维度二：依据老师记录干扰 -->
-    <div v-if="activeTab === 'teacher'" class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5 mb-8">
-      <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-        <span class="w-2.5 h-2.5 rounded-full bg-violet-600"></span>
-        教师干扰事件录入
-      </h2>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider flex items-center gap-1.5">
-            <CalendarDays class="w-4 h-4 text-violet-600" /> 干扰发生日期:
-          </label>
-          <input 
-            type="date" 
-            v-model="teacherForm.date" 
-            @change="loadTeacherSubjects"
-            class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
-          />
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider flex items-center gap-1.5">
-            <Users class="w-4 h-4 text-violet-600" /> 选择受干扰/请假教师:
-          </label>
-          <select 
-            v-model="teacherForm.teacherId" 
-            @change="loadTeacherSubjects"
-            class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
-          >
-            <option value="" disabled>-- 请选择教师 --</option>
-            <option v-for="t in teachersList" :key="t.id" :value="t.id">{{ t.name }}</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- 🌟 全新的教师快捷分类与输入 -->
-      <div class="mb-6">
-        <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider flex items-center gap-1.5">
-          <AlertTriangle class="w-4 h-4 text-amber-500" /> 缺课原因分类 (系统将自动打上标签):
-        </label>
-        
-        <div class="flex flex-wrap gap-2 mb-3">
-          <label v-for="cat in ['[个人请假]', '[离校公干]', '[校内任务]', '[未分类]']" :key="cat" class="cursor-pointer">
-            <input type="radio" v-model="teacherForm.category" :value="cat" class="hidden" />
-            <span :class="teacherForm.category === cat ? 'bg-violet-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all inline-block">
-              {{ cat }}
-            </span>
-          </label>
-        </div>
-
-        <input 
-          v-model="teacherForm.eventName" 
-          type="text" 
-          placeholder="请填写具体说明 (例如：带队参加篮球赛、出席会议、病假等)..." 
-          class="w-full bg-white border border-slate-200 px-4 h-11 rounded-2xl text-xs font-semibold text-slate-800 uppercase shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-        />
-      </div>
-
-      <div class="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100 mb-6">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-900 mb-3 flex items-center justify-between">
-          <span>📚 自动加载：该教师当日原有课程及受影响班级</span>
-          <span v-if="loadingSubjects" class="text-xs font-normal text-indigo-600 animate-pulse">正在提取课程...</span>
-        </h3>
-
-        <div v-if="exportedSubjects.length === 0" class="text-xs text-slate-400 py-4 text-center font-medium">
-          请选择日期与教师，自动加载当日受影响科目与班级
-        </div>
-
-        <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-          <div 
-            v-for="sub in exportedSubjects" 
-            :key="sub.period"
-            class="p-3 bg-white border border-indigo-100 rounded-xl shadow-sm flex items-center justify-between"
-          >
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-extrabold text-slate-900">第 {{ sub.period }} 节</span>
-                <span v-if="sub.is_combined" class="px-1.5 py-0.5 bg-violet-100 text-violet-700 rounded text-[9px] font-bold">合班</span>
-              </div>
-              <span class="text-xs text-slate-500 font-medium">{{ sub.class_name }} · {{ sub.subject }}</span>
-            </div>
-            <span class="text-[10px] px-2 py-0.5 rounded bg-indigo-100 text-indigo-700 font-bold">受干扰</span>
-          </div>
-        </div>
-      </div>
-
-      <button 
-        @click="submitTeacherInterruption" 
-        :disabled="exportedSubjects.length === 0"
-        class="bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer flex items-center gap-2"
-      >
-        <Save class="w-4 h-4" /> 确认并保存该教师干扰事件
-      </button>
-    </div>
-
     <!-- 干扰日志历史记录表格区 -->
     <div class="bg-white rounded-3xl p-8 shadow-sm ring-1 ring-slate-900/5">
       
-      <!-- 第一行：标题与导出按钮 -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-4">
         <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
           <History class="w-5 h-5 text-indigo-600" />
@@ -309,14 +189,7 @@
         </button>
       </div>
 
-      <!-- 第二行：所有筛选与搜索框平铺 -->
       <div class="flex flex-wrap items-center gap-3 mb-6">
-        <select v-model="typeFilter" class="bg-slate-50 border border-slate-200 px-3.5 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none cursor-pointer">
-          <option value="all">所有类型</option>
-          <option value="class">班级干扰</option>
-          <option value="teacher">教师干扰</option>
-        </select>
-
         <select v-model="dateRangeFilter" class="bg-slate-50 border border-slate-200 px-3.5 h-11 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none cursor-pointer">
           <option value="all">所有时间范围</option>
           <option value="week">📅 本周 (最近 7 天)</option>
@@ -332,18 +205,16 @@
           <input 
             type="text" 
             v-model="searchQuery" 
-            placeholder="搜索老师/班级/原因..." 
+            placeholder="搜索班级/原因..." 
             class="w-full bg-slate-50 border border-slate-200 px-4 h-11 rounded-2xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
       </div>
 
-      <!-- 表格区域 -->
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse text-xs table-fixed">
           <thead>
             <tr class="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-b border-slate-200 select-none">
-              <!-- 日期: 靠左对齐 -->
               <th @click="handleSort('interruption_date')" class="py-3 px-4 w-32 cursor-pointer hover:bg-slate-100 transition text-left">
                 <div class="flex items-center gap-1">
                   <span>日期</span>
@@ -353,7 +224,6 @@
                 </div>
               </th>
 
-              <!-- 事件类型: 居中对齐 -->
               <th @click="handleSort('type')" class="py-3 px-3 w-28 cursor-pointer hover:bg-slate-100 transition text-center">
                 <div class="flex items-center justify-center gap-1">
                   <span>事件类型</span>
@@ -363,7 +233,6 @@
                 </div>
               </th>
 
-              <!-- 影响对象 / 范围: 靠左对齐 -->
               <th @click="handleSort('target_display')" class="py-3 px-4 w-auto cursor-pointer hover:bg-slate-100 transition text-left">
                 <div class="flex items-center gap-1">
                   <span>影响对象 / 范围</span>
@@ -373,7 +242,6 @@
                 </div>
               </th>
 
-              <!-- 受影响节次: 居中对齐 -->
               <th @click="handleSort('start_period')" class="py-3 px-3 w-32 cursor-pointer hover:bg-slate-100 transition text-center">
                 <div class="flex items-center justify-center gap-1">
                   <span>受影响节次</span>
@@ -383,7 +251,6 @@
                 </div>
               </th>
 
-              <!-- 干扰原因: 居中对齐 -->
               <th @click="handleSort('reason')" class="py-3 px-3 w-36 cursor-pointer hover:bg-slate-100 transition text-center">
                 <div class="flex items-center justify-center gap-1">
                   <span>干扰原因</span>
@@ -393,7 +260,6 @@
                 </div>
               </th>
 
-              <!-- 操作: 居中对齐 -->
               <th class="py-3 px-3 w-24 text-center">操作</th>
             </tr>
           </thead>
@@ -404,29 +270,24 @@
               </td>
             </tr>
             <tr v-for="log in filteredLogs" :key="log.id" class="hover:bg-slate-50/50 transition">
-              <!-- 日期: 靠左 -->
               <td class="py-3.5 px-4 font-bold text-slate-900 truncate text-left">{{ log.interruption_date }}</td>
               
-              <!-- 事件类型: 居中 -->
               <td class="py-3.5 px-3 text-center truncate">
-                <span :class="log.type === 'class' ? 'bg-indigo-50 text-indigo-700' : 'bg-violet-50 text-violet-700'" class="px-2.5 py-1 rounded-full text-xs font-bold inline-block">
-                  {{ log.type === 'class' ? '班级干扰' : '教师干扰' }}
+                <span class="bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full text-xs font-bold inline-block">
+                  班级干扰
                 </span>
               </td>
 
-              <!-- 影响对象 / 范围: 靠左 -->
               <td class="py-3.5 px-4 font-semibold text-slate-800 truncate text-left" :title="formatTargetDisplay(log.target_display)">
                 {{ formatTargetDisplay(log.target_display) }}
               </td>
 
-              <!-- 受影响节次: 居中 -->
               <td class="py-3.5 px-3 text-center truncate">
                 <span class="bg-slate-100 px-2.5 py-1 rounded-lg text-xs text-slate-700 font-bold inline-block">
                   第 {{ log.start_period }} - {{ log.end_period }} 节
                 </span>
               </td>
 
-              <!-- 干扰原因: 居中 -->
               <td class="py-3.5 px-3 text-center truncate">
                 <span v-if="!log.reason || log.reason === '-'">-</span>
                 <button 
@@ -439,7 +300,6 @@
                 </button>
               </td>
 
-              <!-- 操作: 居中 -->
               <td class="py-3.5 px-3 text-center truncate">
                 <button @click="deleteLog(log)" class="text-xs text-red-600 hover:text-red-800 font-bold px-3 py-1.5 bg-red-50 hover:bg-red-100 rounded-xl cursor-pointer transition inline-flex items-center gap-1">
                   <Trash2 class="w-3.5 h-3.5" /> 删除
@@ -476,11 +336,7 @@
           <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
             <span class="font-bold text-indigo-900 block mb-1">📄 完整备注与自动同步课程内容：</span>
             
-            <p v-if="currentDetailLog?.type === 'teacher'" class="text-slate-800 leading-relaxed font-medium whitespace-pre-wrap">
-              {{ currentDetailLog?.remarks?.replace('自动同步自请假录入 ', '') }}
-            </p>
-            
-            <div v-if="currentDetailLog?.type === 'class'" class="text-slate-800 leading-relaxed font-medium whitespace-pre-wrap">
+            <div class="text-slate-800 leading-relaxed font-medium whitespace-pre-wrap">
               <span v-if="currentDetailLog?.remarks">{{ currentDetailLog.remarks }}<br/><br/></span>
               
               <span v-if="loadingDetail" class="animate-pulse inline-flex items-center gap-1">
@@ -510,7 +366,6 @@ import { useToast } from '../utils/toast'
 import { 
   GraduationCap, 
   School, 
-  Users, 
   CalendarDays, 
   Clock, 
   Save, 
@@ -525,7 +380,6 @@ import {
 } from 'lucide-vue-next'
 
 const toast = useToast()
-const activeTab = ref('class')
 
 const getLocalToday = () => {
   const now = new Date()
@@ -537,8 +391,8 @@ const getLocalToday = () => {
 
 const classForm = ref({
   date: getLocalToday(),
-  category: '[讲座]', // 默认选中项
-  eventName: '',      // 用户填写的具体名称
+  category: '[讲座]', 
+  eventName: '',      
   scopeType: 'specific',
   selectedClasses: [],
   selectedGrade: 1,
@@ -577,21 +431,9 @@ const fetchClasses = async () => {
   }
 }
 
-const teacherForm = ref({
-  date: getLocalToday(),
-  teacherId: '',
-  category: '[离校公干]', // 默认选中项
-  eventName: ''         // 用户填写的具体说明
-})
-
-const teachersList = ref([])
-const exportedSubjects = ref([])
-const loadingSubjects = ref(false)
-
 const interruptionLogs = ref([])
 
 const searchQuery = ref('')
-const typeFilter = ref('all')         
 const dateRangeFilter = ref('all')    
 const selectedMonth = ref('all')      
 
@@ -617,71 +459,66 @@ const openDetailModal = async (log) => {
   showDetailModal.value = true
   currentDetailAffectedClasses.value = ''
 
-  if (log.type === 'class') {
-    loadingDetail.value = true
-    try {
-      const logDate = new Date(log.interruption_date)
-      const weekdayNum = logDate.getDay() 
-      const queryWeekday = weekdayNum === 0 ? 7 : weekdayNum
+  loadingDetail.value = true
+  try {
+    const logDate = new Date(log.interruption_date)
+    const weekdayNum = logDate.getDay() 
+    const queryWeekday = weekdayNum === 0 ? 7 : weekdayNum
 
-      const { data: timetables, error } = await supabase
-        .from('timetable')
-        .select('*')
-        .eq('weekday', queryWeekday)
+    const { data: timetables, error } = await supabase
+      .from('timetable')
+      .select('*')
+      .eq('weekday', queryWeekday)
 
-      if (error) throw error
+    if (error) throw error
 
-      if (timetables && timetables.length > 0) {
-        const startP = Number(log.start_period)
-        const endP = Number(log.end_period)
-        const targetDisp = log.target_display || ''
+    if (timetables && timetables.length > 0) {
+      const startP = Number(log.start_period)
+      const endP = Number(log.end_period)
+      const targetDisp = log.target_display || ''
 
-        const matched = timetables.filter(t => {
-          const itemWeekday = Number(t.weekday)
-          const matchWd = itemWeekday === weekdayNum || itemWeekday === (weekdayNum === 0 ? 7 : weekdayNum)
-          if (!matchWd) return false
+      const matched = timetables.filter(t => {
+        const itemWeekday = Number(t.weekday)
+        const matchWd = itemWeekday === weekdayNum || itemWeekday === (weekdayNum === 0 ? 7 : weekdayNum)
+        if (!matchWd) return false
 
-          const p = Number(t.period)
-          if (p < startP || p > endP) return false
+        const p = Number(t.period)
+        if (p < startP || p > endP) return false
 
-          // 1. 全校影响 (三语兼容)
-          if (targetDisp.includes('SEMUA') || targetDisp.includes('ALL') || targetDisp.includes('全校') || targetDisp.includes('WHOLE SCHOOL')) return true
+        if (targetDisp.includes('SEMUA') || targetDisp.includes('ALL') || targetDisp.includes('全校') || targetDisp.includes('WHOLE SCHOOL')) return true
 
-          // 2. 年级影响 (三语兼容)
-          if (targetDisp.includes('TAHUN') || targetDisp.includes('GRADE') || targetDisp.includes('全年级') || targetDisp.includes('Tahun') || targetDisp.includes('YEAR') || targetDisp.includes('年级')) {
-            const match = targetDisp.match(/(?:TAHUN|Grade|Tahun|YEAR|Year)\s*(\d)/i) || targetDisp.match(/(\d)\s*年级/)
-            const grade = match ? match[1] : null
-            return grade && String(t.class_name).startsWith(grade)
-          }
-
-          // 3. 班级影响 (三语兼容)
-          const cleanTarget = targetDisp.replace(/^(?:KELAS|CLASS|班级)[:：]\s*/i, '').trim()
-          const classList = cleanTarget.split(',').map(c => c.trim())
-          
-          return classList.some(c => 
-            t.class_name === c || 
-            t.class_name.toLowerCase() === c.toLowerCase() || 
-            t.class_name.includes(c) || 
-            c.includes(t.class_name)
-          )
-        })
-
-        if (matched.length > 0) {
-          matched.sort((a, b) => Number(a.period) - Number(b.period))
-          const periods = [...new Set(matched.map(m => m.period))].sort((a, b) => a - b).join(', ')
-          const classes = matched.map(m => `${m.class_name}(${m.subject || m.subject_name})`).join(', ')
-          
-          currentDetailAffectedClasses.value = `(涉及节次: 第 ${periods} 节 | 课程: ${classes})`
-        } else {
-          currentDetailAffectedClasses.value = '该时段未排课或无受影响记录'
+        if (targetDisp.includes('TAHUN') || targetDisp.includes('GRADE') || targetDisp.includes('全年级') || targetDisp.includes('Tahun') || targetDisp.includes('YEAR') || targetDisp.includes('年级')) {
+          const match = targetDisp.match(/(?:TAHUN|Grade|Tahun|YEAR|Year)\s*(\d)/i) || targetDisp.match(/(\d)\s*年级/)
+          const grade = match ? match[1] : null
+          return grade && String(t.class_name).startsWith(grade)
         }
+
+        const cleanTarget = targetDisp.replace(/^(?:KELAS|CLASS|班级)[:：]\s*/i, '').trim()
+        const classList = cleanTarget.split(',').map(c => c.trim())
+        
+        return classList.some(c => 
+          t.class_name === c || 
+          t.class_name.toLowerCase() === c.toLowerCase() || 
+          t.class_name.includes(c) || 
+          c.includes(t.class_name)
+        )
+      })
+
+      if (matched.length > 0) {
+        matched.sort((a, b) => Number(a.period) - Number(b.period))
+        const periods = [...new Set(matched.map(m => m.period))].sort((a, b) => a - b).join(', ')
+        const classes = matched.map(m => `${m.class_name}(${m.subject || m.subject_name})`).join(', ')
+        
+        currentDetailAffectedClasses.value = `(涉及节次: 第 ${periods} 节 | 课程: ${classes})`
+      } else {
+        currentDetailAffectedClasses.value = '该时段未排课或无受影响记录'
       }
-    } catch (err) {
-      console.error("加载详情失败:", err)
-      currentDetailAffectedClasses.value = '加载受影响课程失败'
-    } finally {
-      loadingDetail.value = false
     }
+  } catch (err) {
+    console.error("加载详情失败:", err)
+    currentDetailAffectedClasses.value = '加载受影响课程失败'
+  } finally {
+    loadingDetail.value = false
   }
 }
 
@@ -693,8 +530,6 @@ const filteredLogs = computed(() => {
       log.reason?.toLowerCase().includes(query) ||
       log.remarks?.toLowerCase().includes(query) ||
       log.interruption_date?.includes(query)
-
-    const matchesType = typeFilter.value === 'all' || log.type === typeFilter.value
 
     let matchesDateRange = true
     if (dateRangeFilter.value !== 'all' && log.interruption_date) {
@@ -718,7 +553,7 @@ const filteredLogs = computed(() => {
       matchesMonth = (logDate.getFullYear() === currentYear) && (logMonth === Number(selectedMonth.value))
     }
 
-    return matchesSearch && matchesType && matchesDateRange && matchesMonth
+    return matchesSearch && matchesDateRange && matchesMonth
   })
 
   return result.sort((a, b) => {
@@ -736,51 +571,7 @@ const filteredLogs = computed(() => {
   })
 })
 
-const loadTeachers = async () => {
-  const { data } = await supabase.from('teachers').select('id, name')
-  if (data) teachersList.value = data
-}
-
-const loadTeacherSubjects = async () => {
-  if (!teacherForm.value.teacherId || !teacherForm.value.date) {
-    exportedSubjects.value = []
-    return
-  }
-  loadingSubjects.value = true
-  try {
-    const { data } = await supabase
-      .from('leave_requests')
-      .select('*')
-      .eq('teacher_id', teacherForm.value.teacherId)
-      .eq('leave_date', teacherForm.value.date)
-      .order('period', { ascending: true })
-
-    const periodMap = new Map()
-    ;(data || []).forEach(s => {
-      if (!periodMap.has(s.period)) {
-        periodMap.set(s.period, {
-          ...s,
-          is_combined: false
-        })
-      } else {
-        const existing = periodMap.get(s.period)
-        if (!existing.class_name.includes(s.class_name)) {
-          existing.class_name = `${existing.class_name}/${s.class_name}`
-          existing.is_combined = true 
-        }
-      }
-    })
-
-    exportedSubjects.value = Array.from(periodMap.values())
-  } catch (err) {
-    toast.error("课程提取失败: " + err.message)
-  } finally {
-    loadingSubjects.value = false
-  }
-}
-
 const submitClassInterruption = async () => {
-  // 校验事件名称是否为空
   if (!classForm.value.eventName.trim()) {
     return toast.error("请填写具体的活动名称！")
   }
@@ -795,7 +586,6 @@ const submitClassInterruption = async () => {
     targetDisplay = '全校所有班级'
   }
 
-  // 核心逻辑：自动拼接标签和活动名称 [标签] 活动名称，并强制大写
   let finalCategory = classForm.value.category
   if (finalCategory === '[未分类]') finalCategory = '' 
   
@@ -822,48 +612,6 @@ const submitClassInterruption = async () => {
   }
 }
 
-const submitTeacherInterruption = async () => {
-  if (exportedSubjects.value.length === 0) return
-
-  // 校验缺课说明是否为空
-  if (!teacherForm.value.eventName.trim()) {
-    return toast.error("请填写具体的缺课说明！")
-  }
-
-  const teacher = teachersList.value.find(t => t.id === teacherForm.value.teacherId)
-  const periods = exportedSubjects.value.map(s => Number(s.period)).sort((a,b) => a-b)
-  const startP = periods[0] || 1
-  const endP = periods[periods.length - 1] || 1
-
-  const subjectSummary = exportedSubjects.value.map(s => `${s.class_name}(${s.subject})`).join(', ')
-
-  // 核心逻辑：自动拼接标签和原因 [标签] 缺课说明，并强制大写
-  let finalCategory = teacherForm.value.category
-  if (finalCategory === '[未分类]') finalCategory = ''
-  
-  const finalReason = `${finalCategory} ${teacherForm.value.eventName.trim()}`.trim().toUpperCase()
-
-  try {
-    const { error } = await supabase.from('mmi_interruptions').insert({
-      interruption_date: teacherForm.value.date,
-      type: 'teacher',
-      target_display: `教师: ${teacher?.name || ''}`,
-      start_period: startP,
-      end_period: endP,
-      reason: finalReason,
-      remarks: `(涉及节次: 第 ${periods.join(', ')} 节 | 课程: ${subjectSummary})`
-    })
-
-    if (error) throw error
-
-    toast.success("教师干扰事件统一记录成功！")
-    fetchLogs()
-    teacherForm.value.eventName = ''
-  } catch (err) {
-    toast.error("保存失败: " + err.message)
-  }
-}
-
 const fetchLogs = async () => {
   const { data } = await supabase
     .from('mmi_interruptions')
@@ -880,7 +628,7 @@ const exportLogsToExcel = () => {
 
   let csvContent = "\uFEFF日期,事件类型,影响对象,受影响节次,干扰原因,说明备注\n"
   filteredLogs.value.forEach(item => {
-    const typeStr = item.type === 'class' ? '班级干扰' : '教师干扰'
+    const typeStr = '班级干扰'
     const row = [
       item.interruption_date,
       typeStr,
@@ -903,7 +651,6 @@ const exportLogsToExcel = () => {
   toast.success("导出报表成功！")
 }
 
-// 🌟 三语兼容的表格格式化
 const formatTargetDisplay = (text) => {
   if (!text) return ''
   return text.replace(/^(KELAS|CLASS|班级)[:：]\s*/i, '').trim()
@@ -920,45 +667,7 @@ const deleteLog = async (log) => {
 
     if (mmiErr) throw mmiErr
 
-    // 🌟 三语兼容的教师判断
-    if (log.type === 'teacher' || (log.target_display && (log.target_display.includes('教师') || log.target_display.includes('GURU') || log.target_display.includes('TEACHER')))) {
-      let teacherName = ''
-      if (log.target_display) {
-        teacherName = log.target_display.replace(/(?:教师|GURU|TEACHER)[:：]?\s*/i, '').trim()
-      }
-
-      if (teacherName) {
-        const { data: teacherObj } = await supabase
-          .from('teachers')
-          .select('id')
-          .eq('name', teacherName)
-          .single()
-
-        if (teacherObj) {
-          const { data: leaveReqs } = await supabase
-            .from('leave_requests')
-            .select('id')
-            .eq('teacher_id', teacherObj.id)
-            .eq('leave_date', log.interruption_date)
-
-          if (leaveReqs && leaveReqs.length > 0) {
-            const leaveIds = leaveReqs.map(l => l.id)
-
-            await supabase
-              .from('substitute_assignments')
-              .delete()
-              .in('leave_request_id', leaveIds)
-
-            await supabase
-              .from('leave_requests')
-              .delete()
-              .in('id', leaveIds)
-          }
-        }
-      }
-    }
-
-    toast.success("干扰记录与对应的请假登记已同步彻底清除！")
+    toast.success("干扰记录已成功删除！")
     fetchLogs()
   } catch (err) {
     toast.error("删除失败: " + err.message)
@@ -968,9 +677,7 @@ const deleteLog = async (log) => {
 onMounted(() => {
   const today = getLocalToday()
   classForm.value.date = today
-  teacherForm.value.date = today
 
-  loadTeachers()
   fetchLogs()
   fetchClasses()
 })
@@ -978,6 +685,5 @@ onMounted(() => {
 onActivated(() => {
   const today = getLocalToday()
   classForm.value.date = today
-  teacherForm.value.date = today
 })
 </script>
