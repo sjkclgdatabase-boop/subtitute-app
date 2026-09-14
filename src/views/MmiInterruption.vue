@@ -77,9 +77,16 @@
         </div>
 
         <div v-if="classForm.scopeType === 'specific'" class="space-y-3 pt-2">
-          <div class="flex justify-between items-center pb-2 border-b border-slate-200/80 text-xs">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-2 border-b border-slate-200/80 text-xs gap-2">
             <span class="font-bold text-slate-500">请勾选受影响的班级：</span>
-            <div class="space-x-3">
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" @click="selectAllMorningClasses" class="text-sky-600 hover:text-sky-800 font-bold bg-sky-50 px-2.5 py-1 rounded-lg cursor-pointer transition">
+                ☀️ 全选上午班
+              </button>
+              <button type="button" @click="selectAllAfternoonClasses" class="text-amber-600 hover:text-amber-800 font-bold bg-amber-50 px-2.5 py-1 rounded-lg cursor-pointer transition">
+                🌙 全选下午班
+              </button>
+              <span class="text-slate-300">|</span>
               <button type="button" @click="selectAllClasses" class="text-indigo-600 hover:text-indigo-800 font-bold cursor-pointer">
                 全选
               </button>
@@ -103,10 +110,14 @@
                 v-for="c in classes" 
                 :key="c" 
                 :class="classForm.selectedClasses.includes(c) ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs scale-105' : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/30'"
-                class="w-14 h-9 border rounded-xl text-xs font-extrabold flex items-center justify-center cursor-pointer transition-all select-none"
+                class="w-16 h-9 border rounded-xl text-xs font-extrabold flex items-center justify-center gap-1 cursor-pointer transition-all select-none"
+                :title="classSessionMap[c] === 'petang' ? '下午班' : '上午班'"
               >
                 <input type="checkbox" :value="c" v-model="classForm.selectedClasses" class="hidden" />
-                {{ c }}
+                <span>{{ c }}</span>
+                <span class="text-[8px] font-normal opacity-75">
+                  {{ classSessionMap[c] === 'petang' ? '🌙' : '☀️' }}
+                </span>
               </label>
             </div>
           </div>
@@ -403,6 +414,9 @@ const classForm = ref({
 
 const groupedClasses = ref({})
 
+// 🏫 独立班级上下午属性映射表 (精确匹配 1A, 1B 等具体的 session)
+const classSessionMap = ref({})
+
 const selectAllClasses = () => {
   const all = []
   Object.values(groupedClasses.value).forEach(arr => all.push(...arr))
@@ -413,21 +427,57 @@ const clearAllClasses = () => {
   classForm.value.selectedClasses = []
 }
 
+// ☀️ 全选上午班班级 (精准匹配具体班级的 session)
+const selectAllMorningClasses = () => {
+  const classesToSelect = []
+  Object.values(groupedClasses.value).forEach(classes => {
+    classes.forEach(cName => {
+      if (classSessionMap.value[cName] === 'morning') {
+        classesToSelect.push(cName)
+      }
+    })
+  })
+  classForm.value.selectedClasses = [...new Set([...classForm.value.selectedClasses, ...classesToSelect])]
+  toast.success("已成功勾选所有上午班班级！")
+}
+
+// 🌙 全选下午班班级 (精准匹配具体班级的 session)
+const selectAllAfternoonClasses = () => {
+  const classesToSelect = []
+  Object.values(groupedClasses.value).forEach(classes => {
+    classes.forEach(cName => {
+      if (classSessionMap.value[cName] === 'petang') {
+        classesToSelect.push(cName)
+      }
+    })
+  })
+  classForm.value.selectedClasses = [...new Set([...classForm.value.selectedClasses, ...classesToSelect])]
+  toast.success("已成功勾选所有下午班班级！")
+}
+
 const fetchClasses = async () => {
+  // 读取 classes 表中的 class_name, grade 以及 session 字段
   const { data } = await supabase
     .from('classes')
-    .select('class_name, grade')
+    .select('class_name, grade, session')
     .order('grade', { ascending: true })
     .order('class_name', { ascending: true })
   
   if (data) {
     const groups = {}
+    const sessionMap = {}
+    
     data.forEach(c => {
       const g = c.grade || c.class_name[0]
       if (!groups[g]) groups[g] = []
       groups[g].push(c.class_name)
+      
+      // 记录每个班级独立的上下午属性（若未单独设置则默认按 morning 处理）
+      sessionMap[c.class_name] = c.session || 'morning'
     })
+    
     groupedClasses.value = groups
+    classSessionMap.value = sessionMap
   }
 }
 
@@ -660,7 +710,6 @@ const deleteLog = async (log) => {
   if (!confirm(`确定要删除 ${log.interruption_date} 的这条 MMI 干扰记录吗？关联的代课记录也将同步清除。`)) return
 
   try {
-    // 1. 查找因该 MMI 干扰事件而在 leave_requests 中生成的记录
     const { data: relatedLeaves, error: fetchErr } = await supabase
       .from('leave_requests')
       .select('id')
@@ -673,7 +722,6 @@ const deleteLog = async (log) => {
 
     const leaveIds = (relatedLeaves || []).map(l => l.id)
 
-    // 2. 如果存在关联的代课记录，先删代课指派 (substitute_assignments)，再删待代课记录 (leave_requests)
     if (leaveIds.length > 0) {
       const { error: subErr } = await supabase
         .from('substitute_assignments')
@@ -690,7 +738,6 @@ const deleteLog = async (log) => {
       if (leaveErr) throw leaveErr
     }
 
-    // 3. 最后删除 MMI 干扰事件本身
     const { error: mmiErr } = await supabase
       .from('mmi_interruptions')
       .delete()
@@ -704,7 +751,6 @@ const deleteLog = async (log) => {
     toast.error("删除失败: " + err.message)
   }
 }
-
 
 onMounted(() => {
   const today = getLocalToday()

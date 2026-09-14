@@ -248,27 +248,35 @@
       </h2>
       <p class="text-slate-500 text-xs font-medium mb-6">维护全校标准班级，供排课、请假与 MMI 干扰记录选用。</p>
 
-      <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 mb-8 flex flex-col sm:flex-row gap-4 items-end">
-        <div class="w-full sm:w-1/3">
+      <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 mb-8 grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
+        <div>
           <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">年级 (Tahun):</label>
           <select v-model="newClassGrade" class="w-full bg-white border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 cursor-pointer">
             <option v-for="g in [1, 2, 3, 4, 5, 6]" :key="g" :value="g">Tahun {{ g }}</option>
           </select>
         </div>
 
-        <div class="w-full sm:w-1/2">
-          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">班级名称 (例如: 1A, 4C):</label>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">班级名称 (如: 1A):</label>
           <input 
             type="text" 
             v-model="newClassName" 
-            placeholder="输入标准班级名称..." 
+            placeholder="输入班级名称..." 
             class="w-full bg-white border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
 
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">上课时段:</label>
+          <select v-model="newClassSession" class="w-full bg-white border border-slate-200 px-4 h-11 rounded-2xl text-xs font-bold text-slate-800 cursor-pointer">
+            <option value="morning">☀️ 上午班 (Pagi)</option>
+            <option value="petang">🌙 下午班 (Petang)</option>
+          </select>
+        </div>
+
         <button 
           @click="addClass" 
-          class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-md transition-all shrink-0 cursor-pointer"
+          class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-6 h-11 rounded-2xl text-xs font-bold shadow-md transition-all shrink-0 cursor-pointer"
         >
           ➕ 添加班级
         </button>
@@ -303,19 +311,64 @@
               <div 
                 v-for="c in classListGroup" 
                 :key="c.id"
-                class="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm flex items-center justify-between group hover:border-indigo-300 transition-all min-w-[120px]"
+                class="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm flex items-center justify-between group hover:border-indigo-300 transition-all min-w-[160px]"
               >
-                <div>
-                  <div class="text-xs font-bold text-slate-900">{{ c.class_name }}</div>
-                  <div class="text-[10px] text-slate-400 font-medium">Tahun {{ c.grade }}</div>
-                </div>
-                <button 
-                  @click.stop="deleteClass(c.id)" 
-                  class="text-slate-300 hover:text-red-600 text-xs font-bold p-1 transition opacity-0 group-hover:opacity-100 ml-3 cursor-pointer"
-                  title="删除"
-                >
-                  ✕
-                </button>
+                <!-- 非编辑状态 -->
+                <template v-if="editingClassId !== c.id">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs font-bold text-slate-900">{{ c.class_name }}</span>
+                      <span :class="c.session === 'petang' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-sky-50 text-sky-700 border-sky-200'" 
+                            class="text-[9px] px-1.5 py-0.5 rounded-md font-bold border">
+                        {{ c.session === 'petang' ? '下午班' : '上午班' }}
+                      </span>
+                    </div>
+                    <div class="text-[10px] text-slate-400 font-medium mt-0.5">Tahun {{ c.grade }}</div>
+                  </div>
+                  <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition ml-3">
+                    <button 
+                      @click.stop="startEditClass(c)" 
+                      class="text-slate-400 hover:text-indigo-600 text-xs font-bold p-1 cursor-pointer"
+                      title="修改"
+                    >
+                      ✏️
+                    </button>
+                    <button 
+                      @click.stop="deleteClass(c.id)" 
+                      class="text-slate-300 hover:text-red-600 text-xs font-bold p-1 cursor-pointer"
+                      title="删除"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </template>
+
+                <!-- 编辑状态 -->
+                <template v-else>
+                  <div class="space-y-2 w-full">
+                    <div class="flex gap-2">
+                      <select v-model.number="editForm.grade" class="bg-slate-50 border border-slate-200 px-2 py-1 rounded-lg text-xs font-bold text-slate-800">
+                        <option v-for="g in [1, 2, 3, 4, 5, 6]" :key="g" :value="g">T {{ g }}</option>
+                      </select>
+                      <input 
+                        type="text" 
+                        v-model="editForm.class_name" 
+                        class="bg-slate-50 border border-slate-200 px-2 py-1 rounded-lg text-xs font-bold text-slate-800 w-20"
+                      />
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                      <select v-model="editForm.session" class="bg-slate-50 border border-slate-200 px-2 py-1 rounded-lg text-[10px] font-bold text-slate-800">
+                        <option value="morning">上午班</option>
+                        <option value="petang">下午班</option>
+                      </select>
+                      <div class="flex gap-1">
+                        <button @click="saveEditClass(c.id)" class="bg-indigo-600 text-white px-2 py-1 rounded-lg text-[10px] font-bold cursor-pointer">保存</button>
+                        <button @click="cancelEditClass" class="bg-slate-200 text-slate-700 px-2 py-1 rounded-lg text-[10px] font-bold cursor-pointer">取消</button>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+
               </div>
             </div>
 
@@ -603,6 +656,49 @@ const finishProgress = async (successMsg = '导入完成') => {
 const classList = ref([])
 const newClassGrade = ref(1)
 const newClassName = ref('')
+const newClassSession = ref('morning')
+
+// ✏️ 班级修改状态
+const editingClassId = ref(null)
+const editForm = ref({ grade: 1, class_name: '', session: 'morning' })
+
+const startEditClass = (c) => {
+  editingClassId.value = c.id
+  editForm.value = {
+    grade: c.grade || 1,
+    class_name: c.class_name || '',
+    session: c.session || 'morning'
+  }
+}
+
+const cancelEditClass = () => {
+  editingClassId.value = null
+}
+
+const saveEditClass = async (id) => {
+  if (!editForm.value.class_name.trim()) {
+    return toast.error("班级名称不能为空！")
+  }
+
+  try {
+    const { error } = await supabase
+      .from('classes')
+      .update({
+        grade: editForm.value.grade,
+        class_name: editForm.value.class_name.trim().toUpperCase(),
+        session: editForm.value.session
+      })
+      .eq('id', id)
+
+    if (error) throw error
+
+    toast.success("班级修改成功！")
+    editingClassId.value = null
+    fetchClasses()
+  } catch (err) {
+    toast.error("修改失败: " + err.message)
+  }
+}
 
 const expandedGrades = ref({ 1: true, 2: true, 3: true, 4: true, 5: true, 6: true })
 const allExpanded = computed(() => Object.values(expandedGrades.value).every(v => v))
@@ -644,7 +740,7 @@ onMounted(() => {
   fetchClasses()
   fetchSchoolWeeks()
   fetchSchoolIdentity()
-  fetchUsers() // 自动加载用户列表
+  fetchUsers()
 })
 
 const saveConfig = () => {
@@ -684,7 +780,8 @@ const addClass = async () => {
   try {
     const { error } = await supabase.from('classes').insert({
       grade: newClassGrade.value,
-      class_name: newClassName.value.trim().toUpperCase()
+      class_name: newClassName.value.trim().toUpperCase(),
+      session: newClassSession.value
     })
 
     if (error) throw error
