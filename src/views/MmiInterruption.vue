@@ -657,9 +657,40 @@ const formatTargetDisplay = (text) => {
 }
 
 const deleteLog = async (log) => {
-  if (!confirm(`确定要删除 ${log.interruption_date} 的这条 MMI 干扰记录吗？`)) return
+  if (!confirm(`确定要删除 ${log.interruption_date} 的这条 MMI 干扰记录吗？关联的代课记录也将同步清除。`)) return
 
   try {
+    // 1. 查找因该 MMI 干扰事件而在 leave_requests 中生成的记录
+    const { data: relatedLeaves, error: fetchErr } = await supabase
+      .from('leave_requests')
+      .select('id')
+      .eq('leave_date', log.interruption_date)
+      .eq('reason', log.reason)
+      .gte('period', log.start_period)
+      .lte('period', log.end_period)
+
+    if (fetchErr) throw fetchErr
+
+    const leaveIds = (relatedLeaves || []).map(l => l.id)
+
+    // 2. 如果存在关联的代课记录，先删代课指派 (substitute_assignments)，再删待代课记录 (leave_requests)
+    if (leaveIds.length > 0) {
+      const { error: subErr } = await supabase
+        .from('substitute_assignments')
+        .delete()
+        .in('leave_request_id', leaveIds)
+
+      if (subErr) throw subErr
+
+      const { error: leaveErr } = await supabase
+        .from('leave_requests')
+        .delete()
+        .in('id', leaveIds)
+
+      if (leaveErr) throw leaveErr
+    }
+
+    // 3. 最后删除 MMI 干扰事件本身
     const { error: mmiErr } = await supabase
       .from('mmi_interruptions')
       .delete()
@@ -667,12 +698,13 @@ const deleteLog = async (log) => {
 
     if (mmiErr) throw mmiErr
 
-    toast.success("干扰记录已成功删除！")
+    toast.success("干扰记录及关联的代课排程已成功删除！")
     fetchLogs()
   } catch (err) {
     toast.error("删除失败: " + err.message)
   }
 }
+
 
 onMounted(() => {
   const today = getLocalToday()
