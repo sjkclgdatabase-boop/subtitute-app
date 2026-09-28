@@ -427,21 +427,23 @@ const clearAllClasses = () => {
   classForm.value.selectedClasses = []
 }
 
-// ☀️ 全选上午班班级 (精准匹配具体班级的 session)
+// ☀️ 全选上午班班级 (精准匹配 Supabase 中的 'pagi')
 const selectAllMorningClasses = () => {
   const classesToSelect = []
   Object.values(groupedClasses.value).forEach(classes => {
     classes.forEach(cName => {
-      if (classSessionMap.value[cName] === 'morning') {
+      // 适配数据库中的 'pagi'，或者防空默认处理
+      const session = classSessionMap.value[cName]
+      if (session === 'pagi' || !session) {
         classesToSelect.push(cName)
       }
     })
   })
   classForm.value.selectedClasses = [...new Set([...classForm.value.selectedClasses, ...classesToSelect])]
-  toast.success("已成功勾选所有上午班班级！")
+  toast.success(`已成功勾选所有上午班班级（共 ${classesToSelect.length} 个）！`)
 }
 
-// 🌙 全选下午班班级 (精准匹配具体班级的 session)
+// 🌙 全选下午班班级 (精准匹配 Supabase 中的 'petang')
 const selectAllAfternoonClasses = () => {
   const classesToSelect = []
   Object.values(groupedClasses.value).forEach(classes => {
@@ -451,8 +453,12 @@ const selectAllAfternoonClasses = () => {
       }
     })
   })
+  if (classesToSelect.length === 0) {
+    toast.error("系统中未检测到任何被标记为下午班（petang）的班级！")
+    return
+  }
   classForm.value.selectedClasses = [...new Set([...classForm.value.selectedClasses, ...classesToSelect])]
-  toast.success("已成功勾选所有下午班班级！")
+  toast.success(`已成功勾选所有下午班班级（共 ${classesToSelect.length} 个）！`)
 }
 
 const fetchClasses = async () => {
