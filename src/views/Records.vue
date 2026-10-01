@@ -126,7 +126,7 @@
             style="page-break-inside: avoid; break-inside: avoid;"
             class="print:break-inside-avoid"
           >
-              
+            
             <template v-if="pageTeachers[slotIndex - 1]">
               <tr>
                 <td
@@ -368,7 +368,7 @@
                 </label>
               </div>
             </div>
-            
+          
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
               <span class="text-xs font-bold text-slate-700 whitespace-nowrap">
                 📍 地点/特殊备注:
@@ -416,43 +416,54 @@
             <hr class="border-slate-200" />
 
             <div>
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
-                <Sparkles class="w-4 h-4 text-indigo-600" />
-                智能推荐候选列表（Top 6）
-              </h3>
+              <div class="flex justify-between items-center mb-3">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                  <Sparkles class="w-4 h-4 text-indigo-600" />
+                  智能推荐候选列表 (共 {{ recommendations.length }} 人)
+                </h3>
+                <span v-if="recommendations.length > 0" class="text-[11px] text-slate-400 font-semibold">
+                  第 {{ recCurrentPage }} / {{ recTotalPages }} 页
+                </span>
+              </div>
               
               <div
                 v-if="loadingRecs"
                 class="flex flex-col items-center justify-center py-6 space-y-3"
               >
                 <div class="w-6 h-6 border-4 border-indigo-500/30 border-t-indigo-600 rounded-full animate-spin"></div>
-                <p class="text-xs text-slate-500 font-medium">智能算法计算中...</p>
+                <p class="text-xs text-slate-500 font-medium">智能数据计算中...</p>
               </div>
               
               <div
                 v-else-if="recommendations.length === 0"
                 class="bg-white p-4 rounded-2xl border border-slate-200 text-xs text-slate-500 text-center"
               >
-                暂无自动推荐人选，请使用上方手动指派。
+                暂无可指派的推荐人选，请使用上方手动指派。
               </div>
 
               <div v-else class="space-y-3">
                 <div
-                  v-for="(teacher, index) in recommendations"
+                  v-for="(teacher, index) in paginatedRecommendations"
                   :key="teacher.id"
                   :class="[
-                    'group flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-white border border-slate-200 rounded-2xl hover:border-indigo-300 hover:shadow-sm transition-all',
-                    { 'force-page-break': (index + 1) % 5 === 0 }
+                    'group flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border rounded-2xl transition-all',
+                    teacher.isBusy ? 'bg-red-50/30 border-red-100' : 'bg-white border-slate-200 hover:border-indigo-300 hover:shadow-sm'
                   ]"
                 >
                   <div class="flex items-center gap-3 mb-3 sm:mb-0">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-100 to-violet-100 text-indigo-700 font-extrabold flex items-center justify-center text-xs">
-                      #{{ index + 1 }}
+                    <div :class="[
+                      'w-8 h-8 rounded-full font-extrabold flex items-center justify-center text-xs',
+                      teacher.isBusy ? 'bg-red-100 text-red-600' : 'bg-gradient-to-br from-indigo-100 to-violet-100 text-indigo-700'
+                    ]">
+                      #{{ (recCurrentPage - 1) * recPageSize + index + 1 }}
                     </div>
 
                     <div>
                       <div class="font-bold text-slate-900 text-sm flex items-center gap-2">
                         {{ teacher.name }}
+                        <span v-if="teacher.isBusy" class="text-[10px] text-red-600 bg-red-100 px-2 py-0.5 rounded-full font-bold">
+                          此节有课
+                        </span>
                       </div>
 
                       <div class="text-[11px] text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
@@ -477,7 +488,7 @@
                         <span>
                           本周已代:
                           <span class="font-bold text-slate-700">
-                            {{ teacher.currentSubCount }}/{{ teacher.max_substitute_per_week }}
+                            {{ teacher.currentSubCount }}{{ teacher.currentSubCount !== '-' ? '/' : '' }}{{ teacher.currentSubCount !== '-' ? teacher.max_substitute_per_week : '' }}
                           </span>
                         </span>
                       </div>
@@ -486,9 +497,33 @@
 
                   <button
                     @click="assignSubstitute(teacher.id)"
-                    class="bg-slate-900 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer"
+                    :class="[
+                      'px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer',
+                      teacher.isBusy ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-slate-900 hover:bg-indigo-600 text-white'
+                    ]"
                   >
-                    智能指派
+                    {{ teacher.isBusy ? '强制指派' : '智能指派' }}
+                  </button>
+                </div>
+
+                <!-- 分页控制栏 (当候选人超过 10 人时显示) -->
+                <div v-if="recTotalPages > 1" class="flex items-center justify-between pt-2 px-1">
+                  <button 
+                    @click="recCurrentPage = Math.max(1, recCurrentPage - 1)"
+                    :disabled="recCurrentPage === 1"
+                    class="px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 transition cursor-pointer"
+                  >
+                    上一页
+                  </button>
+                  <span class="text-xs font-semibold text-slate-500">
+                    页码 {{ recCurrentPage }} / {{ recTotalPages }}
+                  </span>
+                  <button 
+                    @click="recCurrentPage = Math.min(recTotalPages, recCurrentPage + 1)"
+                    :disabled="recCurrentPage === recTotalPages"
+                    class="px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 transition cursor-pointer"
+                  >
+                    下一页
                   </button>
                 </div>
               </div>
@@ -917,7 +952,20 @@ const manualSelectedTeacherId = ref('')
 const isAutoAssigning = ref(false)
 const isExportingPdf = ref(false)
 
-// ⭐️ 新增：简易空白行弹窗状态
+// 🌟 智能推荐列表分页状态 (每页最多10个)
+const recCurrentPage = ref(1)
+const recPageSize = 10
+
+const recTotalPages = computed(() => {
+  return Math.max(1, Math.ceil(recommendations.value.length / recPageSize))
+})
+
+const paginatedRecommendations = computed(() => {
+  const start = (recCurrentPage.value - 1) * recPageSize
+  return recommendations.value.slice(start, start + recPageSize)
+})
+
+// ⭐️️ 新增：简易空白行弹窗状态
 const showBlankModal = ref(false)
 const blankTarget = ref({
   slot: null,
@@ -1268,17 +1316,19 @@ const getTeacherPeriodData = (
 }
 
 const loadSameSessionTeachers = async () => {
-  if (allSameSessionTeachers.value.length === 0) {
-    const { data } = await supabase
-      .from('teachers')
-      .select('*')
-      .eq('is_active', true)
-      .eq('session', currentSession.value)
+  const { data } = await supabase
+    .from('teachers')
+    .select('*')
+    .eq('is_active', true)
+    .eq('session', currentSession.value)
 
-    allSameSessionTeachers.value = data || []
-  }
+  // 🌟 始终以 A-Z 字母顺序排序
+  allSameSessionTeachers.value = (data || []).sort((a, b) => 
+    a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })
+  )
 }
 
+// 🌟 核心修改：追加其余的 fallback 老师
 const handleCellClick = async (
   teacherId,
   periodNum
@@ -1316,17 +1366,79 @@ const handleCellClick = async (
 
   showModal.value = true
   loadingRecs.value = true
+  recCurrentPage.value = 1 // 每次打开弹窗重置到第一页
 
   try {
-    recommendations.value =
-      await recommendSubstitute(leaveItem)
+    // 1. 获取算法推荐出来的最优老师
+    let results = await recommendSubstitute(leaveItem, 100)
+    if (!results) results = []
 
+    // 2. 加载同班次全部老师
     await loadSameSessionTeachers()
+    
+    const absentTeacherId = leaveItem.teacher_id
+    const recIds = new Set(results.map(t => t.id))
+
+    // 3. 算法如果过滤掉了冲突或达标的老师，我们在这里手动将剩余全部老师捞回来（追加到底部）
+    if (results.length < allSameSessionTeachers.value.length - 1) {
+      
+      // 获取排课表以判断该节课谁有课（冲突），以及原有多少节课
+      const weekday = new Date(targetDate.value).getDay() || 7
+      const { data: ttData } = await supabase
+        .from('timetable')
+        .select('teacher_id, period')
+        .eq('weekday', weekday)
+
+      const originalClassMap = {}
+      const busyPeriodsMap = {}
+
+      if (ttData) {
+        ttData.forEach(row => {
+          originalClassMap[row.teacher_id] = (originalClassMap[row.teacher_id] || 0) + 1
+          if (!busyPeriodsMap[row.teacher_id]) busyPeriodsMap[row.teacher_id] = new Set()
+          busyPeriodsMap[row.teacher_id].add(Number(row.period))
+        })
+      }
+
+      // 获取当天本地已存在的代课情况，用于统计“当天已代”
+      const todaySubMap = {}
+      Object.values(substituteAssignmentsMap.value).forEach(sub => {
+        if (sub.sub_teacher_id) {
+          todaySubMap[sub.sub_teacher_id] = (todaySubMap[sub.sub_teacher_id] || 0) + 1
+        }
+      })
+
+      // 提取剩余未被算法推荐的老师
+      const restTeachers = allSameSessionTeachers.value
+        .filter(t => !recIds.has(t.id) && t.id !== absentTeacherId)
+        .map(t => {
+          const isBusy = busyPeriodsMap[t.id]?.has(Number(periodNum))
+          return {
+            id: t.id,
+            name: t.name,
+            originalClasses: originalClassMap[t.id] || 0,
+            todaySubCount: todaySubMap[t.id] || 0,
+            currentSubCount: '-', // 对于不满足算法上榜的，本周数据统一用 - 代替
+            max_substitute_per_week: t.max_substitute_per_week || 8,
+            isBusy: isBusy
+          }
+        })
+
+      // 针对剩余名单降级排序：没课的放前面（并按原节数从小到大排），有课冲突的沉淀到最后面
+      restTeachers.sort((a, b) => {
+        if (a.isBusy !== b.isBusy) return a.isBusy ? 1 : -1
+        if (a.originalClasses !== b.originalClasses) return a.originalClasses - b.originalClasses
+        return a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })
+      })
+
+      results = [...results, ...restTeachers]
+    }
+
+    recommendations.value = results
   } catch (err) {
     toast.error(
       '加载排课数据失败: ' + err.message
     )
-
     recommendations.value = []
   } finally {
     loadingRecs.value = false

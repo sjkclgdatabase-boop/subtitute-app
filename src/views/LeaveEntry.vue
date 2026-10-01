@@ -9,7 +9,7 @@
         教师缺席与代课任务登记
       </h1>
       <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
-        适配双班运行模式，无论是个人请假、外出公干或校内执行任务，点选后即可自动生成代课需求。
+        适配双班运行模式，选择班次、教师及请假类型后，点选节次即可自动生成代课任务。
       </p>
     </div>
 
@@ -20,13 +20,11 @@
         <span>缺席基础信息</span>
       </h2>
       
-      <!-- 🌟 优化：改为 lg:grid-cols-3 防堆积，并统一使用 h-14 锁定高度 -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
         
         <!-- 1. 班次选择 -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">班次选择</label>
-          <!-- 锁定高度 h-14 -->
           <div class="bg-slate-100 p-1.5 rounded-2xl flex items-center shadow-inner h-14">
             <button 
               @click="currentSession = 'morning'; selectedTeacherId = ''; dailyClasses = []" 
@@ -49,15 +47,13 @@
           </div>
         </div>
 
-        <!-- 2. 教师选择器 -->
+        <!-- 2. 教师选择器 (已按 A-Z 排序) -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">缺席/请假教师</label>
-          <!-- 锁定高度 h-14，移除原有的 py-3 -->
           <div class="relative flex items-center bg-slate-50 border border-slate-200 rounded-2xl px-4 h-14 shadow-sm hover:border-slate-300 transition w-full">
             <div class="w-8 h-8 rounded-xl bg-white flex items-center justify-center mr-3 shrink-0 shadow-xs text-indigo-600">
               <GraduationCap class="w-4 h-4" />
             </div>
-            <!-- 下拉菜单占满 h-full -->
             <select 
               v-model="selectedTeacherId" 
               @change="fetchDailyTimetable"
@@ -74,23 +70,29 @@
           </div>
         </div>
 
-        <!-- 3. 日期选择 -->
+        <!-- 3. 日期选择 (支持点击整个输入框区域唤起日历) -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">缺席日期</label>
-          <!-- 锁定高度 h-14，移除原有的 py-3 -->
-          <div class="relative flex items-center">
+          <div 
+            class="relative flex items-center bg-slate-50 border border-slate-200 rounded-2xl px-4 h-14 shadow-sm hover:border-slate-300 transition w-full cursor-pointer group"
+            @click="openDatePicker"
+          >
+            <div class="w-8 h-8 rounded-xl bg-white flex items-center justify-center mr-3 shrink-0 shadow-xs text-indigo-600 group-hover:scale-105 transition">
+              <CalendarDays class="w-4 h-4" />
+            </div>
             <input 
+              ref="dateInputRef"
               type="date" 
               v-model="leaveDate"
               @change="fetchDailyTimetable"
-              class="w-full px-4 h-14 bg-slate-50 border border-slate-200 rounded-2xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-semibold text-slate-800 cursor-pointer"
+              class="w-full h-full bg-transparent border-none text-xs focus:outline-none focus:ring-0 font-semibold text-slate-800 cursor-pointer appearance-none outline-none"
             />
           </div>
         </div>
 
       </div>
 
-      <!-- 🌟 任务大类选项卡 -->
+      <!-- 任务大类选项卡 -->
       <div class="mt-8">
         <label class="block text-xs font-bold text-slate-700 mb-3 uppercase tracking-wider">缺席类型 / 任务性质 (必选)</label>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -107,9 +109,9 @@
         </div>
       </div>
 
-      <!-- 🌟 具体原因与自动大写 -->
+      <!-- 具体原因 -->
       <div class="mt-6">
-        <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">具体原因说明 (选填，自动大写)</label>
+        <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">具体原因说明 (选填)</label>
         <input 
           type="text" 
           v-model="leaveReason"
@@ -121,20 +123,19 @@
 
     </div>
 
-    <!-- 步骤二：勾选代课节次预览 -->
+    <!-- 步骤二：勾选代课节次 -->
     <transition enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0 translate-y-4" enter-to-class="opacity-100 translate-y-0">
       <div v-if="selectedTeacherId && leaveDate" class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-6 sm:p-8">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-slate-100 pb-4">
           <div>
             <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
               <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs shrink-0">2</span>
-              <span>点选需要安排代课的节次</span>
+              点选需要安排代课的节次
             </h2>
             <p class="text-xs text-slate-500 mt-1 font-medium">勾选卡片以生成代课任务，未勾选的节次将不安排代课。</p>
           </div>
 
           <div class="flex flex-wrap items-center gap-3 shrink-0">
-            <!-- 全选 / 反选快捷按键 -->
             <button @click="selectAll(true)" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-bold text-slate-700 cursor-pointer transition shrink-0">
               全选
             </button>
@@ -159,11 +160,11 @@
             <CheckCircle2 class="w-6 h-6" />
           </div>
           <p class="text-slate-900 font-bold text-sm">该名教师在这一天没有任何排课</p>
-          <p class="text-slate-500 text-xs font-medium">无需安排代课，行政可以直接批准请假/外出。</p>
+          <p class="text-slate-500 text-xs font-medium">无需安排代课，行政可以直接批准。</p>
         </div>
 
         <div v-else class="space-y-3">
-          <!-- 点选卡片区 -->
+          <!-- 卡片列表 -->
           <div 
             v-for="cls in dailyClasses" 
             :key="cls.period"
@@ -174,7 +175,6 @@
             class="p-4 border-2 rounded-2xl transition-all cursor-pointer flex items-center justify-between select-none gap-4"
           >
             <div class="flex items-center gap-4">
-              <!-- 复选框 -->
               <input 
                 type="checkbox" 
                 :checked="cls.selected"
@@ -182,13 +182,11 @@
                 class="w-5 h-5 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 cursor-pointer shrink-0"
               />
 
-              <!-- 节次数字 -->
               <div class="w-16 h-14 rounded-2xl bg-white text-indigo-700 flex flex-col items-center justify-center font-bold shadow-sm ring-1 ring-slate-900/5 shrink-0 px-1">
                 <span class="text-[9px] text-slate-400 font-bold uppercase">第</span>
                 <span class="text-base leading-none">{{ cls.period }}</span>
               </div>
 
-              <!-- 班级与科目 -->
               <div>
                 <div class="flex items-center gap-2">
                   <p class="font-bold text-slate-900 text-sm truncate">{{ cls.class_name }}</p>
@@ -198,7 +196,6 @@
               </div>
             </div>
 
-            <!-- 选择状态标签 -->
             <div class="shrink-0">
               <span 
                 :class="cls.selected ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600'" 
@@ -209,10 +206,10 @@
             </div>
           </div>
 
-          <!-- 提交按钮与统计 -->
+          <!-- 提交按钮 -->
           <div class="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div class="text-xs text-slate-500 font-bold truncate">
-              已选中 <strong class="text-indigo-600 text-sm font-black">{{ selectedClassesCount }}</strong> 节待安排代课任务
+              已选中 <strong class="text-indigo-600 text-sm font-black">{{ selectedClassesCount }}</strong> 节代课任务
             </div>
 
             <button 
@@ -221,7 +218,7 @@
               class="group flex items-center justify-center px-6 py-3 text-xs font-bold text-white bg-slate-900 rounded-2xl hover:bg-slate-800 hover:shadow-lg hover:-translate-y-0.5 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shrink-0 w-full sm:w-auto"
             >
               <span v-if="!isSubmitting" class="truncate">生成代课任务 ({{ selectedClassesCount }})</span>
-              <span v-else>正在生成中...</span>
+              <span v-else>正在生成...</span>
               <ArrowRight v-if="!isSubmitting" class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform shrink-0" />
             </button>
           </div>
@@ -258,16 +255,27 @@ const currentSession = ref('morning')
 const selectedTeacherId = ref('')
 const leaveDate = ref('')
 const leaveReason = ref('')
+const dateInputRef = ref(null)
 
-// 🌟 新增：分类数据（已关联对应的 Lucide 图标）
+// 🌟 辅助函数：允许点击日期区块任意地方唤起日历
+const openDatePicker = () => {
+  if (dateInputRef.value) {
+    if (typeof dateInputRef.value.showPicker === 'function') {
+      dateInputRef.value.showPicker()
+    } else {
+      dateInputRef.value.focus()
+    }
+  }
+}
+
+// 分类数据 (中文版)
 const leaveCategory = ref('个人请假')
 const leaveCategories = [
-  { value: '个人请假', iconComponent: UserCheck, label: '个人请假', desc: '病假/事假/产假等', placeholder: '示例：MC, CRK, CUTI BERSALIN 等' },
-  { value: '离校公干', iconComponent: BriefcaseBusiness, label: '离校公干', desc: '外出开会/课程/带队', placeholder: '示例：MESYUARAT PPD, KURSUS, PKL 等' },
-  { value: '校内任务', iconComponent: Building2, label: '校内任务', desc: '校内看管/活动/开会', placeholder: '示例：MESYUARAT DALAMAN, KAWALAN MURID 等' }
+  { value: '个人请假', iconComponent: UserCheck, label: '个人请假', desc: '病假、事假、产假等', placeholder: '示例：MC, CRK, 产假等' },
+  { value: '离校公干', iconComponent: BriefcaseBusiness, label: '离校公干', desc: '外出开会、课程、带队', placeholder: '示例：PPD会议, 课程, 带队等' },
+  { value: '校内任务', iconComponent: Building2, label: '校内任务', desc: '校内讲座、活动、监考等', placeholder: '示例：校内会议, 维持秩序等' }
 ]
 
-// 动态提示词
 const currentPlaceholder = computed(() => {
   const cat = leaveCategories.find(c => c.value === leaveCategory.value)
   return cat ? cat.placeholder : '请输入具体原因...'
@@ -281,11 +289,17 @@ const dayNames = ['日', '一', '二', '三', '四', '五', '六']
 
 onMounted(async () => {
   const { data } = await supabase.from('teachers').select('id, name, subject, session')
-  if (data) teachersList.value = data
+  if (data) {
+    // 🌟 1. 获取教师名单后按 A-Z 字母排序
+    teachersList.value = data.sort((a, b) => (a.name || '').localeCompare(b.name || ''))
+  }
 })
 
 const filteredTeachersList = computed(() => {
-  return teachersList.value.filter(t => (t.session || 'morning') === currentSession.value)
+  // 🌟 过滤并保证维持 A-Z 字母排序
+  return teachersList.value
+    .filter(t => (t.session || 'morning') === currentSession.value)
+    .sort((a, b) => (a.name || '').localeCompare(b.name || ''))
 })
 
 const computedWeekdayNumber = computed(() => {
@@ -352,30 +366,29 @@ const fetchDailyTimetable = async () => {
 
     dailyClasses.value = Array.from(periodMap.values())
   } catch (error) {
-    toast.error("抓取课表失败: " + error.message)
+    toast.error("获取课表失败: " + error.message)
   } finally {
     loading.value = false
   }
 }
 
-// 🚀 终极修正版：强制单节课的 start_period 与 end_period 相等，确保计算结果永远为 1 节
+// 提交逻辑
 const submitLeaveRequests = async () => {
   const selectedList = dailyClasses.value.filter(cls => cls.selected)
   if (selectedList.length === 0) {
-    return toast.error("请至少选择一节需要代课的科目！")
+    return toast.error("请至少选择一个代课科目！")
   }
 
   isSubmitting.value = true
   try {
     const currentTeacher = teachersList.value.find(t => t.id === selectedTeacherId.value)
-    const teacherName = currentTeacher ? currentTeacher.name : '未知老师'
+    const teacherName = currentTeacher ? currentTeacher.name : '未知教师'
 
     const rawReason = leaveReason.value.trim()
     const formattedReason = rawReason 
       ? `[${leaveCategory.value}] ${rawReason.toUpperCase()}`
       : `[${leaveCategory.value}] 未填写具体说明`
 
-    // 1. 查询该教师当天数据库里已经存在的请假记录
     const { data: existingLeaves } = await supabase
       .from('leave_requests')
       .select('period, status')
@@ -389,7 +402,6 @@ const submitLeaveRequests = async () => {
       })
     }
 
-    // 2. 删除 pending 状态的记录以备覆盖
     await supabase
       .from('leave_requests')
       .delete()
@@ -397,7 +409,6 @@ const submitLeaveRequests = async () => {
       .eq('leave_date', leaveDate.value)
       .eq('status', 'pending')
 
-    // 3. 构建需要插入的数据
     const requests = []
     const periodsForMMI = []
 
@@ -422,22 +433,17 @@ const submitLeaveRequests = async () => {
     })
 
     if (requests.length === 0) {
-      toast.info("所选节次此前均已安排了代课任务，无需重复生成。")
+      toast.info("所选节次此前均已安排代课，无需重新生成。")
       isSubmitting.value = false
       return
     }
 
-    // 4. 插入记录
     const { error: leaveError } = await supabase.from('leave_requests').insert(requests)
     if (leaveError) throw leaveError
 
-    // 5. 🌟 强制精准控制：如果只勾选了 1 节，start 和 end 设为完全一样，杜绝算成 2 节！
     if (periodsForMMI.length > 0) {
       periodsForMMI.sort((a, b) => a - b)
       
-      // 核心控制：
-      // 如果只勾选了 1 节（例如第4节）：start = 4, end = 4 (4 - 4 + 1 = 1 节)
-      // 如果勾选了多节：start = 第一节, end = 最后一节
       const startP = periodsForMMI[0]
       const endP = periodsForMMI.length === 1 ? periodsForMMI[0] : periodsForMMI[periodsForMMI.length - 1]
 
@@ -448,12 +454,12 @@ const submitLeaveRequests = async () => {
         end_period: endP,
         reason: formattedReason,
         target_display: `教师: ${teacherName}`,
-        remarks: `(涉及节次: 第 ${periodsForMMI.join(', ')} 节 | 课程: ${requests.map(c => `${c.class_name}(${c.subject})`).join(', ')})`
+        remarks: `(涉及节次: 第 ${periodsForMMI.join(', ')} 节 | 科目: ${requests.map(c => `${c.class_name}(${c.subject})`).join(', ')})`
       }
 
       const { error: mmiError } = await supabase.from('mmi_interruptions').insert([mmiLogPayload])
       if (mmiError) {
-        console.error("同步 MMI 历史记录失败:", mmiError.message)
+        console.error("同步 MMI 记录失败:", mmiError.message)
       }
     }
 
