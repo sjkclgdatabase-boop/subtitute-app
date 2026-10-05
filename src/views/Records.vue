@@ -317,6 +317,57 @@
           </tbody>
         </table>
       </div>
+
+      <!-- ⭐️ 动态横向排列的备注区域 (UI 端) -->
+      <div v-if="remarksList.length > 0 && remarksList.some(r => r.trim())" class="mt-4 pt-3 border-t border-dashed border-slate-300">
+        <h4 class="text-xs font-bold text-black font-serif uppercase underline mb-2">备注:</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <template v-for="(rmk, rIdx) in remarksList" :key="rIdx">
+            <div v-if="rmk.trim()" class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs font-serif leading-relaxed">
+              <span class="font-bold text-indigo-900 block mb-1">备注 {{ rIdx + 1 }}:</span>
+              <div class="whitespace-pre-wrap text-slate-700">{{ rmk }}</div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⭐️ 动态多 Textbox 备注管理区 (支持换行、新增、删除) -->
+    <div class="print:hidden bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-900/5 space-y-4">
+      <div class="flex items-center justify-between">
+        <label class="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-2">
+          <span>📝 动态多备注管理 (支持换行输入、打印及 PDF 导出)</span>
+        </label>
+        <button
+          @click="addRemarkBox"
+          class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
+        >
+          <span>+ 添加备注</span>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div v-for="(rmk, index) in remarksList" :key="index" class="flex items-start gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+          <span class="text-xs font-bold text-indigo-900 whitespace-nowrap pt-2">备注 {{ index + 1 }}:</span>
+          <textarea
+            v-model="remarksList[index]"
+            @input="syncRemarksToGlobal"
+            @blur="saveCustomSheetsToCloud"
+            rows="2"
+            placeholder="输入备注内容 (支持回车换行)..."
+            class="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-y"
+          ></textarea>
+          <button
+            @click="removeRemarkBox(index)"
+            class="text-xs text-red-600 hover:text-red-800 font-bold px-3 py-2 bg-white hover:bg-red-50 border border-red-200 rounded-xl cursor-pointer transition whitespace-nowrap shadow-2xs mt-1"
+          >
+            删除
+          </button>
+        </div>
+        <div v-if="remarksList.length === 0" class="text-center py-4 text-xs text-slate-400 font-medium">
+          点击右上角 "+ 添加备注" 按钮来添加第一个备注输入框。
+        </div>
+      </div>
     </div>
 
     <!-- 主弹窗：代课指派中心 -->
@@ -665,7 +716,7 @@
                 :key="slotIndex"
               >
                 <tr>
-                  <!-- ⭐️ 一键提取班级 / 清空按钮 (附页) -->
+                  <!-- ⭐️ 一键提取班级的按钮 (附页) -->
                   <td
                     class="border border-black p-0 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 relative group"
                     :style="{ width: '85px', maxWidth: '85px' }"
@@ -1084,6 +1135,34 @@ const classPickerTarget = ref({
 })
 const selectedClassToFill = ref('')
 
+// ⭐️ 动态多备注数组状态
+const remarksList = ref([''])
+
+// 同步数组到全局存储字符串
+const syncRemarksToGlobal = () => {
+  globalPageRemark.value = remarksList.value.join('\n')
+}
+
+// 增加一个备注输入框
+const addRemarkBox = () => {
+  remarksList.value.push('')
+  syncRemarksToGlobal()
+  saveCustomSheetsToCloud()
+}
+
+// 删除指定备注输入框
+const removeRemarkBox = (index) => {
+  remarksList.value.splice(index, 1)
+  if (remarksList.value.length === 0) {
+    remarksList.value = ['']
+  }
+  syncRemarksToGlobal()
+  saveCustomSheetsToCloud()
+}
+
+// 全局页面备注底层变量
+const globalPageRemark = ref('')
+
 // =====================================================
 // 学校身份资料
 // =====================================================
@@ -1230,6 +1309,8 @@ const sessionCustomSheets = ref({
 const fetchManualDrafts = async () => {
   manualEntries.value = {}
   sessionCustomSheets.value[currentSession.value] = []
+  globalPageRemark.value = ''
+  remarksList.value = ['']
 
   try {
     const { data, error } = await supabase
@@ -1246,6 +1327,11 @@ const fetchManualDrafts = async () => {
         sessionCustomSheets.value[currentSession.value] =
           data.draft_data.__custom_sheets__
       }
+      if (data.draft_data.__global_remark__) {
+        globalPageRemark.value = data.draft_data.__global_remark__
+        const parsed = globalPageRemark.value.split(/\r?\n/).map(s => s)
+        remarksList.value = parsed.length > 0 ? parsed : ['']
+      }
     }
   } catch (err) {
     console.error('读取草稿失败:', err)
@@ -1253,8 +1339,10 @@ const fetchManualDrafts = async () => {
 }
 
 const saveCustomSheetsToCloud = async () => {
+  syncRemarksToGlobal()
   manualEntries.value['__custom_sheets__'] =
     sessionCustomSheets.value[currentSession.value]
+  manualEntries.value['__global_remark__'] = globalPageRemark.value
 
   try {
     await supabase
@@ -2935,6 +3023,46 @@ const handleExportPdf = async () => {
         )
 
         y += rowH * 3
+      }
+
+      // ⭐️ PDF End: Render Catatan (remarks) secara melintang ke sebelah kanan
+      const remarksListPdf = remarksList.value.map(s => s.trim()).filter(Boolean)
+
+      if (remarksListPdf.length > 0) {
+        y += 4
+        doc.setFont('Georgia', 'bold')
+        doc.setFontSize(8)
+        doc.setTextColor(...BLACK)
+        doc.text('CATATAN:', M, y)
+        
+        y += 4
+        const colCount = Math.min(remarksListPdf.length, 3) // 最多3列横排
+        const colWidth = (CONTENT_W - (colCount - 1) * 4) / colCount
+        
+        let startX = M
+        let maxBlockH = 0
+        
+        remarksListPdf.forEach((rmkText, rIdx) => {
+          const colIndex = rIdx % colCount
+          if (colIndex === 0 && rIdx > 0) {
+            y += maxBlockH + 3
+            startX = M
+          }
+          
+          doc.setFont('Georgia', 'bold')
+          doc.setFontSize(7)
+          doc.text(`Catatan ${rIdx + 1}:`, startX, y)
+          
+          doc.setFont('Georgia', 'normal')
+          doc.setFontSize(6.5)
+          const splitText = doc.splitTextToSize(rmkText, colWidth)
+          doc.text(splitText, startX, y + 3.5)
+          
+          const blockH = 3.5 + splitText.length * 3
+          if (blockH > maxBlockH) maxBlockH = blockH
+          
+          startX += colWidth + 4
+        })
       }
     }
 
