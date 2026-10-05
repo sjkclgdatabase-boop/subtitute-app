@@ -217,14 +217,39 @@
             <!-- 手动填写格 (当该页老师不足 5 人时显示) -->
             <template v-else>
               <tr>
+                <!-- ⭐️ 一键提取班级 / 清空按钮 -->
                 <td
-                  contenteditable="true"
-                  @blur="saveManualEntry(`page_${pageIndex}_${slotIndex}`, 'name', 0, $event)"
-                  v-text="getManualEntry(`page_${pageIndex}_${slotIndex}`, 'name', 0)"
-                  class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors whitespace-pre-wrap leading-tight uppercase"
-                  :style="[{ width: '85px', maxWidth: '85px' }, getDynamicStyle(getManualEntry(`page_${pageIndex}_${slotIndex}`, 'name', 0), 10)]"
+                  class="border border-black p-0 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 relative group"
+                  :style="{ width: '85px', maxWidth: '85px' }"
                   rowspan="3"
-                ></td>
+                >
+                  <div class="w-full h-full relative flex items-center justify-center min-h-[70px]">
+                    <div
+                      contenteditable="true"
+                      @blur="saveManualEntry(`page_${pageIndex}_${slotIndex}`, 'name', 0, $event)"
+                      v-text="getManualEntry(`page_${pageIndex}_${slotIndex}`, 'name', 0)"
+                      class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors whitespace-pre-wrap leading-tight uppercase flex items-center justify-center p-1"
+                      :style="getDynamicStyle(getManualEntry(`page_${pageIndex}_${slotIndex}`, 'name', 0), 10)"
+                    ></div>
+
+                    <div class="print:hidden absolute right-0 top-0 hidden group-hover:flex flex-col z-10 gap-[1px]">
+                      <button
+                        contenteditable="false"
+                        @click.stop="openClassPicker(pageIndex, slotIndex, null)"
+                        class="bg-emerald-500 text-white rounded-bl px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-emerald-600 font-sans tracking-widest font-bold"
+                      >
+                        班级
+                      </button>
+                      <button
+                        contenteditable="false"
+                        @click.stop="clearManualRow(pageIndex, slotIndex, null)"
+                        class="bg-red-500 text-white rounded-l px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-red-600 font-sans tracking-widest font-bold"
+                      >
+                        清空
+                      </button>
+                    </div>
+                  </div>
+                </td>
 
                 <td
                   class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]"
@@ -640,20 +665,39 @@
                 :key="slotIndex"
               >
                 <tr>
+                  <!-- ⭐️ 一键提取班级 / 清空按钮 (附页) -->
                   <td
-                    contenteditable="true"
-                    @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0, $event)"
-                    v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0)"
-                    class="border border-black p-1 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors whitespace-pre-wrap leading-tight uppercase"
-                    :style="[
-                      { width: '85px', maxWidth: '85px' },
-                      getDynamicStyle(
-                        getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0),
-                        10
-                      )
-                    ]"
+                    class="border border-black p-0 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 relative group"
+                    :style="{ width: '85px', maxWidth: '85px' }"
                     rowspan="3"
-                  ></td>
+                  >
+                    <div class="w-full h-full relative flex items-center justify-center min-h-[70px]">
+                      <div
+                        contenteditable="true"
+                        @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0, $event)"
+                        v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0)"
+                        class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors whitespace-pre-wrap leading-tight uppercase flex items-center justify-center p-1"
+                        :style="getDynamicStyle(getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0), 10)"
+                      ></div>
+
+                      <div class="print:hidden absolute right-0 top-0 hidden group-hover:flex flex-col z-10 gap-[1px]">
+                        <button
+                          contenteditable="false"
+                          @click.stop="openClassPicker(null, slotIndex, sheet.id)"
+                          class="bg-emerald-500 text-white rounded-bl px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-emerald-600 font-sans tracking-widest font-bold"
+                        >
+                          班级
+                        </button>
+                        <button
+                          contenteditable="false"
+                          @click.stop="clearManualRow(null, slotIndex, sheet.id)"
+                          class="bg-red-500 text-white rounded-l px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-red-600 font-sans tracking-widest font-bold"
+                        >
+                          清空
+                        </button>
+                      </div>
+                    </div>
+                  </td>
 
                   <td
                     class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]"
@@ -735,7 +779,55 @@
       </button>
     </div>
 
-    <!-- ⭐️ 新增弹窗：简易空白行代课指派 -->
+    <!-- ⭐️ 新增：专门用于整行提取班级科目的弹窗 -->
+    <transition
+      enter-active-class="transition duration-300 ease-out"
+      enter-from-class="opacity-0 scale-95"
+      enter-to-class="opacity-100 scale-100"
+      leave-active-class="transition duration-200 ease-in"
+      leave-from-class="opacity-100 scale-100"
+      leave-to-class="opacity-0 scale-95"
+    >
+      <div
+        v-if="showClassPickerModal"
+        class="print:hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+      >
+        <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm" @click="showClassPickerModal = false"></div>
+        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden ring-1 ring-slate-900/10">
+          
+          <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+            <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <span>📚 提取班级全天科目</span>
+            </h2>
+            <button @click="showClassPickerModal = false" class="text-slate-400 hover:text-slate-600 bg-white hover:bg-slate-200 rounded-full w-8 h-8 flex items-center justify-center transition cursor-pointer font-bold">
+              ✕
+            </button>
+          </div>
+          
+          <div class="p-6 space-y-5">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-2">选择要提取的班级:</label>
+              <select v-model="selectedClassToFill" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+                <option value="">-- 请选择班级 --</option>
+                <option v-for="cls in allClassesList" :key="cls" :value="cls">{{ cls }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+            <button @click="showClassPickerModal = false" class="text-slate-500 hover:text-slate-700 px-4 py-2 text-xs font-bold transition cursor-pointer">
+              取消
+            </button>
+            <button @click="confirmClassPicker" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer">
+              确定提取
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </transition>
+
+    <!-- 简易空白行代课指派弹窗 -->
     <transition
       enter-active-class="transition duration-300 ease-out"
       enter-from-class="opacity-0 scale-95"
@@ -952,7 +1044,7 @@ const manualSelectedTeacherId = ref('')
 const isAutoAssigning = ref(false)
 const isExportingPdf = ref(false)
 
-// 🌟 智能推荐列表分页状态 (每页最多10个)
+// 智能推荐列表分页状态
 const recCurrentPage = ref(1)
 const recPageSize = 10
 
@@ -965,7 +1057,7 @@ const paginatedRecommendations = computed(() => {
   return recommendations.value.slice(start, start + recPageSize)
 })
 
-// ⭐️️ 新增：简易空白行弹窗状态
+// 简易空白行弹窗状态
 const showBlankModal = ref(false)
 const blankTarget = ref({
   slot: null,
@@ -978,6 +1070,19 @@ const blankForm = ref({
   kiraBeban: true
 })
 const hasExistingVirtual = ref(false)
+
+// 班级科目提取相关状态
+const classSchedulesMap = ref({})
+const allClassesList = ref([])
+
+// 整行班级提取弹窗状态
+const showClassPickerModal = ref(false)
+const classPickerTarget = ref({
+  pageIndex: null,
+  slotIndex: null,
+  sheetId: null
+})
+const selectedClassToFill = ref('')
 
 // =====================================================
 // 学校身份资料
@@ -1007,7 +1112,7 @@ const fetchSchoolIdentity = async () => {
   }
 }
 
-// ⭐️ 终极重写：只针对请假老师的名字和原因作缩小，不影响代课格子
+// 终极重写：只针对请假老师的名字和原因作缩小，不影响代课格子
 const getDynamicStyle = (text, baseSize) => {
   if (!text) {
     return {
@@ -1052,7 +1157,6 @@ const getDynamicStyle = (text, baseSize) => {
     }
   }
 
-  // ⭐️ 强力缩小机制
   const scaledSize =
     baseSize *
     (maxCharsAllowed / maxWordLen) *
@@ -1068,17 +1172,13 @@ const getDynamicStyle = (text, baseSize) => {
 
 const formattedDate = computed(() => {
   if (!targetDate.value) return ''
-
   const [y, m, d] = targetDate.value.split('-')
-
   return `${d}.${m}.${y}`
 })
 
 const formattedDayName = computed(() => {
   if (!targetDate.value) return ''
-
   const dateObj = new Date(targetDate.value)
-
   return dayNames[dateObj.getDay()]
 })
 
@@ -1108,7 +1208,6 @@ const displayTeachersList = computed(() => {
   return Object.values(map)
 })
 
-// ⭐️ 新增：将请假老师按每 5 人一组进行自动切片分页（确保不满 5 人时也有至少一页，且每页固定 5 行）
 const paginatedTeacherPages = computed(() => {
   const list = displayTeachersList.value
   const pages = []
@@ -1211,7 +1310,6 @@ const saveManualEntry = async (
 
 const getManualEntry = (slotIndex, type, period) => {
   const key = `${slotIndex}-${type}-${period}`
-
   return manualEntries.value[key] || ''
 }
 
@@ -1248,11 +1346,9 @@ const fetchData = async () => {
 
       if (sData) {
         const map = {}
-
         sData.forEach(s => {
           map[s.leave_request_id] = s
         })
-
         substituteAssignmentsMap.value = map
       } else {
         substituteAssignmentsMap.value = {}
@@ -1322,13 +1418,162 @@ const loadSameSessionTeachers = async () => {
     .eq('is_active', true)
     .eq('session', currentSession.value)
 
-  // 🌟 始终以 A-Z 字母顺序排序
   allSameSessionTeachers.value = (data || []).sort((a, b) => 
     a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })
   )
 }
 
-// 🌟 核心修改：追加其余的 fallback 老师
+// ⭐️ 完美解决合班问题 (PMPI) 和多科目提取
+const loadClassSchedulesForTargetDate = async () => {
+  try {
+    const dateObj = new Date(targetDate.value)
+    const dayNum = dateObj.getDay()
+    const weekdayCalc = dayNum === 0 ? 7 : dayNum // 1-7 (周一到周日)
+
+    const { data: ttData, error } = await supabase
+      .from('timetable')
+      .select('class_name, subject, period')
+      .eq('weekday', weekdayCalc)
+
+    if (error) throw error
+
+    const map = {}
+    const classSet = new Set()
+
+    if (ttData) {
+      ttData.forEach(row => {
+        if (!row.class_name || !row.subject) return;
+
+        // 1. 获取原始班级名称并剔除里面夹杂的科目名 (如 3A PM, 3A PI)
+        const rawClassName = String(row.class_name).toUpperCase();
+        let cleanedClassName = rawClassName
+          .replace(/\b(PM|PI|MORAL|AGAMA|ISLAM|PENDIDIKAN)\b/g, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+        
+        // 2. 清除两端可能多余的连接符
+        cleanedClassName = cleanedClassName.replace(/^[/-]+|[/-]+$/g, '').trim();
+
+        // 3. 按照合班的常见分隔符进行拆解 (比如 "3A/3B" 拆解为 "3A" 和 "3B")
+        const classTokens = cleanedClassName.split(/[/,&+,]|\bDAN\b/).map(c => c.trim()).filter(Boolean);
+
+        classTokens.forEach(cName => {
+          if (!map[cName]) {
+            map[cName] = {}
+          }
+          
+          const existingSubject = map[cName][row.period]
+          const currentSubject = String(row.subject).toUpperCase().trim()
+
+          if (existingSubject) {
+            const s1 = existingSubject
+            const s2 = currentSubject
+            
+            const hasPM = s1.includes('PM') || s1.includes('MORAL') || s2.includes('PM') || s2.includes('MORAL')
+            const hasPI = s1.includes('PI') || s1.includes('ISLAM') || s1.includes('AGAMA') || s2.includes('PI') || s2.includes('ISLAM') || s2.includes('AGAMA')
+            
+            if (hasPM && hasPI) {
+              map[cName][row.period] = 'PMPI'
+            } else {
+              // 如果不是 PMPI 且科目不重复，则合并 (例如 BM/BI)
+              if (!s1.includes(s2)) {
+                map[cName][row.period] = `${s1}/${s2}`
+              }
+            }
+          } else {
+            map[cName][row.period] = currentSubject
+          }
+          
+          classSet.add(cName)
+        })
+      })
+    }
+
+    classSchedulesMap.value = map
+    allClassesList.value = Array.from(classSet).sort((a, b) => a.localeCompare(b, 'en', { numeric: true }))
+  } catch (err) {
+    console.error('加载班级课表失败:', err)
+  }
+}
+
+// =================================================================
+// ⭐️ 新增：整行清空数据逻辑
+const clearManualRow = async (pageIndex, slotIndex, sheetId) => {
+  if (!window.confirm('确定要清空这一行的所有内容（包含可能已绑定的代课记录）吗？')) {
+    return
+  }
+
+  const prefix = sheetId ? `sheet_${sheetId}_${slotIndex}` : `page_${pageIndex}_${slotIndex}`
+  const periods = currentPeriodTimes.value.length
+
+  try {
+    for (let p = 1; p <= periods; p++) {
+      const virtualLeaveKey = `${prefix}_virtual_leave_${p}`
+      const existingVirtualLeaveId = manualEntries.value[virtualLeaveKey]
+
+      // 清理对应的数据库指派记录
+      if (existingVirtualLeaveId) {
+        await supabase.from('substitute_assignments').delete().eq('leave_request_id', existingVirtualLeaveId)
+        await supabase.from('leave_requests').delete().eq('id', existingVirtualLeaveId)
+        delete manualEntries.value[virtualLeaveKey]
+      }
+
+      // 清空输入文本
+      manualEntries.value[`${prefix}-kelas-${p}`] = ''
+      manualEntries.value[`${prefix}-ganti-${p}`] = ''
+      manualEntries.value[`${prefix}-ttangan-${p}`] = ''
+    }
+
+    manualEntries.value[`${prefix}-name-0`] = ''
+
+    await saveCustomSheetsToCloud()
+    toast.success('整行内容已清空！')
+    
+    // 刷新一下代课数据以防UI残留
+    fetchData()
+  } catch (err) {
+    toast.error('清空失败: ' + err.message)
+  }
+}
+
+// =================================================================
+// 打开整行班级提取弹窗的逻辑
+const openClassPicker = (pageIndex, slotIndex, sheetId) => {
+  classPickerTarget.value = { pageIndex, slotIndex, sheetId }
+  selectedClassToFill.value = ''
+  showClassPickerModal.value = true
+}
+
+// 确认提取班级并自动排入对应的 KELAS 格子
+const confirmClassPicker = async () => {
+  if (!selectedClassToFill.value) {
+    toast.error('请选择一个班级！')
+    return
+  }
+
+  const { pageIndex, slotIndex, sheetId } = classPickerTarget.value
+  const prefix = sheetId ? `sheet_${sheetId}_${slotIndex}` : `page_${pageIndex}_${slotIndex}`
+  const className = selectedClassToFill.value
+
+  // 1. 设置左侧老师名称栏为该班级名称
+  manualEntries.value[`${prefix}-name-0`] = className
+
+  // 2. 将全天有课的科目按照节次自动填入 KELAS 行
+  for (let p = 1; p <= currentPeriodTimes.value.length; p++) {
+    const subject = classSchedulesMap.value[className]?.[p] || ''
+    // ⭐️ 这里的输出格式：班级名称 + 空格 + 科目
+    // 比如 3A PMPI 
+    const text = subject ? `${className} ${subject}` : '' 
+    manualEntries.value[`${prefix}-kelas-${p}`] = text
+  }
+
+  await saveCustomSheetsToCloud()
+  toast.success(`已成功提取 ${className} 当天的所有科目！`)
+  showClassPickerModal.value = false
+}
+
+// =================================================================
+
 const handleCellClick = async (
   teacherId,
   periodNum
@@ -1366,23 +1611,18 @@ const handleCellClick = async (
 
   showModal.value = true
   loadingRecs.value = true
-  recCurrentPage.value = 1 // 每次打开弹窗重置到第一页
+  recCurrentPage.value = 1
 
   try {
-    // 1. 获取算法推荐出来的最优老师
     let results = await recommendSubstitute(leaveItem, 100)
     if (!results) results = []
 
-    // 2. 加载同班次全部老师
     await loadSameSessionTeachers()
     
     const absentTeacherId = leaveItem.teacher_id
     const recIds = new Set(results.map(t => t.id))
 
-    // 3. 算法如果过滤掉了冲突或达标的老师，我们在这里手动将剩余全部老师捞回来（追加到底部）
     if (results.length < allSameSessionTeachers.value.length - 1) {
-      
-      // 获取排课表以判断该节课谁有课（冲突），以及原有多少节课
       const weekday = new Date(targetDate.value).getDay() || 7
       const { data: ttData } = await supabase
         .from('timetable')
@@ -1400,7 +1640,6 @@ const handleCellClick = async (
         })
       }
 
-      // 获取当天本地已存在的代课情况，用于统计“当天已代”
       const todaySubMap = {}
       Object.values(substituteAssignmentsMap.value).forEach(sub => {
         if (sub.sub_teacher_id) {
@@ -1408,7 +1647,6 @@ const handleCellClick = async (
         }
       })
 
-      // 提取剩余未被算法推荐的老师
       const restTeachers = allSameSessionTeachers.value
         .filter(t => !recIds.has(t.id) && t.id !== absentTeacherId)
         .map(t => {
@@ -1418,13 +1656,12 @@ const handleCellClick = async (
             name: t.name,
             originalClasses: originalClassMap[t.id] || 0,
             todaySubCount: todaySubMap[t.id] || 0,
-            currentSubCount: '-', // 对于不满足算法上榜的，本周数据统一用 - 代替
+            currentSubCount: '-',
             max_substitute_per_week: t.max_substitute_per_week || 8,
             isBusy: isBusy
           }
         })
 
-      // 针对剩余名单降级排序：没课的放前面（并按原节数从小到大排），有课冲突的沉淀到最后面
       restTeachers.sort((a, b) => {
         if (a.isBusy !== b.isBusy) return a.isBusy ? 1 : -1
         if (a.originalClasses !== b.originalClasses) return a.originalClasses - b.originalClasses
@@ -1436,9 +1673,7 @@ const handleCellClick = async (
 
     recommendations.value = results
   } catch (err) {
-    toast.error(
-      '加载排课数据失败: ' + err.message
-    )
+    toast.error('加载排课数据失败: ' + err.message)
     recommendations.value = []
   } finally {
     loadingRecs.value = false
@@ -1498,9 +1733,7 @@ const assignSubstitute = async (teacherId) => {
 
     fetchData()
   } catch (err) {
-    toast.error(
-      '指派失败: ' + err.message
-    )
+    toast.error('指派失败: ' + err.message)
   }
 }
 
@@ -1533,9 +1766,7 @@ const removeAssignment = async () => {
       fetchData()
     }
   } catch (err) {
-    toast.error(
-      '操作失败: ' + err.message
-    )
+    toast.error('操作失败: ' + err.message)
   }
 }
 
@@ -1566,10 +1797,7 @@ const handleAutoAssignAll = async () => {
     })
 
   if (pendingRequests.length === 0) {
-    toast.success(
-      '当前班次没有需要自动指派的待办课程！'
-    )
-
+    toast.success('当前班次没有需要自动指派的待办课程！')
     return
   }
 
@@ -1608,22 +1836,17 @@ const handleAutoAssignAll = async () => {
       }
     }
 
-    toast.success(
-      `自动排课完成！成功为您智能指派了 ${successCount} 节课。`
-    )
+    toast.success(`自动排课完成！成功为您智能指派了 ${successCount} 节课。`)
 
     fetchData()
   } catch (err) {
-    toast.error(
-      '一键自动排课过程中出错: ' +
-        err.message
-    )
+    toast.error('一键自动排课过程中出错: ' + err.message)
   } finally {
     isAutoAssigning.value = false
   }
 }
 
-// ================= ⭐️ 新增：空白行与虚拟负荷指派逻辑 =================
+// ================= 空白行与虚拟负荷指派逻辑 =================
 
 const openBlankModal = async (
   slot,
@@ -1697,9 +1920,7 @@ const confirmBlankAssignment = async () => {
     !blankForm.value.teacherId &&
     blankForm.value.kiraBeban
   ) {
-    return toast.error(
-      '如需计入负荷，请先选择指派教师！'
-    )
+    return toast.error('如需计入负荷，请先选择指派教师！')
   }
 
   let teacherName = ''
@@ -1923,9 +2144,7 @@ const confirmBlankAssignment = async () => {
     fetchData()
 
   } catch (err) {
-    toast.error(
-      '保存失败: ' + err.message
-    )
+    toast.error('保存失败: ' + err.message)
   }
 }
 
@@ -1978,18 +2197,14 @@ const removeBlankAssignment = async () => {
 
     await saveCustomSheetsToCloud()
     
-    toast.success(
-      '已清空指派并撤销负荷计算！'
-    )
+    toast.success('已清空指派并撤销负荷计算！')
 
     showBlankModal.value = false
 
     fetchData()
 
   } catch (err) {
-    toast.error(
-      '清除失败: ' + err.message
-    )
+    toast.error('清除失败: ' + err.message)
   }
 }
 
@@ -1999,20 +2214,17 @@ watch(
   [targetDate, currentSession],
   () => {
     fetchData()
+    loadClassSchedulesForTargetDate() // 切换日期/班次时，重新获取当前目标日期的课表
   }
 )
 
 onMounted(async () => {
-  // 先读取学校身份资料
   await fetchSchoolIdentity()
-
-  // 再读取当天代课数据
   await fetchData()
+  await loadClassSchedulesForTargetDate() // 初始化时获取当前目标日期的课表
 })
 
 // ========================= Direct PDF Export =========================
-// This export does NOT use window.print() or the browser's HTML pagination.
-// Each timetable is drawn as a real A4 landscape PDF page.
 
 const handleExportPdf = async () => {
   if (isExportingPdf.value) return
@@ -2020,8 +2232,6 @@ const handleExportPdf = async () => {
   isExportingPdf.value = true
 
   try {
-    // Install once in the project with:
-    // npm install jspdf
     const { jsPDF } = await import('jspdf')
 
     const doc = new jsPDF({
@@ -2039,13 +2249,6 @@ const handleExportPdf = async () => {
 
     const BLACK = [0, 0, 0]
     const BLUE = [20, 28, 115]
-
-    // -----------------------------------------------------------------
-    // PDF FONT: use the same Georgia font family rendered by the web UI.
-    // Put these files in:
-    // public/fonts/Georgia.ttf
-    // public/fonts/Georgia Bold.ttf
-    // -----------------------------------------------------------------
 
     const arrayBufferToBase64 = (
       buffer
@@ -2106,7 +2309,6 @@ const handleExportPdf = async () => {
       )
     }
 
-    // Use the exact filenames supplied for this project.
     await loadPdfFont(
       '/fonts/Georgia.ttf',
       'Georgia.ttf',
@@ -2119,7 +2321,6 @@ const handleExportPdf = async () => {
       'bold'
     )
 
-    // Make Georgia the default PDF family.
     doc.setFont(
       'Georgia',
       'normal'
@@ -2153,8 +2354,6 @@ const handleExportPdf = async () => {
       if (!text) return
 
       text = text.replace(/•/g, '-')
-
-      // 【优化 1】：智能换行。如果手动输入的文本包含 " ("，自动把它变成换行，统一排版风格
       text = text.replace(/ \(/g, '\n(')
 
       const innerWidth = Math.max(width - 1.6, 1)
@@ -2166,13 +2365,11 @@ const handleExportPdf = async () => {
       let size = fontSize
       let lines = []
 
-      // 提取所有独立的单词，用于后面检测宽度
       const words = text.split(/[\s\n]+/)
 
       for (let attempt = 0; attempt < 20; attempt++) {
         doc.setFontSize(size)
         
-        // 【优化 2】：检测单行最长单词宽度。如果有任何一个单词比格子还宽，就标记为过宽。
         let isWordTooWide = false
         for (const word of words) {
           if (doc.getTextWidth(word) > innerWidth) {
@@ -2185,12 +2382,10 @@ const handleExportPdf = async () => {
         const lineHeight = Math.max(size * 0.38, 1.8)
         const totalHeight = lines.length * lineHeight
 
-        // 只有当总高度放得下，且【没有任何单个单词被暴力裁切】时，才停止缩小！
         if (totalHeight <= innerHeight && !isWordTooWide && size <= fontSize) {
           break
         }
 
-        // 如果高度超了，或者单词太宽，继续缩小字体
         if (totalHeight > innerHeight || isWordTooWide) {
           size -= 0.25
 
@@ -2299,10 +2494,6 @@ const handleExportPdf = async () => {
         'bold'
       )
 
-      // =============================================================
-      // 学校名称：改为读取 Supabase school_settings.school_name
-      // =============================================================
-
       doc.setFontSize(18)
 
       doc.text(
@@ -2315,7 +2506,6 @@ const handleExportPdf = async () => {
         }
       )
 
-      // 文件标题
       doc.setFontSize(14)
 
       doc.text(
@@ -2327,7 +2517,6 @@ const handleExportPdf = async () => {
         }
       )
 
-      // 日期 / 星期位置下移
       const infoY =
         y + 27
 
@@ -2466,9 +2655,7 @@ const handleExportPdf = async () => {
       const headerH = 11
       const rowH = 8.3
       const tableX = M
-      const tableW = CONTENT_W
 
-      // Header
       let x = tableX
 
       drawCell(
@@ -2582,7 +2769,6 @@ const handleExportPdf = async () => {
               )
             : ''
 
-        // Teacher name spans the 3 rows.
         drawCell(
           tableX,
           y,
@@ -2602,7 +2788,6 @@ const handleExportPdf = async () => {
           }
         )
 
-        // Row 1: KELAS
         drawCell(
           tableX + teacherW,
           y,
@@ -2653,7 +2838,6 @@ const handleExportPdf = async () => {
           }
         )
 
-        // Row 2: GURU GANTI
         drawCell(
           tableX + teacherW,
           y + rowH,
@@ -2705,7 +2889,6 @@ const handleExportPdf = async () => {
           }
         )
 
-        // Row 3: T/TANGAN
         drawCell(
           tableX + teacherW,
           y + rowH * 2,
@@ -2767,7 +2950,6 @@ const handleExportPdf = async () => {
         ? 'SESI PAGI'
         : 'SESI PETANG'
 
-    // ⭐️ 循环导出所有自动分页的主表页面
     const pages = paginatedTeacherPages.value
     pages.forEach((pageTeachers, pIndex) => {
       if (pIndex > 0) {
@@ -2782,7 +2964,6 @@ const handleExportPdf = async () => {
       })
     })
 
-    // Every additional timetable becomes a real PDF page.
     for (
       const sheet of
         extraCustomSheets.value
@@ -2828,25 +3009,11 @@ const handleExportPdf = async () => {
     )
 
   } catch (err) {
-    console.error(
-      'PDF export failed:',
-      err
-    )
-
-    toast.error(
-      `PDF 生成失败：${
-        err?.message || err
-      }`
-    )
-
+    console.error('PDF export failed:', err)
+    toast.error(`PDF 生成失败：${err?.message || err}`)
   } finally {
-    isExportingPdf.value =
-      false
+    isExportingPdf.value = false
   }
-}
-
-const handlePrint = () => {
-  window.print()
 }
 
 const extraCustomSheets = computed(() => {
@@ -2913,18 +3080,15 @@ const removeCustomSheet = async (
     print-color-adjust: exact !important;
   }
 
-  /* 页面最外层的屏幕间距，打印时不产生额外高度 */
   body > * {
     margin-top: 0 !important;
   }
 
-  /* 主表允许自然跨页 */
   .print-main-sheet {
     break-inside: auto !important;
     page-break-inside: auto !important;
   }
 
-  /* 主表每位老师的 3 行尽量保持完整 */
   .print-main-sheet tbody,
   .print-main-sheet tbody tr,
   .print-main-sheet tbody td {
@@ -2932,16 +3096,10 @@ const removeCustomSheet = async (
     page-break-inside: avoid !important;
   }
 
-  /* 主表跨页时重复表头 */
   .print-main-sheet thead {
     display: table-header-group !important;
   }
 
-  /*
-   * 关键：
-   * 不再只依赖 .print-custom-sheet 的 break-before。
-   * 在每张附页之前放置一个独立的“分页点”。
-   */
   .print-page-break {
     display: block !important;
     height: 0 !important;
@@ -2953,7 +3111,6 @@ const removeCustomSheet = async (
     page-break-before: always !important;
   }
 
-  /* 每张附页本身是一个完整打印块 */
   .print-custom-sheet {
     display: block !important;
     break-inside: avoid !important;
@@ -2981,7 +3138,6 @@ const removeCustomSheet = async (
     display: table-header-group !important;
   }
 
-  /* 不让推荐列表制造 timetable 的额外分页 */
   .force-page-break {
     break-after: auto !important;
     page-break-after: auto !important;
