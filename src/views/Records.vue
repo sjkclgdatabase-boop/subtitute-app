@@ -94,7 +94,7 @@
         </h3>
       </div>
 
-      <div class="flex justify-between items-center mb-4 print:mb-2 font-bold text-sm font-serif border-b-2 border-black pb-2 print:pb-1">
+      <div class="flex justify-between items-center mb-4 print:mb-2 font-bold text-sm font-serif border-b-2 border-black pb-2 print:pb-1 uppercase">
         <div>
           <span class="underline underline-offset-4">TARIKH :</span> <span class="ml-2 border-b border-black px-4">{{ formattedDate }}</span>
         </div>
@@ -107,7 +107,7 @@
         <table class="w-full border-collapse border-2 border-black text-center text-xs font-serif table-fixed uppercase">
           <thead>
             <tr class="bg-slate-100 print:bg-white">
-              <th class="border border-black p-1 font-bold" colspan="2" style="width: 130px; min-width: 130px; max-width: 130px;">MASA</th>
+              <th class="border border-black p-1 font-bold uppercase" colspan="2" style="width: 130px; min-width: 130px; max-width: 130px;">MASA</th>
 
               <th
                 v-for="(time, index) in currentPeriodTimes"
@@ -134,7 +134,7 @@
                   rowspan="3"
                   style="width: 85px; max-width: 85px;"
                 >
-                  <div class="flex flex-col items-center justify-center w-full px-0.5">
+                  <div class="flex flex-col items-center justify-center w-full px-0.5 uppercase">
                     <span
                       class="uppercase font-bold w-full text-center whitespace-normal"
                       :style="getDynamicStyle(pageTeachers[slotIndex - 1].name, 10)"
@@ -153,7 +153,7 @@
                 </td>
 
                 <td
-                  class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]"
+                  class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px] uppercase"
                   style="width: 45px; max-width: 45px;"
                 >
                   KELAS
@@ -162,10 +162,10 @@
                 <td
                   v-for="p in currentPeriodTimes.length"
                   :key="p"
-                  class="border border-black p-0.5 font-semibold align-middle h-8"
+                  class="border border-black p-0.5 font-semibold align-middle h-8 uppercase"
                   style="max-width: 0;"
                 >
-                  <div class="w-full h-full flex items-center justify-center px-0.5 overflow-hidden">
+                  <div class="w-full h-full flex items-center justify-center px-0.5 overflow-hidden uppercase">
                     <span class="block w-full text-center text-[10px] tracking-tighter leading-tight text-slate-800 whitespace-normal uppercase">
                       {{ getTeacherPeriodData(pageTeachers[slotIndex - 1].id, p, 'class_subject') }}
                     </span>
@@ -174,7 +174,7 @@
               </tr>
 
               <tr>
-                <td class="border border-black p-0.5 font-bold bg-slate-50 print:bg-white text-[5.2px] tracking-tighter whitespace-nowrap">
+                <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px] uppercase">
                   GURU GANTI
                 </td>
 
@@ -182,18 +182,18 @@
                   v-for="p in currentPeriodTimes.length"
                   :key="p"
                   @click="hasLeavePeriod(pageTeachers[slotIndex - 1].id, p) ? handleCellClick(pageTeachers[slotIndex - 1].id, p) : null"
-                  :class="hasLeavePeriod(pageTeachers[slotIndex - 1].id, p) ? 'cursor-pointer hover:bg-indigo-50 group' : ''"
-                  class="print:hover:bg-transparent border border-black p-0.5 font-bold text-indigo-900 align-middle h-8 transition relative"
+                  :class="hasLeavePeriod(pageTeachers[slotIndex - 1].id, p) ? 'cursor-pointer hover:bg-indigo-50 group uppercase' : 'uppercase'"
+                  class="print:hover:bg-transparent border border-black p-0.5 font-bold text-indigo-900 align-middle h-8 transition relative uppercase"
                   style="max-width: 0;"
                 >
-                  <div class="w-full h-full flex items-center justify-center px-0.5 overflow-hidden">
+                  <div class="w-full h-full flex items-center justify-center px-0.5 overflow-hidden uppercase">
                     <span class="block w-full text-center text-[9px] tracking-tighter leading-tight whitespace-normal uppercase">
                       {{ getTeacherPeriodData(pageTeachers[slotIndex - 1].id, p, 'substitute_name') }}
                     </span>
 
                     <span
                       v-if="hasLeavePeriod(pageTeachers[slotIndex - 1].id, p)"
-                      class="print:hidden hidden group-hover:inline-block text-[9px] text-indigo-500 absolute right-1"
+                      class="print:hidden hidden group-hover:inline-block text-[9px] text-indigo-500 absolute right-1 uppercase"
                     >
                       ✏️
                     </span>
@@ -202,14 +202,14 @@
               </tr>
 
               <tr>
-                <td class="border border-black p-0.5 font-bold bg-slate-50 print:bg-white text-[5.2px] tracking-tighter whitespace-nowrap">
+                <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[8px] whitespace-nowrap uppercase">
                   T/TANGAN
                 </td>
 
                 <td
                   v-for="p in currentPeriodTimes.length"
                   :key="p"
-                  class="border border-black p-1 align-middle h-8"
+                  class="border border-black p-1 align-middle h-8 uppercase"
                 ></td>
               </tr>
             </template>
@@ -219,31 +219,31 @@
               <tr>
                 <!-- ⭐️ 一键提取班级 / 清空按钮 -->
                 <td
-                  class="border border-black p-0 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 relative group"
+                  class="border border-black p-0 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 relative group uppercase"
                   :style="{ width: '85px', maxWidth: '85px' }"
                   rowspan="3"
                 >
-                  <div class="w-full h-full relative flex items-center justify-center min-h-[70px]">
+                  <div class="w-full h-full relative flex items-center justify-center min-h-[70px] uppercase">
                     <div
                       contenteditable="true"
                       @blur="saveManualEntry(`page_${pageIndex}_${slotIndex}`, 'name', 0, $event)"
                       v-text="getManualEntry(`page_${pageIndex}_${slotIndex}`, 'name', 0)"
-                      class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors whitespace-pre-wrap leading-tight uppercase flex items-center justify-center p-1"
+                      class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors whitespace-pre-wrap leading-tight uppercase flex items-center justify-center p-1 uppercase"
                       :style="getDynamicStyle(getManualEntry(`page_${pageIndex}_${slotIndex}`, 'name', 0), 10)"
                     ></div>
 
-                    <div class="print:hidden absolute right-0 top-0 hidden group-hover:flex flex-col z-10 gap-[1px]">
+                    <div class="print:hidden absolute right-0 top-0 hidden group-hover:flex flex-col z-10 gap-[1px] uppercase">
                       <button
                         contenteditable="false"
                         @click.stop="openClassPicker(pageIndex, slotIndex, null)"
-                        class="bg-emerald-500 text-white rounded-bl px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-emerald-600 font-sans tracking-widest font-bold"
+                        class="bg-emerald-500 text-white rounded-bl px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-emerald-600 font-sans tracking-widest font-bold uppercase"
                       >
                         班级
                       </button>
                       <button
                         contenteditable="false"
                         @click.stop="clearManualRow(pageIndex, slotIndex, null)"
-                        class="bg-red-500 text-white rounded-l px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-red-600 font-sans tracking-widest font-bold"
+                        class="bg-red-500 text-white rounded-l px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-red-600 font-sans tracking-widest font-bold uppercase"
                       >
                         清空
                       </button>
@@ -252,7 +252,7 @@
                 </td>
 
                 <td
-                  class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]"
+                  class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px] uppercase"
                   style="width: 45px; max-width: 45px;"
                 >
                   KELAS
@@ -270,28 +270,28 @@
               </tr>
 
               <tr>
-                <td class="border border-black p-0.5 font-bold bg-slate-50 print:bg-white text-[5.2px] tracking-tighter whitespace-nowrap">
+                <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px] uppercase">
                   GURU GANTI
                 </td>
 
                 <td
                   v-for="p in currentPeriodTimes.length"
                   :key="'ganti-'+p"
-                  class="border border-black p-0.5 align-middle h-8 relative group"
+                  class="border border-black p-0.5 align-middle h-8 relative group uppercase"
                   style="max-width: 0;"
                 >
-                  <div class="w-full h-full relative flex items-center justify-center">
+                  <div class="w-full h-full relative flex items-center justify-center uppercase">
                     <div
                       contenteditable="true"
                       @blur="saveManualEntry(`page_${pageIndex}_${slotIndex}`, 'ganti', p, $event)"
                       v-text="getManualEntry(`page_${pageIndex}_${slotIndex}`, 'ganti', p)"
-                      class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-bold text-[10px] text-indigo-900 whitespace-pre-wrap leading-tight flex items-center justify-center text-center uppercase"
+                      class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-bold text-indigo-900 text-[10px] whitespace-pre-wrap leading-tight flex items-center justify-center text-center uppercase"
                     ></div>
 
                     <button
                       contenteditable="false"
                       @click.stop="openBlankModal(`page_${pageIndex}_${slotIndex}`, p, null)"
-                      class="print:hidden absolute right-0 top-0 hidden group-hover:flex bg-indigo-500 text-white rounded-bl px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-indigo-600 z-10 font-sans tracking-widest font-bold"
+                      class="print:hidden absolute right-0 top-0 hidden group-hover:flex bg-indigo-500 text-white rounded-bl px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-indigo-600 z-10 font-sans tracking-widest font-bold uppercase"
                     >
                       指派
                     </button>
@@ -300,7 +300,7 @@
               </tr>
 
               <tr>
-                <td class="border border-black p-0.5 font-bold bg-slate-50 print:bg-white text-[5.2px] tracking-tighter whitespace-nowrap">
+                <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[8px] whitespace-nowrap uppercase">
                   T/TANGAN
                 </td>
 
@@ -310,7 +310,7 @@
                   contenteditable="true"
                   @blur="saveManualEntry(`page_${pageIndex}_${slotIndex}`, 'ttangan', p, $event)"
                   v-text="getManualEntry(`page_${pageIndex}_${slotIndex}`, 'ttangan', p)"
-                  class="border border-black p-1 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors"
+                  class="border border-black p-1 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors uppercase"
                 ></td>
               </tr>
             </template>
@@ -319,12 +319,12 @@
       </div>
 
       <!-- ⭐️ 动态横向排列的备注区域 (UI 端，已彻底去除编号) -->
-      <div v-if="remarksList.length > 0 && remarksList.some(r => r.trim())" class="mt-4 pt-3 border-t border-dashed border-slate-300">
+      <div v-if="remarksList.length > 0 && remarksList.some(r => r.trim())" class="mt-4 pt-3 border-t border-dashed border-slate-300 uppercase">
         <h4 class="text-xs font-bold text-black font-serif uppercase underline mb-2">备注:</h4>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 uppercase">
           <template v-for="(rmk, rIdx) in remarksList" :key="rIdx">
-            <div v-if="rmk.trim()" class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs font-serif leading-relaxed">
-              <div class="whitespace-pre-wrap text-slate-700">{{ rmk }}</div>
+            <div v-if="rmk.trim()" class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs font-serif leading-relaxed uppercase">
+              <div class="whitespace-pre-wrap text-slate-700 uppercase">{{ rmk }}</div>
             </div>
           </template>
         </div>
@@ -332,37 +332,37 @@
     </div>
 
     <!-- ⭐️ 动态多 Textbox 备注管理区 (支持换行、新增、删除) -->
-    <div class="print:hidden bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-900/5 space-y-4">
-      <div class="flex items-center justify-between">
-        <label class="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-2">
+    <div class="print:hidden bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-900/5 space-y-4 uppercase">
+      <div class="flex items-center justify-between uppercase">
+        <label class="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-2 uppercase">
           <span>📝 备注管理</span>
         </label>
         <button
           @click="addRemarkBox"
-          class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
+          class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap uppercase"
         >
           <span>+ 添加备注</span>
         </button>
       </div>
 
-      <div class="space-y-3">
-        <div v-for="(rmk, index) in remarksList" :key="index" class="flex items-start gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+      <div class="space-y-3 uppercase">
+        <div v-for="(rmk, index) in remarksList" :key="index" class="flex items-start gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200 uppercase">
           <textarea
             v-model="remarksList[index]"
             @input="syncRemarksToGlobal"
             @blur="saveCustomSheetsToCloud"
             rows="3"
             placeholder="输入备注内容..."
-            class="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-y"
+            class="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-y uppercase"
           ></textarea>
           <button
             @click="removeRemarkBox(index)"
-            class="text-xs text-red-600 hover:text-red-800 font-bold px-3 py-2 bg-white hover:bg-red-50 border border-red-200 rounded-xl cursor-pointer transition whitespace-nowrap shadow-2xs"
+            class="text-xs text-red-600 hover:text-red-800 font-bold px-3 py-2 bg-white hover:bg-red-50 border border-red-200 rounded-xl cursor-pointer transition whitespace-nowrap shadow-2xs mt-1 uppercase"
           >
             删除
           </button>
         </div>
-        <div v-if="remarksList.length === 0" class="text-center py-4 text-xs text-slate-400 font-medium">
+        <div v-if="remarksList.length === 0" class="text-center py-4 text-xs text-slate-400 font-medium uppercase">
           点击右上角 "+ 添加备注" 按钮来添加第一个备注输入框。
         </div>
       </div>
@@ -379,63 +379,63 @@
     >
       <div
         v-if="showModal"
-        class="print:hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+        class="print:hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 uppercase"
       >
         <div
-          class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"
+          class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm uppercase"
           @click="showModal = false"
         ></div>
 
-        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden ring-1 ring-slate-900/10 max-h-[90vh] flex flex-col">
+        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden ring-1 ring-slate-900/10 max-h-[90vh] flex flex-col uppercase">
           
-          <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white/50 backdrop-blur-md shrink-0">
+          <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white/50 backdrop-blur-md shrink-0 uppercase">
             <div>
-              <h2 class="text-xl font-bold text-slate-900">代课指派中心</h2>
-              <p class="text-sm text-slate-500 mt-1">
+              <h2 class="text-xl font-bold text-slate-900 uppercase">代课指派中心</h2>
+              <p class="text-sm text-slate-500 mt-1 uppercase">
                 支持智能推荐排序，或在下方直接手动选择任意同班次老师
               </p>
             </div>
 
             <button
               @click="showModal = false"
-              class="text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full p-2 transition cursor-pointer"
+              class="text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full p-2 transition cursor-pointer uppercase"
             >
               ×
             </button>
           </div>
           
-          <div class="p-8 bg-slate-50/50 space-y-6 overflow-y-auto">
-            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="p-8 bg-slate-50/50 space-y-6 overflow-y-auto uppercase">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm uppercase">
               <h3 class="text-xs font-bold text-slate-700 mb-3 uppercase tracking-wider">
                 🏷️ 指派性质:
               </h3>
 
-              <div class="flex flex-col sm:flex-row gap-4">
-                <label class="flex items-center gap-2 cursor-pointer bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 hover:bg-indigo-50 transition">
+              <div class="flex flex-col sm:flex-row gap-4 uppercase">
+                <label class="flex items-center gap-2 cursor-pointer bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 hover:bg-indigo-50 transition uppercase">
                   <input
                     type="radio"
                     v-model="assignmentType"
                     value="substitute"
                     class="text-indigo-600 focus:ring-indigo-500 w-4 h-4"
                   />
-                  <span class="text-sm font-semibold text-slate-800">
+                  <span class="text-sm font-semibold text-slate-800 uppercase">
                     正式代课
-                    <span class="text-xs text-slate-400 font-normal ml-1">
+                    <span class="text-xs text-slate-400 font-normal ml-1 uppercase">
                       (计入负荷统计)
                     </span>
                   </span>
                 </label>
 
-                <label class="flex items-center gap-2 cursor-pointer bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 hover:bg-indigo-50 transition">
+                <label class="flex items-center gap-2 cursor-pointer bg-slate-50 px-4 py-2 rounded-xl border border-slate-100 hover:bg-indigo-50 transition uppercase">
                   <input
                     type="radio"
                     v-model="assignmentType"
                     value="swap"
                     class="text-indigo-600 focus:ring-indigo-500 w-4 h-4"
                   />
-                  <span class="text-sm font-semibold text-slate-800">
+                  <span class="text-sm font-semibold text-slate-800 uppercase">
                     对调换课
-                    <span class="text-xs text-slate-400 font-normal ml-1">
+                    <span class="text-xs text-slate-400 font-normal ml-1 uppercase">
                       (不计入统计)
                     </span>
                   </span>
@@ -443,8 +443,8 @@
               </div>
             </div>
           
-            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
-              <span class="text-xs font-bold text-slate-700 whitespace-nowrap">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3 uppercase">
+              <span class="text-xs font-bold text-slate-700 whitespace-nowrap uppercase">
                 📍 地点/特殊备注:
               </span>
 
@@ -452,26 +452,27 @@
                 v-model="assignmentRemark"
                 type="text"
                 placeholder="例如: Perpustakaan (若需带去图书馆或合并班级)"
-                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 uppercase"
               />
             </div>
 
-            <div class="bg-indigo-50/60 p-5 rounded-2xl border border-indigo-100 shadow-sm">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-900 mb-3 flex items-center gap-2">
-                <span>🛠️ 手动直接指派（不通过智能推荐）</span>
+            <div class="bg-indigo-50/60 p-5 rounded-2xl border border-indigo-100 shadow-sm uppercase">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-900 mb-3 flex items-center gap-2 uppercase">
+                <span>🛠️️ 手动直接指派（不通过智能推荐）</span>
               </h3>
 
-              <div class="flex flex-col sm:flex-row items-center gap-3">
+              <div class="flex flex-col sm:flex-row items-center gap-3 uppercase">
                 <select
                   v-model="manualSelectedTeacherId"
-                  class="w-full px-3.5 py-2.5 bg-white border border-indigo-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                  class="w-full px-3.5 py-2.5 bg-white border border-indigo-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer uppercase"
                 >
-                  <option value="" disabled>-- 请手动选择同班次教师 --</option>
+                  <option value="" disabled class="uppercase">-- 请手动选择同班次教师 --</option>
 
                   <option
                     v-for="t in allSameSessionTeachers"
                     :key="t.id"
                     :value="t.id"
+                    class="uppercase"
                   >
                     {{ t.name }} <span v-if="t.subject">(科目: {{ t.subject }})</span>
                   </option>
@@ -480,7 +481,7 @@
                 <button
                   @click="assignSubstitute(manualSelectedTeacherId)"
                   :disabled="!manualSelectedTeacherId"
-                  class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-5 py-2.5 rounded-xl text-xs font-semibold shadow-sm transition-all shrink-0 cursor-pointer"
+                  class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-5 py-2.5 rounded-xl text-xs font-semibold shadow-sm transition-all shrink-0 cursor-pointer whitespace-nowrap uppercase"
                 >
                   确认手动指派
                 </button>
@@ -489,61 +490,61 @@
 
             <hr class="border-slate-200" />
 
-            <div>
-              <div class="flex justify-between items-center mb-3">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+            <div class="uppercase">
+              <div class="flex justify-between items-center mb-3 uppercase">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2 uppercase">
                   <Sparkles class="w-4 h-4 text-indigo-600" />
-                  智能推荐候选列表 (共 {{ recommendations.length }} 人)
+                  ✨ 智能推荐候选列表 (共 {{ recommendations.length }} 人)
                 </h3>
-                <span v-if="recommendations.length > 0" class="text-[11px] text-slate-400 font-semibold">
+                <span v-if="recommendations.length > 0" class="text-[11px] text-slate-400 font-semibold uppercase">
                   第 {{ recCurrentPage }} / {{ recTotalPages }} 页
                 </span>
               </div>
               
               <div
                 v-if="loadingRecs"
-                class="flex flex-col items-center justify-center py-6 space-y-3"
+                class="flex flex-col items-center justify-center py-6 space-y-3 uppercase"
               >
-                <div class="w-6 h-6 border-4 border-indigo-500/30 border-t-indigo-600 rounded-full animate-spin"></div>
-                <p class="text-xs text-slate-500 font-medium">智能数据计算中...</p>
+                <div class="w-6 h-6 border-4 border-indigo-500/30 border-t-indigo-600 rounded-full animate-spin uppercase"></div>
+                <p class="text-xs text-slate-500 font-medium uppercase">智能数据计算中...</p>
               </div>
               
               <div
                 v-else-if="recommendations.length === 0"
-                class="bg-white p-4 rounded-2xl border border-slate-200 text-xs text-slate-500 text-center"
+                class="bg-white p-4 rounded-2xl border border-slate-200 text-xs text-slate-500 text-center uppercase"
               >
                 暂无可指派的推荐人选，请使用上方手动指派。
               </div>
 
-              <div v-else class="space-y-3">
+              <div v-else class="space-y-3 uppercase">
                 <div
                   v-for="(teacher, index) in paginatedRecommendations"
                   :key="teacher.id"
                   :class="[
-                    'group flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border rounded-2xl transition-all',
-                    teacher.isBusy ? 'bg-red-50/30 border-red-100' : 'bg-white border-slate-200 hover:border-indigo-300 hover:shadow-sm'
+                    'group flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border rounded-2xl transition-all uppercase',
+                    teacher.isBusy ? 'bg-red-50/30 border-red-100 uppercase' : 'bg-white border-slate-200 hover:border-indigo-300 hover:shadow-sm uppercase'
                   ]"
                 >
-                  <div class="flex items-center gap-3 mb-3 sm:mb-0">
+                  <div class="flex items-center gap-3 mb-3 sm:mb-0 uppercase">
                     <div :class="[
-                      'w-8 h-8 rounded-full font-extrabold flex items-center justify-center text-xs',
-                      teacher.isBusy ? 'bg-red-100 text-red-600' : 'bg-gradient-to-br from-indigo-100 to-violet-100 text-indigo-700'
+                      'w-8 h-8 rounded-full font-extrabold flex items-center justify-center text-xs uppercase',
+                      teacher.isBusy ? 'bg-red-100 text-red-600 uppercase' : 'bg-gradient-to-br from-indigo-100 to-violet-100 text-indigo-700 uppercase'
                     ]">
                       #{{ (recCurrentPage - 1) * recPageSize + index + 1 }}
                     </div>
 
-                    <div>
-                      <div class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                    <div class="uppercase">
+                      <div class="font-bold text-slate-900 text-sm flex items-center gap-2 uppercase">
                         {{ teacher.name }}
-                        <span v-if="teacher.isBusy" class="text-[10px] text-red-600 bg-red-100 px-2 py-0.5 rounded-full font-bold">
+                        <span v-if="teacher.isBusy" class="text-[10px] text-red-600 bg-red-100 px-2 py-0.5 rounded-full font-bold uppercase">
                           此节有课
                         </span>
                       </div>
 
-                      <div class="text-[11px] text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
+                      <div class="text-[11px] text-slate-500 mt-1 flex items-center gap-2 flex-wrap uppercase">
                         <span>
                           原有节数:
-                          <span class="font-bold text-slate-700">
+                          <span class="font-bold text-slate-700 uppercase">
                             {{ teacher.originalClasses }}节
                           </span>
                         </span>
@@ -552,7 +553,7 @@
 
                         <span>
                           当天已代:
-                          <span class="font-bold text-orange-600">
+                          <span class="font-bold text-orange-600 uppercase">
                             {{ teacher.todaySubCount }}节
                           </span>
                         </span>
@@ -561,7 +562,7 @@
 
                         <span>
                           本周已代:
-                          <span class="font-bold text-slate-700">
+                          <span class="font-bold text-slate-700 uppercase">
                             {{ teacher.currentSubCount }}{{ teacher.currentSubCount !== '-' ? '/' : '' }}{{ teacher.currentSubCount !== '-' ? teacher.max_substitute_per_week : '' }}
                           </span>
                         </span>
@@ -572,8 +573,8 @@
                   <button
                     @click="assignSubstitute(teacher.id)"
                     :class="[
-                      'px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer',
-                      teacher.isBusy ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-slate-900 hover:bg-indigo-600 text-white'
+                      'px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer whitespace-nowrap uppercase',
+                      teacher.isBusy ? 'bg-red-100 text-red-700 hover:bg-red-200 uppercase' : 'bg-slate-900 hover:bg-indigo-600 text-white uppercase'
                     ]"
                   >
                     {{ teacher.isBusy ? '强制指派' : '智能指派' }}
@@ -581,21 +582,21 @@
                 </div>
 
                 <!-- 分页控制栏 (当候选人超过 10 人时显示) -->
-                <div v-if="recTotalPages > 1" class="flex items-center justify-between pt-2 px-1">
+                <div v-if="recTotalPages > 1" class="flex items-center justify-between pt-2 px-1 uppercase">
                   <button 
                     @click="recCurrentPage = Math.max(1, recCurrentPage - 1)"
                     :disabled="recCurrentPage === 1"
-                    class="px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 transition cursor-pointer"
+                    class="px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 transition cursor-pointer uppercase"
                   >
                     上一页
                   </button>
-                  <span class="text-xs font-semibold text-slate-500">
+                  <span class="text-xs font-semibold text-slate-500 uppercase">
                     页码 {{ recCurrentPage }} / {{ recTotalPages }}
                   </span>
                   <button 
                     @click="recCurrentPage = Math.min(recTotalPages, recCurrentPage + 1)"
                     :disabled="recCurrentPage === recTotalPages"
-                    class="px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 transition cursor-pointer"
+                    class="px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 transition cursor-pointer uppercase"
                   >
                     下一页
                   </button>
@@ -605,15 +606,15 @@
 
             <div
               v-if="currentLeaveItem && substituteAssignmentsMap[currentLeaveItem.id]"
-              class="pt-2 border-t border-slate-100 flex justify-between items-center"
+              class="pt-2 border-t border-slate-100 flex justify-between items-center uppercase"
             >
-              <span class="text-xs text-red-500 font-medium">
+              <span class="text-xs text-red-500 font-medium uppercase">
                 当前格子已有代课/换课安排
               </span>
 
               <button
                 @click="removeAssignment"
-                class="text-xs text-red-600 hover:text-red-800 font-bold px-3 py-1 bg-red-50 rounded-lg cursor-pointer"
+                class="text-xs text-red-600 hover:text-red-800 font-bold px-3 py-1 bg-red-50 rounded-lg cursor-pointer whitespace-nowrap uppercase"
               >
                 取消当前指派
               </button>
@@ -627,28 +628,29 @@
     <div
       v-for="(sheet, sIndex) in extraCustomSheets"
       :key="sheet.id"
+      class="uppercase"
     >
       <!-- 打印时明确制造“下一页”边界；屏幕上完全不占空间 -->
       <div class="print-page-break" aria-hidden="true"></div>
 
-      <div class="print-custom-sheet mt-12 print:mt-0 pt-8 print:pt-0 border-t-4 print:border-none border-dashed border-slate-300">
+      <div class="print-custom-sheet mt-12 print:mt-0 pt-8 print:pt-0 border-t-4 print:border-none border-dashed border-slate-300 uppercase">
       
-        <div class="print:hidden flex justify-between items-center mb-4 bg-amber-50 p-3 rounded-2xl border border-amber-200">
-          <span class="text-xs font-bold text-amber-900">
+        <div class="print:hidden flex justify-between items-center mb-4 bg-amber-50 p-3 rounded-2xl border border-amber-200 uppercase">
+          <span class="text-xs font-bold text-amber-900 uppercase">
             📄 附加自定义手写/编辑备用表 #{{ sIndex + 1 }}
           </span>
 
           <button
             @click="removeCustomSheet(sheet.id)"
-            class="text-xs text-red-600 bg-white hover:bg-red-50 px-3 py-1.5 rounded-xl font-bold shadow-sm transition cursor-pointer"
+            class="text-xs text-red-600 bg-white hover:bg-red-50 px-3 py-1.5 rounded-xl font-bold shadow-sm transition cursor-pointer whitespace-nowrap uppercase"
           >
             删除此附页
           </button>
         </div>
 
-        <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 print:shadow-none print:ring-0 print:p-0 print:rounded-none print:break-inside-avoid">
+        <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 print:shadow-none print:ring-0 print:p-0 print:rounded-none print:break-inside-avoid uppercase">
           
-          <div class="text-center mb-6 print:mb-2">
+          <div class="text-center mb-6 print:mb-2 uppercase">
             <h2 class="text-xl font-black tracking-wider text-black font-serif uppercase">
               {{ schoolName || 'SJK (C) LADANG GRISEK' }}
             </h2>
@@ -658,38 +660,38 @@
             </h3>
           </div>
 
-          <div class="flex justify-between items-center mb-4 print:mb-2 font-bold text-sm font-serif border-b-2 border-black pb-2 print:pb-1">
+          <div class="flex justify-between items-center mb-4 print:mb-2 font-bold text-sm font-serif border-b-2 border-black pb-2 print:pb-1 uppercase">
             <div>
-              <span class="underline underline-offset-4">TARIKH :</span>
+              <span class="underline underline-offset-4 uppercase">TARIKH :</span>
 
               <input
                 v-model="sheet.date"
                 @blur="saveCustomSheetsToCloud"
                 type="text"
                 placeholder="输入日期"
-                class="ml-2 border-b border-black px-2 py-0.5 text-sm font-normal w-32 focus:outline-none"
+                class="ml-2 border-b border-black px-2 py-0.5 text-sm font-normal w-32 focus:outline-none uppercase"
               />
             </div>
 
             <div>
-              <span class="underline underline-offset-4">HARI :</span>
+              <span class="underline underline-offset-4 uppercase">HARI :</span>
 
               <input
                 v-model="sheet.day"
                 @blur="saveCustomSheetsToCloud"
                 type="text"
                 placeholder="输入星期"
-                class="ml-2 border-b border-black px-2 py-0.5 text-sm font-normal w-28 uppercase focus:outline-none"
+                class="ml-2 border-b border-black px-2 py-0.5 text-sm font-normal w-28 uppercase focus:outline-none uppercase"
               />
             </div>
           </div>
 
-          <div class="w-full overflow-x-auto print:overflow-visible">
+          <div class="w-full overflow-x-auto print:overflow-visible uppercase">
             <table class="w-full border-collapse border-2 border-black text-center text-xs font-serif table-fixed uppercase">
               <thead>
-                <tr class="bg-slate-100 print:bg-white">
+                <tr class="bg-slate-100 print:bg-white uppercase">
                   <th
-                    class="border border-black p-1 font-bold"
+                    class="border border-black p-1 font-bold uppercase"
                     colspan="2"
                     style="width: 130px; min-width: 130px; max-width: 130px;"
                   >
@@ -699,10 +701,10 @@
                   <th
                     v-for="(time, index) in currentPeriodTimes"
                     :key="index"
-                    class="border border-black p-1"
+                    class="border border-black p-1 uppercase"
                   >
-                    <div class="font-bold">{{ index + 1 }}</div>
-                    <div class="text-[7px] font-normal mt-0.5 truncate">
+                    <div class="font-bold uppercase">{{ index + 1 }}</div>
+                    <div class="text-[7px] font-normal mt-0.5 truncate uppercase">
                       {{ time }}
                     </div>
                   </th>
@@ -712,35 +714,36 @@
               <tbody
                 v-for="slotIndex in 5"
                 :key="slotIndex"
+                class="uppercase"
               >
                 <tr>
                   <!-- ⭐️ 一键提取班级的按钮 (附页) -->
                   <td
-                    class="border border-black p-0 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 relative group"
+                    class="border border-black p-0 font-bold bg-slate-50 print:bg-white align-middle text-center h-8 relative group uppercase"
                     :style="{ width: '85px', maxWidth: '85px' }"
                     rowspan="3"
                   >
-                    <div class="w-full h-full relative flex items-center justify-center min-h-[70px]">
+                    <div class="w-full h-full relative flex items-center justify-center min-h-[70px] uppercase">
                       <div
                         contenteditable="true"
                         @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0, $event)"
                         v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0)"
-                        class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors whitespace-pre-wrap leading-tight uppercase flex items-center justify-center p-1"
+                        class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors whitespace-pre-wrap leading-tight uppercase flex items-center justify-center p-1 uppercase"
                         :style="getDynamicStyle(getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'name', 0), 10)"
                       ></div>
 
-                      <div class="print:hidden absolute right-0 top-0 hidden group-hover:flex flex-col z-10 gap-[1px]">
+                      <div class="print:hidden absolute right-0 top-0 hidden group-hover:flex flex-col z-10 gap-[1px] uppercase">
                         <button
                           contenteditable="false"
                           @click.stop="openClassPicker(null, slotIndex, sheet.id)"
-                          class="bg-emerald-500 text-white rounded-bl px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-emerald-600 font-sans tracking-widest font-bold"
+                          class="bg-emerald-500 text-white rounded-bl px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-emerald-600 font-sans tracking-widest font-bold uppercase"
                         >
                           班级
                         </button>
                         <button
                           contenteditable="false"
                           @click.stop="clearManualRow(null, slotIndex, sheet.id)"
-                          class="bg-red-500 text-white rounded-l px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-red-600 font-sans tracking-widest font-bold"
+                          class="bg-red-500 text-white rounded-l px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-red-600 font-sans tracking-widest font-bold uppercase"
                         >
                           清空
                         </button>
@@ -749,7 +752,7 @@
                   </td>
 
                   <td
-                    class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]"
+                    class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px] uppercase"
                     style="width: 45px; max-width: 45px;"
                   >
                     KELAS
@@ -767,17 +770,17 @@
                 </tr>
 
                 <tr>
-                  <td class="border border-black p-0.5 font-bold bg-slate-50 print:bg-white text-[5.2px] tracking-tighter whitespace-nowrap">
+                  <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px] uppercase">
                     GURU GANTI
                   </td>
 
                   <td
                     v-for="p in currentPeriodTimes.length"
                     :key="'ganti-'+p"
-                    class="border border-black p-0.5 align-middle h-8 relative group"
+                    class="border border-black p-0.5 align-middle h-8 relative group uppercase"
                     style="max-width: 0;"
                   >
-                    <div class="w-full h-full relative flex items-center justify-center">
+                    <div class="w-full h-full relative flex items-center justify-center uppercase">
                       <div
                         contenteditable="true"
                         @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ganti', p, $event)"
@@ -788,7 +791,7 @@
                       <button
                         contenteditable="false"
                         @click.stop="openBlankModal(slotIndex, p, sheet.id)"
-                        class="print:hidden absolute right-0 top-0 hidden group-hover:flex bg-indigo-500 text-white rounded-bl px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-indigo-600 z-10 font-sans tracking-widest font-bold"
+                        class="print:hidden absolute right-0 top-0 hidden group-hover:flex bg-indigo-500 text-white rounded-bl px-1.5 py-0.5 text-[9px] cursor-pointer shadow-sm hover:bg-indigo-600 z-10 font-sans tracking-widest font-bold uppercase"
                       >
                         指派
                       </button>
@@ -797,7 +800,7 @@
                 </tr>
 
                 <tr>
-                  <td class="border border-black p-0.5 font-bold bg-slate-50 print:bg-white text-[5.2px] tracking-tighter whitespace-nowrap">
+                  <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[8px] whitespace-nowrap uppercase">
                     T/TANGAN
                   </td>
 
@@ -807,7 +810,7 @@
                     contenteditable="true"
                     @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ttangan', p, $event)"
                     v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ttangan', p)"
-                    class="border border-black p-1 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors"
+                    class="border border-black p-1 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors uppercase"
                   ></td>
                 </tr>
               </tbody>
@@ -818,12 +821,12 @@
     </div>
 
     <!-- 放置在最底部的增加按钮 -->
-    <div class="print:hidden mt-8 mb-12 flex justify-center w-full">
+    <div class="print:hidden mt-8 mb-12 flex justify-center w-full uppercase">
       <button
         @click="addBlankSheet"
-        class="flex items-center gap-2 bg-slate-900 hover:bg-indigo-600 text-white px-8 py-3.5 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer whitespace-nowrap"
+        class="flex items-center gap-2 bg-slate-900 hover:bg-indigo-600 text-white px-8 py-3.5 rounded-2xl text-xs font-bold shadow-md transition-all cursor-pointer whitespace-nowrap uppercase"
       >
-        <span class="text-base font-extrabold">+</span>
+        <span class="text-base font-extrabold uppercase">+</span>
         增加一张官方版空白代课备用表
       </button>
     </div>
@@ -839,35 +842,35 @@
     >
       <div
         v-if="showClassPickerModal"
-        class="print:hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+        class="print:hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 uppercase"
       >
-        <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm" @click="showClassPickerModal = false"></div>
-        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden ring-1 ring-slate-900/10">
+        <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm uppercase" @click="showClassPickerModal = false"></div>
+        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden ring-1 ring-slate-900/10 uppercase">
           
-          <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-            <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 uppercase">
+            <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2 uppercase">
               <span>📚 提取班级全天科目</span>
             </h2>
-            <button @click="showClassPickerModal = false" class="text-slate-400 hover:text-slate-600 bg-white hover:bg-slate-200 rounded-full w-8 h-8 flex items-center justify-center transition cursor-pointer font-bold">
+            <button @click="showClassPickerModal = false" class="text-slate-400 hover:text-slate-600 bg-white hover:bg-slate-200 rounded-full w-8 h-8 flex items-center justify-center transition cursor-pointer font-bold uppercase">
               ✕
             </button>
           </div>
           
-          <div class="p-6 space-y-5">
+          <div class="p-6 space-y-5 uppercase">
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-2">选择要提取的班级:</label>
-              <select v-model="selectedClassToFill" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
-                <option value="">-- 请选择班级 --</option>
-                <option v-for="cls in allClassesList" :key="cls" :value="cls">{{ cls }}</option>
+              <label class="block text-xs font-bold text-slate-700 mb-2 uppercase">选择要提取的班级:</label>
+              <select v-model="selectedClassToFill" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer uppercase">
+                <option value="" class="uppercase">-- 请选择班级 --</option>
+                <option v-for="cls in allClassesList" :key="cls" :value="cls" class="uppercase">{{ cls }}</option>
               </select>
             </div>
           </div>
 
-          <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
-            <button @click="showClassPickerModal = false" class="text-slate-500 hover:text-slate-700 px-4 py-2 text-xs font-bold transition cursor-pointer">
+          <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3 uppercase">
+            <button @click="showClassPickerModal = false" class="text-slate-500 hover:text-slate-700 px-4 py-2 text-xs font-bold transition cursor-pointer uppercase">
               取消
             </button>
-            <button @click="confirmClassPicker" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer">
+            <button @click="confirmClassPicker" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer uppercase">
               确定提取
             </button>
           </div>
@@ -887,20 +890,20 @@
     >
       <div
         v-if="showBlankModal"
-        class="print:hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+        class="print:hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 uppercase"
       >
         <div
-          class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"
+          class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm uppercase"
           @click="showBlankModal = false"
         ></div>
 
-        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden ring-1 ring-slate-900/10">
+        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden ring-1 ring-slate-900/10 uppercase">
           
-          <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+          <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 uppercase">
             <div>
-              <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2 uppercase">
                 <span>📝 简易安排</span>
-                <span class="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">
+                <span class="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full uppercase">
                   特殊/临时任务
                 </span>
               </h2>
@@ -908,28 +911,29 @@
 
             <button
               @click="showBlankModal = false"
-              class="text-slate-400 hover:text-slate-600 bg-white hover:bg-slate-200 rounded-full w-8 h-8 flex items-center justify-center transition cursor-pointer font-bold"
+              class="text-slate-400 hover:text-slate-600 bg-white hover:bg-slate-200 rounded-full w-8 h-8 flex items-center justify-center transition cursor-pointer font-bold uppercase"
             >
               ✕
             </button>
           </div>
           
-          <div class="p-6 space-y-5">
+          <div class="p-6 space-y-5 uppercase">
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-2">
+              <label class="block text-xs font-bold text-slate-700 mb-2 uppercase">
                 🧑‍🏫 选择指派教师 (同班次):
               </label>
 
               <select
                 v-model="blankForm.teacherId"
-                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer uppercase"
               >
-                <option value="">-- 不选择 (仅留空或仅打字) --</option>
+                <option value="" class="uppercase">-- 不选择 (仅留空或仅打字) --</option>
 
                 <option
                   v-for="t in allSameSessionTeachers"
                   :key="t.id"
                   :value="t.id"
+                  class="uppercase"
                 >
                   {{ t.name }} <span v-if="t.subject">({{ t.subject }})</span>
                 </option>
@@ -937,7 +941,7 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-2">
+              <label class="block text-xs font-bold text-slate-700 mb-2 uppercase">
                 📍 备注 (地点/特殊任务如: 看管比赛):
               </label>
 
@@ -945,55 +949,55 @@
                 v-model="blankForm.remark"
                 type="text"
                 placeholder="例如: Perpustakaan / Latihan Sukan"
-                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 uppercase"
               />
             </div>
 
-            <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 flex items-start gap-3">
+            <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 flex items-start gap-3 uppercase">
               <input
                 type="checkbox"
                 v-model="blankForm.kiraBeban"
                 id="kiraBebanCb"
-                class="mt-0.5 w-4 h-4 text-indigo-600 rounded cursor-pointer"
+                class="mt-0.5 w-4 h-4 text-indigo-600 rounded cursor-pointer uppercase"
               />
 
-              <div class="flex-1">
+              <div class="flex-1 uppercase">
                 <label
                   for="kiraBebanCb"
-                  class="text-sm font-bold text-slate-800 cursor-pointer block mb-1"
+                  class="text-sm font-bold text-slate-800 cursor-pointer block mb-1 uppercase"
                 >
                   计入该教师代课负荷 (Kira Beban)
                 </label>
 
-                <p class="text-[10px] text-slate-500 font-medium leading-relaxed">
+                <p class="text-[10px] text-slate-500 font-medium leading-relaxed uppercase">
                   勾选后，系统会在后台建立一条虚拟代课记录（不影响科目损失报表），但会让该老师当天的代课节数 +1。
                 </p>
               </div>
             </div>
           </div>
 
-          <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
+          <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center uppercase">
             <button
               v-if="hasExistingVirtual"
               @click="removeBlankAssignment"
-              class="text-xs text-red-600 hover:text-red-800 font-bold px-4 py-2 bg-red-50 hover:bg-red-100 rounded-xl cursor-pointer transition"
+              class="text-xs text-red-600 hover:text-red-800 font-bold px-4 py-2 bg-red-50 hover:bg-red-100 rounded-xl cursor-pointer transition whitespace-nowrap uppercase"
             >
               清空该格指派
             </button>
 
             <div v-else></div>
 
-            <div class="flex gap-3">
+            <div class="flex gap-3 uppercase">
               <button
                 @click="showBlankModal = false"
-                class="text-slate-500 hover:text-slate-700 px-4 py-2 text-xs font-bold transition cursor-pointer"
+                class="text-slate-500 hover:text-slate-700 px-4 py-2 text-xs font-bold transition cursor-pointer uppercase"
               >
                 取消
               </button>
 
               <button
                 @click="confirmBlankAssignment"
-                class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer uppercase"
               >
                 确定保存
               </button>
@@ -1068,13 +1072,13 @@ const currentPeriodTimes = computed(() =>
 )
 
 const dayNames = [
-  'Ahad',
-  'Isnin',
-  'Selasa',
-  'Rabu',
-  'Khamis',
-  'Jumaat',
-  'Sabtu'
+  'AHAD',
+  'ISNIN',
+  'SELASA',
+  'RABU',
+  'KHAMIS',
+  'JUMAAT',
+  'SABTU'
 ]
 
 const leaveRequests = ref([])
@@ -1136,9 +1140,9 @@ const selectedClassToFill = ref('')
 // ⭐️ 动态多备注数组状态
 const remarksList = ref([''])
 
-// 同步数组到全局存储字符串
+// 关键修复：将不同备注框的数据用特殊符号 '|||' 拼接，而不是换行符 \n
 const syncRemarksToGlobal = () => {
-  globalPageRemark.value = remarksList.value.join('\n')
+  globalPageRemark.value = remarksList.value.map(r => r ? r.toUpperCase() : '').join('|||')
 }
 
 // 增加一个备注输入框
@@ -1340,8 +1344,9 @@ const fetchManualDrafts = async () => {
         sessionCustomSheets.value[currentSession.value] = upperDraft.__custom_sheets__
       }
       if (upperDraft.__global_remark__) {
-        globalPageRemark.value = upperDraft.__global_remark__
-        const parsed = globalPageRemark.value.split(/\r?\n/).map(s => s)
+        globalPageRemark.value = upperDraft.__global_remark__.toUpperCase()
+        // 关键修复：从数据库读取时，根据特殊分隔符 '|||' 来拆分还原成数组，不再使用 \n
+        const parsed = globalPageRemark.value.split('|||').map(s => s.toUpperCase())
         remarksList.value = parsed.length > 0 ? parsed : ['']
       }
     }
@@ -2005,22 +2010,6 @@ const openBlankModal = async (
   await loadSameSessionTeachers()
 
   showBlankModal.value = true
-}
-
-// ⭐️ GURU GANTI 的快捷提取班级逻辑：只注入纯科目，绝对不带有班级名！
-const handleClassSelectChange = () => {
-  if (!selectedClassForImport.value) return
-  
-  const period = blankTarget.value.period
-  const className = selectedClassForImport.value
-  
-  const subject = classSchedulesMap.value[className]?.[period] || ''
-  
-  if (subject) {
-    blankForm.value.remark = subject // 完美解决 Guru Ganti 行出现班级名的问题
-  } else {
-    blankForm.value.remark = ''
-  }
 }
 
 const confirmBlankAssignment = async () => {
@@ -2969,7 +2958,7 @@ const handleExportPdf = async () => {
           rowH,
           'GURU GANTI',
           {
-            fontSize: 5.2,
+            fontSize: 6.2,
             bold: true
           }
         )
@@ -3020,7 +3009,7 @@ const handleExportPdf = async () => {
           rowH,
           'T/TANGAN',
           {
-            fontSize: 5.2,
+            fontSize: 5.7,
             bold: true
           }
         )
@@ -3061,8 +3050,8 @@ const handleExportPdf = async () => {
         y += rowH * 3
       }
 
-      // ⭐️ PDF End: Render Catatan (remarks) secara melintang ke sebelah kanan (UPPERCASE)
-      // 使用 CATATAN: 以避免英文字体缺失中文字符的问题
+      // ⭐️ PDF End: Render Remarks horizontally side by side (UPPERCASE)
+      // 使用 CATATAN: 以避免英文字体缺失中文字符的问题，并将 \t 替换为空格以防截断
       const remarksListPdf = remarksList.value.map(s => s.replace(/\t/g, '    ').trim().toUpperCase()).filter(Boolean)
 
       if (remarksListPdf.length > 0) {
@@ -3073,7 +3062,7 @@ const handleExportPdf = async () => {
         doc.text('CATATAN:', M, y)
         
         y += 4
-        const colCount = Math.min(remarksListPdf.length, 3) // Maksimum 3 kolum sebaris
+        const colCount = Math.min(remarksListPdf.length, 3) // 最多3列横排
         const colWidth = (CONTENT_W - (colCount - 1) * 4) / colCount
         
         let startX = M
@@ -3178,7 +3167,7 @@ const handleExportPdf = async () => {
     )
 
     toast.success(
-      `PDF 成功生成，共计 ${
+      `PDF 已生成，共 ${
         pages.length +
         extraCustomSheets.value.length
       } 页。`
