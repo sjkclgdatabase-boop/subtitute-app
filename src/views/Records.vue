@@ -85,11 +85,11 @@
       <div v-if="pageIndex > 0" class="print-page-break" aria-hidden="true"></div>
 
       <div class="text-center mb-6 print:mb-2">
-        <h2 class="text-xl font-black tracking-wider text-black font-serif">
+        <h2 class="text-xl font-black tracking-wider text-black font-serif uppercase">
           {{ schoolName || 'SJK (C) LADANG GRISEK' }}
         </h2>
 
-        <h3 class="text-lg font-bold tracking-widest text-black mt-1 font-serif underline">
+        <h3 class="text-lg font-bold tracking-widest text-black mt-1 font-serif underline uppercase">
           JADUAL GURU GANTI ({{ currentSession === 'morning' ? 'SESI PAGI' : 'SESI PETANG' }})
         </h3>
       </div>
@@ -104,7 +104,7 @@
       </div>
 
       <div class="overflow-x-auto print:overflow-visible">
-        <table class="w-full border-collapse border-2 border-black text-center text-xs font-serif table-fixed">
+        <table class="w-full border-collapse border-2 border-black text-center text-xs font-serif table-fixed uppercase">
           <thead>
             <tr class="bg-slate-100 print:bg-white">
               <th class="border border-black p-1 font-bold" colspan="2" style="width: 130px; min-width: 130px; max-width: 130px;">MASA</th>
@@ -166,7 +166,7 @@
                   style="max-width: 0;"
                 >
                   <div class="w-full h-full flex items-center justify-center px-0.5 overflow-hidden">
-                    <span class="block w-full text-center text-[10px] tracking-tighter leading-tight text-slate-800 whitespace-normal">
+                    <span class="block w-full text-center text-[10px] tracking-tighter leading-tight text-slate-800 whitespace-normal uppercase">
                       {{ getTeacherPeriodData(pageTeachers[slotIndex - 1].id, p, 'class_subject') }}
                     </span>
                   </div>
@@ -174,7 +174,7 @@
               </tr>
 
               <tr>
-                <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]">
+                <td class="border border-black p-0.5 font-bold bg-slate-50 print:bg-white text-[5.2px] tracking-tighter whitespace-nowrap">
                   GURU GANTI
                 </td>
 
@@ -187,7 +187,7 @@
                   style="max-width: 0;"
                 >
                   <div class="w-full h-full flex items-center justify-center px-0.5 overflow-hidden">
-                    <span class="block w-full text-center text-[9px] tracking-tighter leading-tight whitespace-normal">
+                    <span class="block w-full text-center text-[9px] tracking-tighter leading-tight whitespace-normal uppercase">
                       {{ getTeacherPeriodData(pageTeachers[slotIndex - 1].id, p, 'substitute_name') }}
                     </span>
 
@@ -202,7 +202,7 @@
               </tr>
 
               <tr>
-                <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[8px] whitespace-nowrap">
+                <td class="border border-black p-0.5 font-bold bg-slate-50 print:bg-white text-[5.2px] tracking-tighter whitespace-nowrap">
                   T/TANGAN
                 </td>
 
@@ -264,13 +264,13 @@
                   contenteditable="true"
                   @blur="saveManualEntry(`page_${pageIndex}_${slotIndex}`, 'kelas', p, $event)"
                   v-text="getManualEntry(`page_${pageIndex}_${slotIndex}`, 'kelas', p)"
-                  class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-semibold text-[11px] whitespace-pre-wrap leading-tight text-center"
+                  class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-semibold text-[11px] whitespace-pre-wrap leading-tight text-center uppercase"
                   style="max-width: 0;"
                 ></td>
               </tr>
 
               <tr>
-                <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]">
+                <td class="border border-black p-0.5 font-bold bg-slate-50 print:bg-white text-[5.2px] tracking-tighter whitespace-nowrap">
                   GURU GANTI
                 </td>
 
@@ -285,7 +285,7 @@
                       contenteditable="true"
                       @blur="saveManualEntry(`page_${pageIndex}_${slotIndex}`, 'ganti', p, $event)"
                       v-text="getManualEntry(`page_${pageIndex}_${slotIndex}`, 'ganti', p)"
-                      class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-bold text-indigo-900 text-[10px] whitespace-pre-wrap leading-tight flex items-center justify-center text-center"
+                      class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-bold text-[10px] text-indigo-900 whitespace-pre-wrap leading-tight flex items-center justify-center text-center uppercase"
                     ></div>
 
                     <button
@@ -300,7 +300,7 @@
               </tr>
 
               <tr>
-                <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[8px] whitespace-nowrap">
+                <td class="border border-black p-0.5 font-bold bg-slate-50 print:bg-white text-[5.2px] tracking-tighter whitespace-nowrap">
                   T/TANGAN
                 </td>
 
@@ -318,13 +318,12 @@
         </table>
       </div>
 
-      <!-- ⭐️ 动态横向排列的备注区域 (UI 端) -->
+      <!-- ⭐️ 动态横向排列的备注区域 (UI 端，已彻底去除编号) -->
       <div v-if="remarksList.length > 0 && remarksList.some(r => r.trim())" class="mt-4 pt-3 border-t border-dashed border-slate-300">
         <h4 class="text-xs font-bold text-black font-serif uppercase underline mb-2">备注:</h4>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           <template v-for="(rmk, rIdx) in remarksList" :key="rIdx">
             <div v-if="rmk.trim()" class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs font-serif leading-relaxed">
-              <span class="font-bold text-indigo-900 block mb-1">备注 {{ rIdx + 1 }}:</span>
               <div class="whitespace-pre-wrap text-slate-700">{{ rmk }}</div>
             </div>
           </template>
@@ -336,7 +335,7 @@
     <div class="print:hidden bg-white rounded-3xl p-6 shadow-sm ring-1 ring-slate-900/5 space-y-4">
       <div class="flex items-center justify-between">
         <label class="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-2">
-          <span>📝 动态多备注管理 (支持换行输入、打印及 PDF 导出)</span>
+          <span>📝 备注管理</span>
         </label>
         <button
           @click="addRemarkBox"
@@ -348,18 +347,17 @@
 
       <div class="space-y-3">
         <div v-for="(rmk, index) in remarksList" :key="index" class="flex items-start gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200">
-          <span class="text-xs font-bold text-indigo-900 whitespace-nowrap pt-2">备注 {{ index + 1 }}:</span>
           <textarea
             v-model="remarksList[index]"
             @input="syncRemarksToGlobal"
             @blur="saveCustomSheetsToCloud"
-            rows="2"
-            placeholder="输入备注内容 (支持回车换行)..."
+            rows="3"
+            placeholder="输入备注内容..."
             class="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-y"
           ></textarea>
           <button
             @click="removeRemarkBox(index)"
-            class="text-xs text-red-600 hover:text-red-800 font-bold px-3 py-2 bg-white hover:bg-red-50 border border-red-200 rounded-xl cursor-pointer transition whitespace-nowrap shadow-2xs mt-1"
+            class="text-xs text-red-600 hover:text-red-800 font-bold px-3 py-2 bg-white hover:bg-red-50 border border-red-200 rounded-xl cursor-pointer transition whitespace-nowrap shadow-2xs"
           >
             删除
           </button>
@@ -651,11 +649,11 @@
         <div class="bg-white rounded-3xl shadow-sm ring-1 ring-slate-900/5 p-8 print:shadow-none print:ring-0 print:p-0 print:rounded-none print:break-inside-avoid">
           
           <div class="text-center mb-6 print:mb-2">
-            <h2 class="text-xl font-black tracking-wider text-black font-serif">
+            <h2 class="text-xl font-black tracking-wider text-black font-serif uppercase">
               {{ schoolName || 'SJK (C) LADANG GRISEK' }}
             </h2>
 
-            <h3 class="text-lg font-bold tracking-widest text-black mt-1 font-serif underline">
+            <h3 class="text-lg font-bold tracking-widest text-black mt-1 font-serif underline uppercase">
               JADUAL GURU GANTI ({{ currentSession === 'morning' ? 'SESI PAGI' : 'SESI PETANG' }})
             </h3>
           </div>
@@ -687,7 +685,7 @@
           </div>
 
           <div class="w-full overflow-x-auto print:overflow-visible">
-            <table class="w-full border-collapse border-2 border-black text-center text-xs font-serif table-fixed">
+            <table class="w-full border-collapse border-2 border-black text-center text-xs font-serif table-fixed uppercase">
               <thead>
                 <tr class="bg-slate-100 print:bg-white">
                   <th
@@ -763,13 +761,13 @@
                     contenteditable="true"
                     @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'kelas', p, $event)"
                     v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'kelas', p)"
-                    class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-semibold text-[11px] whitespace-pre-wrap leading-tight text-center"
+                    class="border border-black p-0.5 align-middle h-8 outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-semibold text-[11px] whitespace-pre-wrap leading-tight text-center uppercase"
                     style="max-width: 0;"
                   ></td>
                 </tr>
 
                 <tr>
-                  <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[10px]">
+                  <td class="border border-black p-0.5 font-bold bg-slate-50 print:bg-white text-[5.2px] tracking-tighter whitespace-nowrap">
                     GURU GANTI
                   </td>
 
@@ -784,7 +782,7 @@
                         contenteditable="true"
                         @blur="saveManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ganti', p, $event)"
                         v-text="getManualEntry(`sheet_${sheet.id}_${slotIndex}`, 'ganti', p)"
-                        class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-bold text-[10px] text-indigo-900 whitespace-pre-wrap leading-tight flex items-center justify-center text-center"
+                        class="w-full h-full outline-none focus:bg-indigo-50/50 hover:bg-slate-100 cursor-text transition-colors font-bold text-indigo-900 text-[10px] whitespace-pre-wrap leading-tight flex items-center justify-center text-center uppercase"
                       ></div>
 
                       <button
@@ -799,7 +797,7 @@
                 </tr>
 
                 <tr>
-                  <td class="border border-black p-1 font-bold bg-slate-50 print:bg-white text-[8px] whitespace-nowrap">
+                  <td class="border border-black p-0.5 font-bold bg-slate-50 print:bg-white text-[5.2px] tracking-tighter whitespace-nowrap">
                     T/TANGAN
                   </td>
 
@@ -1178,16 +1176,16 @@ const fetchSchoolIdentity = async () => {
     if (error) throw error
 
     schoolName.value =
-      data?.school_name?.trim() ||
+      (data?.school_name?.trim() ||
       localStorage.getItem('school_name')?.trim() ||
-      'SJK (C) LADANG GRISEK'
+      'SJK (C) LADANG GRISEK').toUpperCase()
 
   } catch (err) {
     console.error('读取学校名称失败:', err)
 
     schoolName.value =
-      localStorage.getItem('school_name')?.trim() ||
-      'SJK (C) LADANG GRISEK'
+      (localStorage.getItem('school_name')?.trim() ||
+      'SJK (C) LADANG GRISEK').toUpperCase()
   }
 }
 
@@ -1204,6 +1202,7 @@ const getDynamicStyle = (text, baseSize) => {
   const maxCharsAllowed = 10
   
   const words = String(text)
+    .toUpperCase()
     .split(/\s+/)
     .filter(Boolean)
 
@@ -1275,10 +1274,11 @@ const displayTeachersList = computed(() => {
     ) {
       let cleanReason = (req.reason || '')
         .replace(/\[.*?\]\s*/, '')
+        .toUpperCase()
 
       map[req.teacher_id] = {
         id: req.teacher_id,
-        name: teacher.name,
+        name: teacher.name ? teacher.name.toUpperCase() : '',
         reason: cleanReason
       }
     }
@@ -1321,14 +1321,26 @@ const fetchManualDrafts = async () => {
       .maybeSingle()
 
     if (data && data.draft_data) {
-      manualEntries.value = data.draft_data
-
-      if (data.draft_data.__custom_sheets__) {
-        sessionCustomSheets.value[currentSession.value] =
-          data.draft_data.__custom_sheets__
+      const upperDraft = {}
+      for (const k in data.draft_data) {
+        if (k === '__custom_sheets__' && Array.isArray(data.draft_data[k])) {
+          upperDraft[k] = data.draft_data[k].map(sheet => ({
+            ...sheet,
+            day: sheet.day ? sheet.day.toUpperCase() : ''
+          }))
+        } else if (typeof data.draft_data[k] === 'string') {
+          upperDraft[k] = data.draft_data[k].toUpperCase()
+        } else {
+          upperDraft[k] = data.draft_data[k]
+        }
       }
-      if (data.draft_data.__global_remark__) {
-        globalPageRemark.value = data.draft_data.__global_remark__
+      manualEntries.value = upperDraft
+
+      if (upperDraft.__custom_sheets__) {
+        sessionCustomSheets.value[currentSession.value] = upperDraft.__custom_sheets__
+      }
+      if (upperDraft.__global_remark__) {
+        globalPageRemark.value = upperDraft.__global_remark__
         const parsed = globalPageRemark.value.split(/\r?\n/).map(s => s)
         remarksList.value = parsed.length > 0 ? parsed : ['']
       }
@@ -1340,9 +1352,20 @@ const fetchManualDrafts = async () => {
 
 const saveCustomSheetsToCloud = async () => {
   syncRemarksToGlobal()
+  sessionCustomSheets.value[currentSession.value] = sessionCustomSheets.value[currentSession.value].map(s => ({
+    ...s,
+    day: s.day ? s.day.toUpperCase() : ''
+  }))
+
   manualEntries.value['__custom_sheets__'] =
     sessionCustomSheets.value[currentSession.value]
-  manualEntries.value['__global_remark__'] = globalPageRemark.value
+  manualEntries.value['__global_remark__'] = globalPageRemark.value.toUpperCase()
+
+  for (const k in manualEntries.value) {
+    if (k !== '__custom_sheets__' && typeof manualEntries.value[k] === 'string') {
+      manualEntries.value[k] = manualEntries.value[k].toUpperCase()
+    }
+  }
 
   try {
     await supabase
@@ -1371,6 +1394,7 @@ const saveManualEntry = async (
   const text = event.target.innerText
     .trim()
     .replace(/\n+/g, '\n')
+    .toUpperCase()
 
   const key = `${slotIndex}-${type}-${period}`
 
@@ -1398,7 +1422,7 @@ const saveManualEntry = async (
 
 const getManualEntry = (slotIndex, type, period) => {
   const key = `${slotIndex}-${type}-${period}`
-  return manualEntries.value[key] || ''
+  return (manualEntries.value[key] || '').toUpperCase()
 }
 
 // =================================================================
@@ -1471,7 +1495,7 @@ const getTeacherPeriodData = (
   if (!leaveItem) return ''
 
   if (type === 'class_subject') {
-    return `${leaveItem.class_name} ${leaveItem.subject}`
+    return `${leaveItem.class_name} ${leaveItem.subject}`.toUpperCase()
   }
 
   if (type === 'substitute_name') {
@@ -1485,14 +1509,14 @@ const getTeacherPeriodData = (
     const subTeacher =
       teachersMap.value[subItem.sub_teacher_id]
 
-    let name = subTeacher ? subTeacher.name : ''
+    let name = subTeacher && subTeacher.name ? subTeacher.name.toUpperCase() : ''
 
     if (subItem.assignment_type === 'swap') {
       name += ' ✦'
     }
 
     return subItem.remark
-      ? `${name} (${subItem.remark})`
+      ? `${name} (${subItem.remark.toUpperCase()})`
       : name
   }
 
@@ -1506,12 +1530,16 @@ const loadSameSessionTeachers = async () => {
     .eq('is_active', true)
     .eq('session', currentSession.value)
 
-  allSameSessionTeachers.value = (data || []).sort((a, b) => 
+  allSameSessionTeachers.value = (data || []).map(t => ({
+    ...t,
+    name: t.name ? t.name.toUpperCase() : '',
+    subject: t.subject ? t.subject.toUpperCase() : ''
+  })).sort((a, b) => 
     a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })
   )
 }
 
-// ⭐️ 完美解决合班问题 (PMPI) 和多科目提取
+// ⭐️ 完美解决合班问题 (PMPI) 和多科目提取 (UPPERCASE)
 const loadClassSchedulesForTargetDate = async () => {
   try {
     const dateObj = new Date(targetDate.value)
@@ -1532,17 +1560,14 @@ const loadClassSchedulesForTargetDate = async () => {
       ttData.forEach(row => {
         if (!row.class_name || !row.subject) return;
 
-        // 1. 获取原始班级名称并剔除里面夹杂的科目名 (如 3A PM, 3A PI)
         const rawClassName = String(row.class_name).toUpperCase();
         let cleanedClassName = rawClassName
           .replace(/\b(PM|PI|MORAL|AGAMA|ISLAM|PENDIDIKAN)\b/g, '')
           .replace(/\s+/g, ' ')
           .trim();
         
-        // 2. 清除两端可能多余的连接符
         cleanedClassName = cleanedClassName.replace(/^[/-]+|[/-]+$/g, '').trim();
 
-        // 3. 按照合班的常见分隔符进行拆解 (比如 "3A/3B" 拆解为 "3A" 和 "3B")
         const classTokens = cleanedClassName.split(/[/,&+,]|\bDAN\b/).map(c => c.trim()).filter(Boolean);
 
         classTokens.forEach(cName => {
@@ -1563,7 +1588,6 @@ const loadClassSchedulesForTargetDate = async () => {
             if (hasPM && hasPI) {
               map[cName][row.period] = 'PMPI'
             } else {
-              // 如果不是 PMPI 且科目不重复，则合并 (例如 BM/BI)
               if (!s1.includes(s2)) {
                 map[cName][row.period] = `${s1}/${s2}`
               }
@@ -1587,7 +1611,7 @@ const loadClassSchedulesForTargetDate = async () => {
 // =================================================================
 // ⭐️ 新增：整行清空数据逻辑
 const clearManualRow = async (pageIndex, slotIndex, sheetId) => {
-  if (!window.confirm('确定要清空这一行的所有内容（包含可能已绑定的代课记录）吗？')) {
+  if (!window.confirm('确定要清空这一行的所有内容吗？')) {
     return
   }
 
@@ -1599,14 +1623,12 @@ const clearManualRow = async (pageIndex, slotIndex, sheetId) => {
       const virtualLeaveKey = `${prefix}_virtual_leave_${p}`
       const existingVirtualLeaveId = manualEntries.value[virtualLeaveKey]
 
-      // 清理对应的数据库指派记录
       if (existingVirtualLeaveId) {
         await supabase.from('substitute_assignments').delete().eq('leave_request_id', existingVirtualLeaveId)
         await supabase.from('leave_requests').delete().eq('id', existingVirtualLeaveId)
         delete manualEntries.value[virtualLeaveKey]
       }
 
-      // 清空输入文本
       manualEntries.value[`${prefix}-kelas-${p}`] = ''
       manualEntries.value[`${prefix}-ganti-${p}`] = ''
       manualEntries.value[`${prefix}-ttangan-${p}`] = ''
@@ -1617,7 +1639,6 @@ const clearManualRow = async (pageIndex, slotIndex, sheetId) => {
     await saveCustomSheetsToCloud()
     toast.success('整行内容已清空！')
     
-    // 刷新一下代课数据以防UI残留
     fetchData()
   } catch (err) {
     toast.error('清空失败: ' + err.message)
@@ -1641,17 +1662,13 @@ const confirmClassPicker = async () => {
 
   const { pageIndex, slotIndex, sheetId } = classPickerTarget.value
   const prefix = sheetId ? `sheet_${sheetId}_${slotIndex}` : `page_${pageIndex}_${slotIndex}`
-  const className = selectedClassToFill.value
+  const className = selectedClassToFill.value.toUpperCase()
 
-  // 1. 设置左侧老师名称栏为该班级名称
   manualEntries.value[`${prefix}-name-0`] = className
 
-  // 2. 将全天有课的科目按照节次自动填入 KELAS 行
   for (let p = 1; p <= currentPeriodTimes.value.length; p++) {
     const subject = classSchedulesMap.value[className]?.[p] || ''
-    // ⭐️ 这里的输出格式：班级名称 + 空格 + 科目
-    // 比如 3A PMPI 
-    const text = subject ? `${className} ${subject}` : '' 
+    const text = subject ? `${className} ${subject}`.toUpperCase() : '' 
     manualEntries.value[`${prefix}-kelas-${p}`] = text
   }
 
@@ -1688,7 +1705,7 @@ const handleCellClick = async (
 
   if (existingSub) {
     assignmentRemark.value =
-      existingSub.remark || ''
+      existingSub.remark ? existingSub.remark.toUpperCase() : ''
 
     manualSelectedTeacherId.value =
       existingSub.sub_teacher_id || ''
@@ -1741,7 +1758,7 @@ const handleCellClick = async (
           const isBusy = busyPeriodsMap[t.id]?.has(Number(periodNum))
           return {
             id: t.id,
-            name: t.name,
+            name: t.name ? t.name.toUpperCase() : '',
             originalClasses: originalClassMap[t.id] || 0,
             todaySubCount: todaySubMap[t.id] || 0,
             currentSubCount: '-',
@@ -1759,7 +1776,10 @@ const handleCellClick = async (
       results = [...results, ...restTeachers]
     }
 
-    recommendations.value = results
+    recommendations.value = results.map(r => ({
+      ...r,
+      name: r.name ? r.name.toUpperCase() : ''
+    }))
   } catch (err) {
     toast.error('加载排课数据失败: ' + err.message)
     recommendations.value = []
@@ -1781,7 +1801,7 @@ const assignSubstitute = async (teacherId) => {
     const payload = {
       sub_teacher_id: teacherId,
       remark: assignmentRemark.value
-        ? assignmentRemark.value.trim()
+        ? assignmentRemark.value.trim().toUpperCase()
         : null,
       assignment_type: assignmentType.value
     }
@@ -1976,7 +1996,7 @@ const openBlankModal = async (
         existingSub.sub_teacher_id || ''
 
       blankForm.value.remark =
-        existingSub.remark || ''
+        existingSub.remark ? existingSub.remark.toUpperCase() : ''
 
       blankForm.value.kiraBeban = true
     }
@@ -1985,6 +2005,22 @@ const openBlankModal = async (
   await loadSameSessionTeachers()
 
   showBlankModal.value = true
+}
+
+// ⭐️ GURU GANTI 的快捷提取班级逻辑：只注入纯科目，绝对不带有班级名！
+const handleClassSelectChange = () => {
+  if (!selectedClassForImport.value) return
+  
+  const period = blankTarget.value.period
+  const className = selectedClassForImport.value
+  
+  const subject = classSchedulesMap.value[className]?.[period] || ''
+  
+  if (subject) {
+    blankForm.value.remark = subject // 完美解决 Guru Ganti 行出现班级名的问题
+  } else {
+    blankForm.value.remark = ''
+  }
 }
 
 const confirmBlankAssignment = async () => {
@@ -2024,15 +2060,16 @@ const confirmBlankAssignment = async () => {
         blankForm.value.teacherId
       ]
 
-    teacherName = t ? t.name : ''
+    teacherName = t && t.name ? t.name.toUpperCase() : ''
   }
   
   let displayText = teacherName
 
   if (blankForm.value.remark) {
+    const upperRemark = blankForm.value.remark.toUpperCase()
     displayText = teacherName
-      ? `${teacherName} (${blankForm.value.remark})`
-      : blankForm.value.remark
+      ? `${teacherName} (${upperRemark})`
+      : upperRemark
   }
   
   const existingVirtualLeaveId =
@@ -2086,7 +2123,7 @@ const confirmBlankAssignment = async () => {
           .from('leave_requests')
           .update({
             reason:
-              blankForm.value.remark ||
+              (blankForm.value.remark ? blankForm.value.remark.toUpperCase() : '') ||
               'TUGAS KHAS'
           })
           .eq(
@@ -2109,7 +2146,7 @@ const confirmBlankAssignment = async () => {
             period:
               period,
             reason:
-              blankForm.value.remark ||
+              (blankForm.value.remark ? blankForm.value.remark.toUpperCase() : '') ||
               'TUGAS KHAS',
             class_name:
               'VIRTUAL_CLASS',
@@ -2145,7 +2182,7 @@ const confirmBlankAssignment = async () => {
             sub_teacher_id:
               blankForm.value.teacherId,
             remark:
-              blankForm.value.remark
+              blankForm.value.remark ? blankForm.value.remark.toUpperCase() : null
           })
           .eq(
             'id',
@@ -2162,7 +2199,7 @@ const confirmBlankAssignment = async () => {
             assignment_type:
               'substitute',
             remark:
-              blankForm.value.remark
+              blankForm.value.remark ? blankForm.value.remark.toUpperCase() : null
           })
       }
 
@@ -2217,7 +2254,7 @@ const confirmBlankAssignment = async () => {
     }
 
     manualEntries.value[textKey] =
-      displayText
+      displayText.toUpperCase()
 
     await saveCustomSheetsToCloud()
     
@@ -2424,7 +2461,7 @@ const handleExportPdf = async () => {
         return ''
       }
 
-      return String(value).trim()
+      return String(value).trim().toUpperCase()
     }
 
     const drawCenteredText = (
@@ -2585,8 +2622,7 @@ const handleExportPdf = async () => {
       doc.setFontSize(18)
 
       doc.text(
-        schoolName.value ||
-          'SJK (C) LADANG GRISEK',
+        (schoolName.value || 'SJK (C) LADANG GRISEK').toUpperCase(),
         PAGE_W / 2,
         y + 5,
         {
@@ -2597,7 +2633,7 @@ const handleExportPdf = async () => {
       doc.setFontSize(14)
 
       doc.text(
-        `JADUAL GURU GANTI (${sessionText})`,
+        `JADUAL GURU GANTI (${sessionText})`.toUpperCase(),
         PAGE_W / 2,
         y + 14,
         {
@@ -2692,7 +2728,7 @@ const handleExportPdf = async () => {
         teacher.id,
         period,
         type
-      )
+      ).toUpperCase()
     }
 
     const getManualValue = (
@@ -2710,7 +2746,7 @@ const handleExportPdf = async () => {
         prefix,
         type,
         period
-      )
+      ).toUpperCase()
     }
 
     const drawTimetable = ({
@@ -2838,7 +2874,7 @@ const handleExportPdf = async () => {
         const teacher = pageTeachers[slot - 1] || null
 
         const teacherName =
-          teacher
+          (teacher
             ? teacher.name
             : getManualValue(
                 slot,
@@ -2846,13 +2882,13 @@ const handleExportPdf = async () => {
                 0,
                 sheetId,
                 pageIndex
-              )
+              )).toUpperCase()
 
         const teacherReason =
           teacher
             ? (
                 teacher.reason
-                  ? `(${teacher.reason})`
+                  ? `(${teacher.reason.toUpperCase()})`
                   : ''
               )
             : ''
@@ -2866,7 +2902,7 @@ const handleExportPdf = async () => {
             teacherReason
               ? `\n${teacherReason}`
               : ''
-          }`,
+          }`.toUpperCase(),
           {
             fontSize:
               teacherReason
@@ -2894,7 +2930,7 @@ const handleExportPdf = async () => {
               pIndex + 1
 
             const value =
-              teacher
+              (teacher
                 ? getDisplayValue(
                     teacher,
                     period,
@@ -2906,7 +2942,7 @@ const handleExportPdf = async () => {
                     period,
                     sheetId,
                     pageIndex
-                  )
+                  )).toUpperCase()
 
             drawCell(
               tableX +
@@ -2933,7 +2969,7 @@ const handleExportPdf = async () => {
           rowH,
           'GURU GANTI',
           {
-            fontSize: 6.2,
+            fontSize: 5.2,
             bold: true
           }
         )
@@ -2944,7 +2980,7 @@ const handleExportPdf = async () => {
               pIndex + 1
 
             const value =
-              teacher
+              (teacher
                 ? getDisplayValue(
                     teacher,
                     period,
@@ -2956,7 +2992,7 @@ const handleExportPdf = async () => {
                     period,
                     sheetId,
                     pageIndex
-                  )
+                  )).toUpperCase()
 
             drawCell(
               tableX +
@@ -2984,7 +3020,7 @@ const handleExportPdf = async () => {
           rowH,
           'T/TANGAN',
           {
-            fontSize: 5.7,
+            fontSize: 5.2,
             bold: true
           }
         )
@@ -2995,7 +3031,7 @@ const handleExportPdf = async () => {
               pIndex + 1
 
             const value =
-              teacher
+              (teacher
                 ? ''
                 : getManualValue(
                     slot,
@@ -3003,7 +3039,7 @@ const handleExportPdf = async () => {
                     period,
                     sheetId,
                     pageIndex
-                  )
+                  )).toUpperCase()
 
             drawCell(
               tableX +
@@ -3025,8 +3061,9 @@ const handleExportPdf = async () => {
         y += rowH * 3
       }
 
-      // ⭐️ PDF End: Render Catatan (remarks) secara melintang ke sebelah kanan
-      const remarksListPdf = remarksList.value.map(s => s.trim()).filter(Boolean)
+      // ⭐️ PDF End: Render Catatan (remarks) secara melintang ke sebelah kanan (UPPERCASE)
+      // 使用 CATATAN: 以避免英文字体缺失中文字符的问题
+      const remarksListPdf = remarksList.value.map(s => s.replace(/\t/g, '    ').trim().toUpperCase()).filter(Boolean)
 
       if (remarksListPdf.length > 0) {
         y += 4
@@ -3036,29 +3073,40 @@ const handleExportPdf = async () => {
         doc.text('CATATAN:', M, y)
         
         y += 4
-        const colCount = Math.min(remarksListPdf.length, 3) // 最多3列横排
+        const colCount = Math.min(remarksListPdf.length, 3) // Maksimum 3 kolum sebaris
         const colWidth = (CONTENT_W - (colCount - 1) * 4) / colCount
         
         let startX = M
         let maxBlockH = 0
+        let currentY = y
+
+        doc.setFont('Georgia', 'normal')
+        doc.setFontSize(6.5)
+        const lineHeight = 3.2 // mm
         
         remarksListPdf.forEach((rmkText, rIdx) => {
           const colIndex = rIdx % colCount
           if (colIndex === 0 && rIdx > 0) {
-            y += maxBlockH + 3
+            currentY += maxBlockH + 3
             startX = M
+            maxBlockH = 0
           }
           
-          doc.setFont('Georgia', 'bold')
-          doc.setFontSize(7)
-          doc.text(`Catatan ${rIdx + 1}:`, startX, y)
+          // Split by newline to preserve manual line breaks
+          const rawLines = rmkText.split(/\r?\n/)
+          let printLines = []
+          rawLines.forEach(line => {
+            const wrapped = doc.splitTextToSize(line, colWidth)
+            printLines.push(...wrapped)
+          })
           
-          doc.setFont('Georgia', 'normal')
-          doc.setFontSize(6.5)
-          const splitText = doc.splitTextToSize(rmkText, colWidth)
-          doc.text(splitText, startX, y + 3.5)
+          let lineY = currentY
+          printLines.forEach(line => {
+            doc.text(line, startX, lineY)
+            lineY += lineHeight
+          })
           
-          const blockH = 3.5 + splitText.length * 3
+          const blockH = printLines.length * lineHeight
           if (blockH > maxBlockH) maxBlockH = blockH
           
           startX += colWidth + 4
@@ -3126,11 +3174,11 @@ const handleExportPdf = async () => {
         : 'SESI_PETANG'
 
     doc.save(
-      `JADUAL_GURU_GANTI_${safeDate}_${sessionName}.pdf`
+      `JADUAL_GURU_GANTI_${safeDate}_${sessionName}`.toUpperCase() + '.PDF'
     )
 
     toast.success(
-      `PDF 已生成，共 ${
+      `PDF 成功生成，共计 ${
         pages.length +
         extraCustomSheets.value.length
       } 页。`
@@ -3138,7 +3186,7 @@ const handleExportPdf = async () => {
 
   } catch (err) {
     console.error('PDF export failed:', err)
-    toast.error(`PDF 生成失败：${err?.message || err}`)
+    toast.error(`PDF 生成失败：${err?.message || err}`.toUpperCase())
   } finally {
     isExportingPdf.value = false
   }
