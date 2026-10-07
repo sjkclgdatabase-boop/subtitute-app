@@ -47,7 +47,7 @@
           </div>
         </div>
 
-        <!-- 2. 教师选择器 (已按 A-Z 排序) -->
+        <!-- 2. 教师选择器 -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">缺席/请假教师</label>
           <div class="relative flex items-center bg-slate-50 border border-slate-200 rounded-2xl px-4 h-14 shadow-sm hover:border-slate-300 transition w-full">
@@ -70,7 +70,7 @@
           </div>
         </div>
 
-        <!-- 3. 日期选择 (支持点击整个输入框区域唤起日历) -->
+        <!-- 3. 日期选择 -->
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">缺席日期</label>
           <div 
@@ -130,9 +130,9 @@
           <div>
             <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
               <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs shrink-0">2</span>
-              点选需要安排代课的节次
+              确认代课节次与缺席影响
             </h2>
-            <p class="text-xs text-slate-500 mt-1 font-medium">勾选卡片以生成代课任务，未勾选的节次将不安排代课。</p>
+            <p class="text-xs text-slate-500 mt-1 font-medium">若需安排代课请勾选卡片；若内部消化无需代课，可取消全选并纯记录缺席。</p>
           </div>
 
           <div class="flex flex-wrap items-center gap-3 shrink-0">
@@ -155,14 +155,27 @@
           <p class="text-slate-500 text-xs font-bold mt-4">正在从数据库检索课表...</p>
         </div>
 
-        <div v-else-if="dailyClasses.length === 0" class="bg-slate-50 rounded-2xl p-8 text-center border border-slate-100 space-y-2">
-          <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3">
+        <!-- 🌟 无课表时的展示 (移除了手动选节次的下拉框，更简洁) -->
+        <div v-else-if="dailyClasses.length === 0" class="bg-slate-50 rounded-2xl p-8 border border-slate-100 flex flex-col items-center text-center space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center mx-auto">
             <CheckCircle2 class="w-6 h-6" />
           </div>
-          <p class="text-slate-900 font-bold text-sm">该名教师在这一天没有任何排课</p>
-          <p class="text-slate-500 text-xs font-medium">无需安排代课，行政可以直接批准。</p>
+          <div>
+            <p class="text-slate-900 font-bold text-sm">该名教师在这一天没有任何排课</p>
+            <p class="text-slate-500 text-xs font-medium mt-1">无需安排代课。您可以直接将此缺席记录同步至报表。</p>
+          </div>
+          
+          <button 
+            @click="submitAbsenceOnly" 
+            :disabled="isSubmitting"
+            class="mt-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-sm transition cursor-pointer"
+          >
+            <span v-if="!isSubmitting">仅记录缺席 (同步至报表)</span>
+            <span v-else>记录中...</span>
+          </button>
         </div>
 
+        <!-- 🌟 有课表时的展示 -->
         <div v-else class="space-y-3">
           <!-- 卡片列表 -->
           <div 
@@ -206,22 +219,35 @@
             </div>
           </div>
 
-          <!-- 提交按钮 -->
-          <div class="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <!-- 提交按钮区 -->
+          <div class="mt-6 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div class="text-xs text-slate-500 font-bold truncate">
               已选中 <strong class="text-indigo-600 text-sm font-black">{{ selectedClassesCount }}</strong> 节代课任务
             </div>
 
-            <button 
-              @click="submitLeaveRequests" 
-              :disabled="isSubmitting || selectedClassesCount === 0"
-              class="group flex items-center justify-center px-6 py-3 text-xs font-bold text-white bg-slate-900 rounded-2xl hover:bg-slate-800 hover:shadow-lg hover:-translate-y-0.5 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shrink-0 w-full sm:w-auto"
-            >
-              <span v-if="!isSubmitting" class="truncate">生成代课任务 ({{ selectedClassesCount }})</span>
-              <span v-else>正在生成...</span>
-              <ArrowRight v-if="!isSubmitting" class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform shrink-0" />
-            </button>
+            <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+              <!-- 🌟 只有选中数量为 0 时，纯记录按钮才会出现 -->
+              <button 
+                v-if="selectedClassesCount === 0"
+                @click="submitAbsenceOnly" 
+                :disabled="isSubmitting"
+                class="px-6 py-3 text-xs font-bold text-amber-700 bg-amber-100 hover:bg-amber-200 rounded-2xl transition-all shadow-sm cursor-pointer w-full sm:w-auto"
+              >
+                仅记录缺席
+              </button>
+
+              <button 
+                @click="submitLeaveRequests" 
+                :disabled="isSubmitting || selectedClassesCount === 0"
+                class="group flex items-center justify-center px-6 py-3 text-xs font-bold text-white bg-slate-900 rounded-2xl hover:bg-slate-800 hover:shadow-lg hover:-translate-y-0.5 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shrink-0 w-full sm:w-auto"
+              >
+                <span v-if="!isSubmitting" class="truncate">生成代课任务 ({{ selectedClassesCount }})</span>
+                <span v-else>正在处理...</span>
+                <ArrowRight v-if="!isSubmitting" class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform shrink-0" />
+              </button>
+            </div>
           </div>
+          
         </div>
       </div>
     </transition>
@@ -285,18 +311,20 @@ const dailyClasses = ref([])
 const loading = ref(false)
 const isSubmitting = ref(false)
 
+// 用于纯记录时的内部节次变量
+const manualStartPeriod = ref(1)
+const manualEndPeriod = ref(10)
+
 const dayNames = ['日', '一', '二', '三', '四', '五', '六']
 
 onMounted(async () => {
   const { data } = await supabase.from('teachers').select('id, name, subject, session')
   if (data) {
-    // 🌟 1. 获取教师名单后按 A-Z 字母排序
     teachersList.value = data.sort((a, b) => (a.name || '').localeCompare(b.name || ''))
   }
 })
 
 const filteredTeachersList = computed(() => {
-  // 🌟 过滤并保证维持 A-Z 字母排序
   return teachersList.value
     .filter(t => (t.session || 'morning') === currentSession.value)
     .sort((a, b) => (a.name || '').localeCompare(b.name || ''))
@@ -365,6 +393,17 @@ const fetchDailyTimetable = async () => {
     })
 
     dailyClasses.value = Array.from(periodMap.values())
+    
+    // 🌟 在后台悄悄计算出其实和结束节次，无需用户手动干预
+    if (dailyClasses.value.length > 0) {
+      const sortedPeriods = dailyClasses.value.map(c => Number(c.period)).sort((a, b) => a - b)
+      manualStartPeriod.value = sortedPeriods[0]
+      manualEndPeriod.value = sortedPeriods[sortedPeriods.length - 1]
+    } else {
+      manualStartPeriod.value = 1
+      manualEndPeriod.value = 10
+    }
+
   } catch (error) {
     toast.error("获取课表失败: " + error.message)
   } finally {
@@ -372,7 +411,42 @@ const fetchDailyTimetable = async () => {
   }
 }
 
-// 提交逻辑
+// 🌟 纯记录缺席逻辑 (无论是无课表，还是取消全选，都跑这个)
+const submitAbsenceOnly = async () => {
+  isSubmitting.value = true
+  try {
+    const currentTeacher = teachersList.value.find(t => t.id === selectedTeacherId.value)
+    const teacherName = currentTeacher ? currentTeacher.name : '未知教师'
+
+    const rawReason = leaveReason.value.trim()
+    const formattedReason = rawReason 
+      ? `[${leaveCategory.value}] ${rawReason.toUpperCase()}`
+      : `[${leaveCategory.value}] 未填写具体说明`
+
+    // 直接写入 MMI 记录表
+    const mmiLogPayload = {
+      interruption_date: leaveDate.value,
+      type: 'teacher',
+      start_period: manualStartPeriod.value,
+      end_period: manualEndPeriod.value,
+      reason: formattedReason,
+      target_display: `教师: ${teacherName}`,
+      remarks: '(当日无排课或无需代课)'
+    }
+
+    const { error: mmiError } = await supabase.from('mmi_interruptions').insert([mmiLogPayload])
+    if (mmiError) throw mmiError
+
+    toast.success("缺勤记录已成功同步至 MMI 报表！")
+    router.push('/')
+  } catch (error) {
+    toast.error("记录失败: " + error.message)
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+// 原有的代课排程与 MMI 同步提交逻辑
 const submitLeaveRequests = async () => {
   const selectedList = dailyClasses.value.filter(cls => cls.selected)
   if (selectedList.length === 0) {
